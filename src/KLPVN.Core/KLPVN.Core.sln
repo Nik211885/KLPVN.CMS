@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.11.35312.102
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KLPVN.Core", "KLPVN.Core.csproj", "{00F311BD-4187-4036-83D8-9120A900E53F}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{00F311BD-4187-4036-83D8-9120A900E53F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{00F311BD-4187-4036-83D8-9120A900E53F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{00F311BD-4187-4036-83D8-9120A900E53F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{00F311BD-4187-4036-83D8-9120A900E53F}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {A083CE43-3B58-4E25-9AD2-D3578AC63501}
+	EndGlobalSection
+EndGlobal
