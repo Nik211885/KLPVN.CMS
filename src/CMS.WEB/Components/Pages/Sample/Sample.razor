@@ -1,0 +1,39 @@
+﻿@page "/sample"
+@using KLPVN.Core.Helper
+
+@code {
+    protected override async Task OnInitializedAsync()
+    {
+        using var client = factory.CreateClient(apiType.Key);
+        var httpResponse = await client.GetAsync("WeatherForecast");
+        if (httpResponse.IsSuccessStatusCode)
+        {
+            var data = await httpResponse.Content.DecodeAsync<List<WeatherForecast>>();
+            foreach (var d in data)
+            {
+                Console.WriteLine(d);
+            }
+        }
+        else
+        {
+            throw new ArgumentException("Can't get data");
+        }
+    }
+    public class WeatherForecast
+    {
+        public DateTime Date { get; set; }
+
+        public int TemperatureC { get; set; }
+
+        public int TemperatureF { get; set; }
+
+        public string? Summary { get; set; }
+        public override string ToString()
+        {
+            return $"Hello this is {Summary}";
+        }
+    }
+}
+
+<h3>Sample</h3>
+<h1>Hello World</h1>

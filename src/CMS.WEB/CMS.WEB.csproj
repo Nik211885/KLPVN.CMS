@@ -9,5 +9,11 @@
 
   <ItemGroup>
     <PackageReference Include="MudBlazor" Version="7.*" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+  </ItemGroup>
+
+
+  <ItemGroup>
+    <ProjectReference Include="..\KLPVN.Core\KLPVN.Core.csproj" />
   </ItemGroup>
 </Project>

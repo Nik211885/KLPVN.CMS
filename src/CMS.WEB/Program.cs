@@ -1,15 +1,21 @@
+﻿using CMS.WEB.Components;
+using KLPVN.Core.Models;
 using MudBlazor.Services;
-using CMS.WEB.Components;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add MudBlazor services
 builder.Services.AddMudServices();
-
 // Add services to the container.
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 
+var apiType = builder.Configuration.GetSection("ApiType").Get<ApiType>() ?? throw new ArgumentException("Not config apiTypes");
+builder.Services.AddSingleton(apiType);
+builder.Services.AddHttpClient(apiType.Key, (httpClient) =>
+{
+  httpClient.BaseAddress = new Uri(apiType.Uri);
+});
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
