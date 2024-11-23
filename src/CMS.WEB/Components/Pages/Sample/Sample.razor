@@ -4,20 +4,8 @@
 @code {
     protected override async Task OnInitializedAsync()
     {
-        using var client = factory.CreateClient(apiType.Key);
-        var httpResponse = await client.GetAsync("WeatherForecast");
-        if (httpResponse.IsSuccessStatusCode)
-        {
-            var data = await httpResponse.Content.DecodeAsync<List<WeatherForecast>>();
-            foreach (var d in data)
-            {
-                Console.WriteLine(d);
-            }
-        }
-        else
-        {
-            throw new ArgumentException("Can't get data");
-        }
+        using var client = new HttpClient();
+        var httpResponse = await client.GetFromJsonAsync<List<WeatherForecast>>("WeatherForecast");
     }
     public class WeatherForecast
     {
