@@ -12,13 +12,13 @@ public abstract class CoreEntity<TKey>
   (TKey id, string? userName) : BaseEntity<TKey>(id)
 {
   public string CreatedBy { get; } = userName ?? Variables.DEFAULT_USER_NAME;
-  public DateTimeOffset CreatedAt { get; } = DateTimeOffset.UtcNow;
+  public DateTimeOffset CreatedDatetime { get; } = DateTimeOffset.UtcNow;
   public string UpdatedBy { get; private set; } = userName ?? Variables.DEFAULT_USER_NAME; 
-  public DateTimeOffset UpdatedAt{ get; private set; } = DateTimeOffset.UtcNow;
+  public DateTimeOffset UpdatedDateTime{ get; private set; } = DateTimeOffset.UtcNow;
 
   public void UpdateCoreEntity(string? updatedBy)
   {
     UpdatedBy = updatedBy ?? Variables.DEFAULT_USER_NAME;
-    UpdatedAt = DateTimeOffset.UtcNow;
+    UpdatedDateTime = DateTimeOffset.UtcNow;
   }
 }

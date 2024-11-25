@@ -58,7 +58,6 @@ public class JwtManager : IJwtManager
       {
         throw new ArgumentException("Invalid refresh token");
       }
-      _memoryCache.Remove(userName);
       return GenerateTokens(userName, principal.Claims.ToList());
   }
   
