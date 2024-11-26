@@ -1,6 +1,6 @@
 ﻿namespace KLPVN.Core.Models;
 
-public abstract class BaseEntity<TKey>(TKey id)
+public abstract class BaseEntity<TKey>
 {
-  public TKey Id { get; set; } = id;
+  public TKey Id { get; set; }
 }

@@ -8,6 +8,10 @@ public class SubjectConfiguration : IEntityTypeConfiguration<Subject>
 {
   public void Configure(EntityTypeBuilder<Subject> builder)
   {
-    throw new NotImplementedException();
+    builder.ToTable("Subjects");
+    builder.HasKey(x => x.Id);
+    builder.HasOne(x=>x.Parent).WithMany(x=>x.Children).HasForeignKey(x=>x.ParentId);
+    builder.Property(x => x.Name).HasMaxLength(75).IsRequired();
+    builder.Property(x=>x.Code).HasMaxLength(50).IsRequired();
   }
 }

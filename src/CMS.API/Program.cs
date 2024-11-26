@@ -3,6 +3,7 @@ using CMS.API.Common;
 using CMS.API.Infrastructure.Authentication;
 using CMS.API.Infrastructure.Data;
 using CMS.API.Infrastructure.Notification;
+using CMS.API.Services;
 using KLPVN.Core.Commons;
 using KLPVN.Core.Interface;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -26,6 +27,7 @@ var identityAuthentication =
 builder.Services.AddSingleton(identityAuthentication);
 builder.Services.AddScoped<IUserProvider, UserProvider>();
 builder.Services.AddSingleton<IJwtManager, JwtManager>();
+builder.Services.AddScoped(typeof(IServicesWrapper), typeof(ServicesWrapper));
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
 {
   options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")

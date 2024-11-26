@@ -7,6 +7,12 @@ namespace KLPVN.Core.Helper;
 
 public static class StringHelper
 {
+  public static string RandomKeyFormatDateTime(string? code = null, bool start = true)
+  {
+    var date = DateTimeOffset.UtcNow.ToString("yyyyMMddHHmmssfff");
+    code = code ?? GeneratorStringBase64(10);
+    return start ? string.Concat(date, code) : string.Concat(code, date);
+  }
   public static string ConvertDateToString(DateTime dateTime)
     => dateTime.ToString("dd/MM/yyyy");
   public static TObject? AsObject<TObject>(this string str)

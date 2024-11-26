@@ -4,29 +4,16 @@ namespace CMS.API.Entities;
 
 public class FeedBack : BaseEntity<Guid>
 {
-  public string FullName { get; } = null!;
-  public string Phone { get; } = null!;
-  public string Title { get; } = null!;
-  public string? Email { get;}
-  public string? Note { get; }
-  public string? Address { get; }
-  public DateTimeOffset CreatedDateTime { get; }
+  public string FullName { get; set; } = null!;
+  public string Phone { get; set; } = null!;
+  public string Title { get; set; } = null!;
+  public string? Email { get; set; }
+  public string? Note { get; set; }
+  public string? Address { get; set; }
+  public DateTimeOffset CreatedDateTime { get; set; }
 
-  public FeedBack() : base(default)
+  public FeedBack()
   {
     
   }
-
-  public FeedBack(string fullName,string title,
-    string phone, string? email, string? note, string address)
-    : base(Guid.NewGuid())
-  {
-    FullName = fullName;
-    Phone = phone;
-    Title = title;
-    Email = email;
-    Note = note;
-    Address = address;
-    CreatedDateTime = DateTimeOffset.UtcNow;
-  } 
 }

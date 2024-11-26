@@ -5,20 +5,11 @@ namespace KLPVN.Core.Models;
 /// <summary>
 ///     username make foreign key and username is unique
 /// </summary>
-/// <param name="id"></param>
-/// <param name="userName"></param>
 /// <typeparam name="TKey"></typeparam>
-public abstract class CoreEntity<TKey>
-  (TKey id, string? userName) : BaseEntity<TKey>(id)
+public abstract class CoreEntity<TKey> : BaseEntity<TKey>
 {
-  public string CreatedBy { get; } = userName ?? Variables.DEFAULT_USER_NAME;
-  public DateTimeOffset CreatedDatetime { get; } = DateTimeOffset.UtcNow;
-  public string UpdatedBy { get; private set; } = userName ?? Variables.DEFAULT_USER_NAME; 
-  public DateTimeOffset UpdatedDateTime{ get; private set; } = DateTimeOffset.UtcNow;
-
-  public void UpdateCoreEntity(string? updatedBy)
-  {
-    UpdatedBy = updatedBy ?? Variables.DEFAULT_USER_NAME;
-    UpdatedDateTime = DateTimeOffset.UtcNow;
-  }
+  public string CreatedBy { get; set; }
+  public DateTimeOffset CreatedDatetime { get; set; }
+  public string UpdatedBy { get; set; }
+  public DateTimeOffset UpdatedDateTime{ get; set; } 
 }
