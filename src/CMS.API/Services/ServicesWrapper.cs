@@ -1,5 +1,7 @@
-﻿using KLPVN.Core.Interface;
+﻿using CMS.API.Common;
+using KLPVN.Core.Interface;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Memory;
 
 namespace CMS.API.Services;
 

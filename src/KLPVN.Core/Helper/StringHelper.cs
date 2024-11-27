@@ -13,6 +13,17 @@ public static class StringHelper
     code = code ?? GeneratorStringBase64(10);
     return start ? string.Concat(date, code) : string.Concat(code, date);
   }
+
+  private static string ConcatDateTime(int date, string code)
+    => string.Concat(date, " ", code, " trước");
+  public static string ConvertDateTimeToString(DateTimeOffset date)
+  {
+    var hh = date.Hour;
+    var mm = date.Minute;
+    var ss = date.Second;
+    if (hh != 0) return ConcatDateTime(hh, " giờ");
+    return mm != 0 ? ConcatDateTime(mm, "phút") : ConcatDateTime(ss, "giây");
+  }
   public static string ConvertDateToString(DateTime dateTime)
     => dateTime.ToString("dd/MM/yyyy");
   public static TObject? AsObject<TObject>(this string str)

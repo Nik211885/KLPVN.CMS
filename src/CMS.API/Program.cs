@@ -1,6 +1,7 @@
 using System.Text;
 using CMS.API.Common;
 using CMS.API.Infrastructure.Authentication;
+using CMS.API.Infrastructure.Caching.Memory;
 using CMS.API.Infrastructure.Data;
 using CMS.API.Infrastructure.Notification;
 using CMS.API.Services;
@@ -20,13 +21,14 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddScoped<INotification, EmailSender>();
-builder.Services.AddSingleton<IMemoryCache, MemoryCache>();
+builder.Services.AddSingleton<IMemoryCacheManager, MemoryCacheManager>();
 var identityAuthentication =
   builder.Configuration.GetSection(nameof(IdentityAuthentication)).Get<IdentityAuthentication>()
   ?? throw new ArgumentException("IdentityAuthentication section not config or key not correct");
 builder.Services.AddSingleton(identityAuthentication);
 builder.Services.AddScoped<IUserProvider, UserProvider>();
-builder.Services.AddSingleton<IJwtManager, JwtManager>();
+builder.Services.AddScoped<IJwtManager, JwtManager>();
+builder.Services.AddMemoryCache();
 builder.Services.AddScoped(typeof(IServicesWrapper), typeof(ServicesWrapper));
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
 {

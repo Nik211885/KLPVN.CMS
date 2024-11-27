@@ -1,5 +1,6 @@
 ﻿using KLPVN.Core.Interface;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Memory;
 
 namespace CMS.API.Services.AuAction;
 

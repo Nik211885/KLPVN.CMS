@@ -1,8 +1,8 @@
-﻿using System.Collections.Immutable;
-using System.IdentityModel.Tokens.Jwt;
+﻿using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using CMS.API.Common;
+using CMS.API.Infrastructure.Caching.Memory;
 using KLPVN.Core.Helper;
 using KLPVN.Core.Interface;
 using KLPVN.Core.Models;
@@ -16,10 +16,10 @@ public class JwtManager : IJwtManager
   private readonly IdentityAuthentication _identityAuthentication;
   private readonly IMemoryCache _memoryCache;
   private readonly byte[] _secret;
-  public JwtManager(IdentityAuthentication identityAuthentication, IMemoryCache memoryCache)
+  public JwtManager(IdentityAuthentication identityAuthentication, IMemoryCacheManager memoryManager)
   {
     _identityAuthentication = identityAuthentication;
-    _memoryCache = memoryCache;
+    _memoryCache = memoryManager.GetMemoryCache(Common.Variables.MemoryTypes.Security);
     _secret = Encoding.UTF8.GetBytes(_identityAuthentication.Secret);
   }
   // make sure claims have user name is claims type name
@@ -50,6 +50,7 @@ public class JwtManager : IJwtManager
       }
       var userName = principal.Claims.FirstOrDefault(x => x.Type.Equals(ClaimTypes.NameIdentifier))?.Value
         ?? throw new ArgumentException("Not find user name");
+      // want check access still express
       if (!_memoryCache.TryGetValue(userName, out var refresh))
       {
         throw new ArgumentException("Invalid refresh token");
