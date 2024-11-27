@@ -8,7 +8,7 @@ public class Subject : CoreEntity<Guid>
   public string Name { get; set; } = null!;
   public bool IsActive { get; set; }
   public int DisplayOrder {  get; set; }
-  public Guid? ParentId {  get; set; }
+  public Guid? ParentId { get; set; }
   public Subject? Parent { get; init; }
   public IEnumerable<Subject>? Children { get; init; }
   public IEnumerable<SubjectContent>? SubjectContents { get; init; }

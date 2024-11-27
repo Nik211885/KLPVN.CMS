@@ -1,16 +1,14 @@
-﻿using CMS.API.Common;
+﻿using CMS.API.Infrastructure.Data;
 using KLPVN.Core.Interface;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Caching.Memory;
 
 namespace CMS.API.Services;
 
 public class ServicesWrapper : IServicesWrapper
 {
-  private readonly DbContext _context;
+  private readonly ApplicationDbContext _context;
   private readonly IUserProvider _userProvider;
 
-  public ServicesWrapper(DbContext context, IUserProvider userProvider)
+  public ServicesWrapper(ApplicationDbContext context, IUserProvider userProvider)
   {
     _context = context;
     _userProvider = userProvider;

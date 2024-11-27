@@ -64,20 +64,15 @@ public class ApplicationDbContext : DbContext
       var flags = 0;
       if (p.CanWrite)
       {
-        switch (p.Name.ToLower())
+        switch (p.Name)
         {
           case "Id":
             if (p.GetValue(entity) is null)
             {
-              if (p.PropertyType == typeof(Guid))
-              {
-                p.SetValue(entry, Guid.NewGuid());
-                break;
-              }
               // if type is int make sure it is serial
               if (p.PropertyType == typeof(string))
               {
-                p.SetValue(entry, StringHelper.RandomKeyFormatDateTime());
+                p.SetValue(entity, StringHelper.RandomKeyFormatDateTime());
                 break;
               }
             }
@@ -87,20 +82,34 @@ public class ApplicationDbContext : DbContext
             flags += 1;
             if (p.PropertyType == typeof(string))
             {
-              p.SetValue(entry,_userProvider.UserName);
+              p.SetValue(entity,_userProvider.UserName);
             }
             break;
           case "CreatedDatetime":
             flags += 1;
-            if (p.PropertyType == typeof(DateTime))
+            if (p.PropertyType == typeof(DateTimeOffset))
             {
-              p.SetValue(entry, DateTimeOffset.UtcNow);
+              p.SetValue(entity, DateTimeOffset.UtcNow);
+            }
+            break;
+          case "UpdatedBy":
+            flags += 1;
+            if (p.PropertyType == typeof(string))
+            {
+               p.SetValue(entity,_userProvider.UserName);
+            }
+            break;
+          case "UpdatedDateTime":
+            flags += 1;
+            if (p.PropertyType == typeof(DateTimeOffset))
+            {
+              p.SetValue(entity, DateTimeOffset.UtcNow);
             }
             break;
         }
       }
 
-      if (flags == 3)
+      if (flags == 5)
       {
         break;
       }
@@ -124,16 +133,16 @@ public class ApplicationDbContext : DbContext
         {
           case "UpdatedBy":
             flags += 1;
-            if (p.PropertyType == typeof(DateTime))
+            if (p.PropertyType == typeof(string))
             {
-              p.SetValue(entry, DateTimeOffset.UtcNow);
+              p.SetValue(entity,_userProvider.UserName);
             }
             break;
           case "UpdatedDateTime":
             flags += 1;
-            if (p.PropertyType == typeof(string))
+            if (p.PropertyType == typeof(DateTimeOffset))
             {
-              p.SetValue(entry, _userProvider.UserName);
+              p.SetValue(entity, DateTimeOffset.UtcNow);
             }
             break;
         }

@@ -28,13 +28,14 @@ var identityAuthentication =
 builder.Services.AddSingleton(identityAuthentication);
 builder.Services.AddScoped<IUserProvider, UserProvider>();
 builder.Services.AddScoped<IJwtManager, JwtManager>();
+builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 builder.Services.AddMemoryCache();
-builder.Services.AddScoped(typeof(IServicesWrapper), typeof(ServicesWrapper));
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
 {
   options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")
                     ?? throw new ArgumentException("Not config connection string"));
 });
+builder.Services.AddScoped(typeof(IServicesWrapper), typeof(ServicesWrapper));
 builder.Services.AddAuthentication(options =>
   {
     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
