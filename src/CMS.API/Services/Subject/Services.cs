@@ -1,4 +1,5 @@
 ﻿using CMS.API.DTOs.Subject.Request;
+using CMS.API.Exceptions;
 using CMS.API.Infrastructure.Data;
 using KLPVN.Core.Interface;
 namespace CMS.API.Services.Subject;
@@ -18,7 +19,7 @@ public class Services : IServices
   {
     if (!request.IsValid(out var errors))
     {
-      throw new ArgumentException(string.Join(", ", errors));  
+      throw new BadRequestException(errors);
     }
     var subject = request.Mapping();
     var entry = _context.Subjects.Add(subject);

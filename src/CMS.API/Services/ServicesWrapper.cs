@@ -6,10 +6,12 @@ namespace CMS.API.Services;
 public class ServicesWrapper : IServicesWrapper
 {
   private readonly ApplicationDbContext _context;
+  private readonly IJwtManager _jwtManager;
   private readonly IUserProvider _userProvider;
 
-  public ServicesWrapper(ApplicationDbContext context, IUserProvider userProvider)
+  public ServicesWrapper(ApplicationDbContext context, IUserProvider userProvider, IJwtManager jwtManager)
   {
+    _jwtManager = jwtManager;
     _context = context;
     _userProvider = userProvider;
   }
@@ -23,6 +25,7 @@ public class ServicesWrapper : IServicesWrapper
   private sample.IServices _sample;
   private Subject.IServices _subject;
   private User.IServices _user;
+  private Au.IServices _au;
 
   public AuAction.IServices AuAction => _auAction ??= new AuAction.Services(_context, _userProvider);
   public AuClass.IServices AuClass => _auClass ??= new AuClass.Services(_context, _userProvider);
@@ -35,4 +38,5 @@ public class ServicesWrapper : IServicesWrapper
   public sample.IServices Sample => _sample ??= new sample.Services(_context, _userProvider);
   public Subject.IServices Subject => _subject ??= new Subject.Services(_context, _userProvider);
   public User.IServices User => _user ??= new User.Services(_context, _userProvider);
+  public Au.IServices Au => _au ??= new Au.Services(_context, _userProvider,_jwtManager );
 }

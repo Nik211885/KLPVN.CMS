@@ -25,7 +25,6 @@ public class JwtManager : IJwtManager
   // make sure claims have user name is claims type name
   public JwtResult GenerateTokens(string userName, List<Claim> claims)
   {
-    claims.Add(new Claim(ClaimTypes.NameIdentifier, userName));
     var jwtToken = new JwtSecurityToken(
       issuer: _identityAuthentication.Issuer,
       claims: claims,

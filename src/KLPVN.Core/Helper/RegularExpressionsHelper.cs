@@ -4,7 +4,7 @@ namespace KLPVN.Core.Helper;
 
 public partial class RegularExpressionsHelper
 {
-  public static bool IsValidEmail(string email)
+  public static bool IsValidEmail(string? email)
   {
     if (string.IsNullOrWhiteSpace(email))
     {
@@ -20,7 +20,7 @@ public partial class RegularExpressionsHelper
     }
   }
 
-  public static bool IsValidPhoneNumberInVietNam(string phoneNumber)
+  public static bool IsValidPhoneNumberInVietNam(string? phoneNumber)
   {
     if (string.IsNullOrWhiteSpace(phoneNumber))
     {
@@ -36,7 +36,7 @@ public partial class RegularExpressionsHelper
     }
   }
 
-  public static bool IsValidPassword(string password)
+  public static bool IsValidPassword(string? password)
   {
     if (string.IsNullOrWhiteSpace(password))
     {
@@ -55,6 +55,6 @@ public partial class RegularExpressionsHelper
   private static partial Regex RegexEmailAddress();
   [GeneratedRegex("(84|0[3|5|7|8|9])+([0-9]{8})")]
   private static partial Regex RegexPhoneNumberInVietNam();
-  [GeneratedRegex(@"^(?=.*\\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[a-zA-Z]).{8,}$")]
+  [GeneratedRegex(@"^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}$")]
   private static partial Regex RegexPassword();
 }

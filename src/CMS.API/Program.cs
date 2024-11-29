@@ -1,5 +1,6 @@
 using System.Text;
 using CMS.API.Common;
+using CMS.API.Exceptions;
 using CMS.API.Infrastructure.Authentication;
 using CMS.API.Infrastructure.Caching.Memory;
 using CMS.API.Infrastructure.Data;
@@ -9,7 +10,6 @@ using KLPVN.Core.Commons;
 using KLPVN.Core.Interface;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Caching.Memory;
 using Microsoft.IdentityModel.Tokens;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -27,6 +27,7 @@ var identityAuthentication =
   ?? throw new ArgumentException("IdentityAuthentication section not config or key not correct");
 builder.Services.AddSingleton(identityAuthentication);
 builder.Services.AddScoped<IUserProvider, UserProvider>();
+builder.Services.AddTransient<ExceptionHandlingMiddleware>();
 builder.Services.AddScoped<IJwtManager, JwtManager>();
 builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 builder.Services.AddMemoryCache();
@@ -71,5 +72,7 @@ app.UseHttpsRedirection();
 app.UseAuthorization();
 
 app.MapControllers();
+
+app.UseMiddleware<ExceptionHandlingMiddleware>();
 
 app.Run();

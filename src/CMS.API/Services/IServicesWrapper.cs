@@ -12,4 +12,5 @@ public interface IServicesWrapper
   sample.IServices Sample { get; }
   Subject.IServices Subject { get; }
   User.IServices User { get; }
+  Au.IServices Au { get; }
 }

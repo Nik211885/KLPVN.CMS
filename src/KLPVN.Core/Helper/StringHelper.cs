@@ -28,7 +28,6 @@ public static class StringHelper
     => dateTime.ToString("dd/MM/yyyy");
   public static TObject? AsObject<TObject>(this string str)
     => JsonConvert.DeserializeObject<TObject>(str);
-  
   public static string GeneratorStringBase64(int bytes)
   {
     // one character in base 64 equals 6 bits , one byte = 8 bits
