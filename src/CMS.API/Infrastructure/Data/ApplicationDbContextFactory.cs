@@ -7,17 +7,14 @@ namespace CMS.API.Infrastructure.Data;
 
 public class ApplicationDbContextFactory : IDesignTimeDbContextFactory<ApplicationDbContext>
 {
-  private readonly IConfiguration _configuration;
-
-  public ApplicationDbContextFactory(IConfiguration configuration)
-  {
-    _configuration = configuration;
-  }
   public ApplicationDbContext CreateDbContext(string[] args)
   {
     var optionsBuilder = new DbContextOptionsBuilder<ApplicationDbContext>();
-    optionsBuilder.UseNpgsql(_configuration.GetConnectionString("DefaultConnection") 
-                             ?? throw new ArgumentException("Not config connection string"));
+    var builder = new ConfigurationBuilder()
+      .SetBasePath(Path.Combine(Directory.GetCurrentDirectory()))
+      .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
+    var config = builder.Build();
+    optionsBuilder.UseNpgsql(config.GetConnectionString("DefaultConnection"));
     return new ApplicationDbContext(optionsBuilder.Options, new UserProvideDesignRuntime());
   }
 

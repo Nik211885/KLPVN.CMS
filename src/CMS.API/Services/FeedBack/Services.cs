@@ -1,4 +1,6 @@
-﻿using CMS.API.Infrastructure.Data;
+﻿using CMS.API.DTOs.FeedBack.Request;
+using CMS.API.Exceptions;
+using CMS.API.Infrastructure.Data;
 using KLPVN.Core.Interface;
 
 namespace CMS.API.Services.FeedBack;
@@ -12,5 +14,17 @@ public class Services : IServices
   {
     _context = dbContext;
     _userProvider = userProvider;
+  }
+
+  public async Task<Guid> CreateFeedBackAsync(CreateFeedBackRequest request)
+  {
+    if (!request.IsValid(out var errors))
+    {
+      throw new BadRequestException(errors);
+    }
+    var feedBack = request.Mapping();
+    _context.FeedBacks.Add(feedBack);
+    await _context.SaveChangesAsync();
+    return feedBack.Id;
   }
 }

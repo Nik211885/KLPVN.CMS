@@ -52,6 +52,7 @@ public class ExceptionHandlingMiddleware : IMiddleware
     {
       NotFoundException => StatusCodes.Status404NotFound,
       BadRequestException => StatusCodes.Status400BadRequest,
+      ErrorProcessing => StatusCodes.Status406NotAcceptable,
       UnauthorizedException => StatusCodes.Status401Unauthorized,
       _ => StatusCodes.Status500InternalServerError
     };
