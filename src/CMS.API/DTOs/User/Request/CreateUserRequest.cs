@@ -53,6 +53,26 @@ public static class CreateUserRequestExtensions
     {
       errors.Add(ConstFailure.IN_VALID_PASSWORD);
     }
+
+    if (request.UserName.Length > 50)
+    {
+      errors.Add("User name không lớn hơn 50 ký tự");
+    }
+
+    if (request?.Email?.Length > 100)
+    {
+      errors.Add("Email không lớn hơn 100 kí tự");
+    }
+
+    if (request?.Address?.Length > 150)
+    {
+      errors.Add("Địa chỉ không lớn hơn 150 kí tự");
+    }
+
+    if (request?.FullName?.Length > 100)
+    {
+      errors.Add("Tên không lớn hơn 100 kí tự");
+    }
     return errors.Count == 0;
   }
 }

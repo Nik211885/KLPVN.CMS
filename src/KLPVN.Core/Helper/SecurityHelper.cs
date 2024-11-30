@@ -7,17 +7,11 @@ public static class SecurityHelper
 {
   public static string HashPassword(string password, string salt)
   {
-    int count = 10000;
-    var passwordBytes = Encoding.UTF8.GetBytes(password);
+    int iterations = 100000;
+    int keySize = 32;
     var saltBytes = Encoding.UTF8.GetBytes(salt);
-    var passwordSaltBytes = new byte[saltBytes.Length + passwordBytes.Length];
-    Buffer.BlockCopy(passwordBytes, 0, saltBytes, 0, passwordBytes.Length);
-    Buffer.BlockCopy(saltBytes, 0, passwordSaltBytes, passwordBytes.Length, salt.Length);
-    byte[] hashBytes = passwordSaltBytes;
-    for (int i = 0; i < count; i++)
-    {
-      hashBytes = SHA256.HashData(hashBytes);
-    }
+    using var pbkdf2 = new Rfc2898DeriveBytes(password, saltBytes, iterations, HashAlgorithmName.SHA256);
+    byte[] hashBytes = pbkdf2.GetBytes(keySize);
     return Convert.ToBase64String(hashBytes);
   }
 

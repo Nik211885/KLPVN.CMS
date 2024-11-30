@@ -9,4 +9,6 @@ public interface IServices
   Task<Guid> ChangePasswordAsync(ChangePasswordRequest request);
   Task<Guid> ActiveUserAsync(string userName);
   Task<Guid> UpdateUserAsync(UpdateUserInformationRequest request);
+  Task<Guid> AddRoleForUserAsync(string userName, Guid roleId);
+  Task<Guid> RemoveRoleForUserAsync(string userName, Guid roleId);
 }

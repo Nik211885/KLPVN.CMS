@@ -7,13 +7,21 @@ namespace CMS.API.Infrastructure.Data;
 
 public class ApplicationDbContextFactory : IDesignTimeDbContextFactory<ApplicationDbContext>
 {
+  private readonly IConfiguration _configuration;
+
+  public ApplicationDbContextFactory(IConfiguration configuration)
+  {
+    _configuration = configuration;
+  }
   public ApplicationDbContext CreateDbContext(string[] args)
   {
     var optionsBuilder = new DbContextOptionsBuilder<ApplicationDbContext>();
-    optionsBuilder.UseNpgsql("Server=localhost;Port=5432;Database=klpvn_cms;Username=postgres;Password=211885;");
+    optionsBuilder.UseNpgsql(_configuration.GetConnectionString("DefaultConnection") 
+                             ?? throw new ArgumentException("Not config connection string"));
     return new ApplicationDbContext(optionsBuilder.Options, new UserProvideDesignRuntime());
   }
-  public class UserProvideDesignRuntime : IUserProvider
+
+  private class UserProvideDesignRuntime : IUserProvider
   {
     public bool IsAuthenticated { get; } = true;
     public Guid UserId { get; } = Guid.NewGuid();

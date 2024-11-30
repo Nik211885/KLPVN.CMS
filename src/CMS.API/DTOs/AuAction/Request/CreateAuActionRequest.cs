@@ -23,6 +23,16 @@ public static class CreateAuActionRequestExtensions
     {
       error.Add("Tên của action không được để trống");
     }
+
+    if (request.Code.Length > 50)
+    {
+      error.Add("Mã action không lớn hơn 50 ký tự");
+    }
+
+    if (request.Name.Length > 50)
+    {
+      error.Add("Tên của action không lơn hơn 50 ký tự");
+    }
     return error.Count == 0;
   }
 }

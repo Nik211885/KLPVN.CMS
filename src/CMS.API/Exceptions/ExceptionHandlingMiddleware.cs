@@ -27,23 +27,16 @@ public class ExceptionHandlingMiddleware : IMiddleware
   private async Task HandlerExceptionAsync(HttpContext context, Exception ex)
   {
     int statusCode = GetStatusCode(ex);
-    var controllerName = context.GetRouteData()?.Values["controller"]?.ToString();
-    var actionName = context.GetRouteData()?.Values["action"]?.ToString();
-    var requestMethod = context.Request.Method;
-    var requestPath = context.Request.Path;
-    var time = DateTimeOffset.UtcNow.AddHours(7); 
-    switch (statusCode)
+    if (statusCode >= 500)
     {
-      case >= 500:
-        _logger.LogError(ex, "{Time} - Exception occurred at {Controller}/{Action} - Path: {Path}, Method: {Method}",
-          time, controllerName, actionName, requestPath, requestMethod);
-        break;
-      case >= 400:
-        _logger.LogWarning(ex,"{Time} - Exception occurred at {Controller}/{Action} - Path: {Path}, Method: {Method}",
-          time, controllerName, actionName, requestPath, requestMethod);
-        break;
+      var controllerName = context.GetRouteData()?.Values["controller"]?.ToString();
+      var actionName = context.GetRouteData()?.Values["action"]?.ToString();
+      var requestMethod = context.Request.Method;
+      var requestPath = context.Request.Path;
+      var time = DateTimeOffset.UtcNow.AddHours(7);
+      _logger.LogError(ex, "{Time} - Exception occurred at {Controller}/{Action} - Path: {Path}, Method: {Method}",
+        time, controllerName, actionName, requestPath, requestMethod);
     }
-
     var response = new ErrorResponse(
       "An error occurred", 
       statusCode, 

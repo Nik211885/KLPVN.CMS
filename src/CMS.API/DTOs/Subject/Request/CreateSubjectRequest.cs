@@ -26,6 +26,16 @@ public static class CreateSubjectRequestExtensions
     {
       error.Add("Tên của chủ đề không được để trống");
     }
+
+    if (request.Code.Length > 50)
+    {
+      error.Add("Mã của chủ đề không lớn hơn 50 ký tự");
+    }
+
+    if (request.Name.Length > 75)
+    {
+      error.Add("Tên của chủ đề không lớn hơn 75 kí tự");
+    }
     return error.Count == 0;
   }
 }

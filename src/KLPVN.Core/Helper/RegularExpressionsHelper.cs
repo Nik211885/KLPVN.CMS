@@ -22,7 +22,7 @@ public partial class RegularExpressionsHelper
 
   public static bool IsValidPhoneNumberInVietNam(string? phoneNumber)
   {
-    if (string.IsNullOrWhiteSpace(phoneNumber))
+    if (string.IsNullOrWhiteSpace(phoneNumber) || phoneNumber.Length != 10)
     {
       return false;
     }

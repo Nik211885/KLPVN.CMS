@@ -1,6 +1,5 @@
 ﻿using CMS.API.DTOs.User.Request;
 using CMS.API.Services;
-using Microsoft.AspNetCore.Identity.Data;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CMS.API.Controllers;
@@ -47,6 +46,20 @@ public class UserController : ControllerBase
   public async Task<ActionResult<string>> ResetPasswordAsync(string userName)
   {
     var result = await _services.User.RestPasswordAsync(userName);
+    return Ok(result);
+  }
+
+  [HttpPost("add-role")]
+  public async Task<ActionResult<Guid>> AddRoleForUserAsync(string userName, Guid roleId)
+  {
+    var result = await _services.User.AddRoleForUserAsync(userName, roleId);
+    return Ok(result);
+  }
+
+  [HttpDelete("remove-role")]
+  public async Task<ActionResult<Guid>> RemoveRoleForUserAsync(string userName, Guid roleId)
+  {
+    var result = await _services.User.RemoveRoleForUserAsync(userName, roleId);
     return Ok(result);
   }
 }
