@@ -18,7 +18,7 @@ public class Services : IServices
     _context = dbContext;
     _userProvider = userProvider;
   }
-  public async Task<Guid> CreateNewUserAsync(CreateUserRequest request)
+  public async Task<Guid> CreateAsync(CreateUserRequest request)
   {
     if (!request.IsValid(out var errors))
     {
@@ -38,7 +38,7 @@ public class Services : IServices
     return user.Id;
   }
 
-  public async Task<string> RestPasswordAsync(string userName)
+  public async Task<string> ResetPasswordAsync(string userName)
   {
     var user = await _context.Users.FirstOrDefaultAsync(x => x.UserName == userName);
     if (user is null)
@@ -84,7 +84,7 @@ public class Services : IServices
     return user.Id;
   }
 
-  public async Task<Guid> UpdateUserAsync(UpdateUserInformationRequest request)
+  public async Task<Guid> UpdateAsync(UpdateUserInformationRequest request)
   {
     if (!request.IsValid(out var errors))
     {

@@ -17,7 +17,7 @@ public class Services : IServices
     _userProvider = userProvider;
   }
 
-  public async Task<Guid> CreateRoleAsync(CreateRoleRequest request)
+  public async Task<Guid> CreateAsync(CreateRoleRequest request)
   {
     if (!request.IsValid(out var errors))
     {
@@ -38,7 +38,7 @@ public class Services : IServices
     return role.Id;
   }
 
-  public async Task<Guid> UpdateRoleAsync(Guid roleId, UpdateRoleRequest request)
+  public async Task<Guid> UpdateAsync(Guid roleId, UpdateRoleRequest request)
   {
     if (!request.IsValid(out var errors))
     {
@@ -63,7 +63,7 @@ public class Services : IServices
     return role.Id;
   }
 
-  public async Task DeleteRoleAsync(Guid roleId)
+  public async Task DeleteAsync(Guid roleId)
   {
     var role = await _context.Roles.FirstOrDefaultAsync(x => x.Id == roleId);
     if (role is null)

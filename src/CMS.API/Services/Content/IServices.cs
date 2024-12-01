@@ -4,6 +4,7 @@ namespace CMS.API.Services.Content;
 
 public interface IServices
 {
- Task<Guid> CreateContentAsync(CreateContentRequest request);
- Task<Guid> UpdateContentAsync(Guid id, UpdateContentRequest request);
+ Task<Guid> CreatetAsync(CreateContentRequest request);
+ Task<Guid> UpdateAsync(Guid id, UpdateContentRequest request);
+ Task<Guid> ActiveAsync(Guid id);
 }

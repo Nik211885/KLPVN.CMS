@@ -1,4 +1,5 @@
-﻿using CMS.API.DTOs.Subject.Request;
+﻿using System.ComponentModel.DataAnnotations;
+using CMS.API.DTOs.Subject.Request;
 using CMS.API.Services;
 using Microsoft.AspNetCore.Mvc;
 
@@ -15,9 +16,23 @@ public class SubjectController : ControllerBase
   }
 
   [HttpPost("create")]
-  public async Task<IActionResult> CreateAuActionAsync(CreateSubjectRequest request)
+  public async Task<IActionResult> CreateSubjectAsync(CreateSubjectRequest request)
   {
     var result = await _services.Subject.CreateAsync(request);
+    return Ok(result);
+  }
+
+  [HttpPut("update")]
+  public async Task<ActionResult<Guid>> UpdateSubjectAsync([Required] Guid id, UpdateSubjectRequest request)
+  {
+    var result = await _services.Subject.UpdateAsync(id, request);
+    return Ok(result);
+  }
+
+  [HttpPut("active")]
+  public async Task<ActionResult<Guid>> ActiveSubjectAsync([Required] Guid id)
+  {
+    var result = await _services.Subject.ActiveAsync(id);
     return Ok(result);
   }
 }

@@ -6,4 +6,5 @@ public interface IServices
 {
   Task<Guid> CreateAsync(CreateSubjectRequest request);
   Task<Guid> UpdateAsync(Guid id, UpdateSubjectRequest request);
+  Task<Guid> ActiveAsync(Guid id);
 }
