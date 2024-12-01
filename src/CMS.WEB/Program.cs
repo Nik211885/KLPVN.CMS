@@ -12,11 +12,11 @@ builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 
 var app = builder.Build();
-builder.Services.AddHttpClient(ApiKey.BaseAddress, client =>
-{
-  client.BaseAddress = new Uri(builder.Configuration.GetValue<string>("ApiBaseAddress") 
-                               ?? throw new ArgumentException("Not config api address"));
-});
+//builder.Services.AddHttpClient(ApiKey.BaseAddress, client =>
+//{
+//  client.BaseAddress = new Uri(builder.Configuration.GetValue<string>("ApiBaseAddress") 
+//                               ?? throw new ArgumentException("Not config api address"));
+//});
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {

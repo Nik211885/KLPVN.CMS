@@ -1,0 +1,106 @@
+﻿@using System.ComponentModel.DataAnnotations
+
+<style>
+    .mud-button-label {
+        text-transform: none;
+    }
+</style>
+
+<MudDialog>
+    <TitleContent>
+        <MudStack Row AlignItems="AlignItems.Center" Justify="Justify.FlexStart" Spacing="1" Class="pl-0 pr-4 pt-1">
+            <MudText Color="Color.Default" Style="font-weight: bold" Typo="Typo.h6">Thêm Nhân Viên</MudText>
+        </MudStack>
+    </TitleContent>
+    <DialogContent>
+        <MudForm @ref="form" Model="nhanVien">
+            <MudGrid Justify="Justify.FlexStart" Spacing="1">
+                <MudItem xs="12">
+                    <MudTextField @bind-Value="nhanVien.UserName" For="@(() => nhanVien.UserName)" Variant="Variant.Outlined" Margin="Margin.Dense" Required Label="Tên đăng nhập"></MudTextField>
+                </MudItem>
+                <MudItem xs="12">
+                    <MudTextField @bind-Value="nhanVien.Password" For="@(() => nhanVien.Password)" InputType="@passType" Adornment="Adornment.End" AdornmentIcon="@passIcon"
+                                  OnAdornmentClick="ShowPass" Variant="Variant.Outlined" Margin="Margin.Dense" Required Label="Mật khẩu"></MudTextField>
+                </MudItem>
+                <MudItem xs="12" sm="12" md="6" lg="6">
+                    <MudTextField @bind-Value="nhanVien.FullName" For="@(() => nhanVien.FullName)" Variant="Variant.Outlined" Margin="Margin.Dense" Required Label="Họ tên"></MudTextField>
+                </MudItem>
+                <MudItem xs="12" sm="12" md="6" lg="6">
+                    <MudRadioGroup @bind-Value="nhanVien.Gender">
+                        <MudRadio Value="@(true)">Nam</MudRadio>
+                        <MudRadio Value="@(false)">Nữ</MudRadio>
+                    </MudRadioGroup>
+                </MudItem>
+                <MudItem xs="12">
+                    <MudTextField @bind-Value="nhanVien.PhoneNumber" For="@(() => nhanVien.PhoneNumber)" Variant="Variant.Outlined" Margin="Margin.Dense" Required Label="Số điện thoại"></MudTextField>
+                </MudItem>
+                <MudItem xs="12">
+                    <MudTextField @bind-Value="nhanVien.Email" For="@(() => nhanVien.Email)" Variant="Variant.Outlined" Margin="Margin.Dense" Label="Email"></MudTextField>
+                </MudItem>
+                <MudItem xs="12">
+                    <MudTextField @bind-Value="nhanVien.Address" For="@(() => nhanVien.Address)" Variant="Variant.Outlined" Margin="Margin.Dense" Label="Địa chỉ"></MudTextField>
+                </MudItem>
+            </MudGrid>
+        </MudForm>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel" Variant="Variant.Filled">Hủy</MudButton>
+        <MudButton Color="Color.Primary" OnClick="Submit" Variant="Variant.Filled">Lưu</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [CascadingParameter]
+    private MudDialogInstance MudDialog { get; set; }
+    private MudForm form;
+    public NhanVien nhanVien { get; set; } = new();
+    bool isShowPass = false;
+    InputType passType = InputType.Password;
+    string passIcon = Icons.Material.Filled.VisibilityOff;
+
+    public void ShowPass()
+    {
+        if (isShowPass)
+        {
+            isShowPass = false;
+            passType = InputType.Password;
+            passIcon = Icons.Material.Filled.VisibilityOff;
+        }
+        else
+        {
+            isShowPass = true;
+            passType = InputType.Text;
+            passIcon = Icons.Material.Filled.Visibility;
+        }
+    }
+
+    private void Submit() => MudDialog.Close(DialogResult.Ok(true));
+
+    private void Cancel() => MudDialog.Cancel();
+
+    public class NhanVien
+    {
+        [Required(ErrorMessage = "Tên đăng nhập không được để trống!")]
+        public string UserName { get; set; }
+
+        [Required(ErrorMessage = "Số điện thoại không được để trống!")]
+        [RegularExpression(@"^(0|84)(2(0[3-9]|1[0-6|8|9]|2[0-2|5-9]|3[2-9]|4[0-9]|5[1|2|4-9]|6[0-3|9]|7[0-7]|8[0-9]|9[0-4|6|7|9])|3[2-9]|5[5|6|8|9]|7[0|6-9]|8[0-6|8|9]|9[0-4|6-9])([0-9]{7})$", ErrorMessage = "Số điện thoại không đúng định dạng")]
+        public string PhoneNumber { get; set; }
+
+        [RegularExpression(@"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$", ErrorMessage = "Email không đúng định dạng!")]
+        public string Email { get; set; }
+
+        public string Address { get; set; }
+
+        [Required(ErrorMessage = "Tên nhân viên không được để trống!")]
+        public string FullName { get; set; }
+
+        [Required(ErrorMessage = "Mật khẩu không được để trống!")]
+        [DataType(DataType.Password)]
+        [StringLength(255, MinimumLength = 7, ErrorMessage = "Mật khẩu phải có trên 7 ký tự!")]
+        [RegularExpression(@"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{7,}$", ErrorMessage = "Mật khẩu cần ít nhất 1 ký tự thường, 1 ký tự IN HOA, 1 ký tự số, 1 ký tự đặc biệt (@$!%*?&)")]
+        public string Password { get; set; }
+
+        public bool Gender { get; set; }
+    }
+}

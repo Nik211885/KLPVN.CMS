@@ -1,0 +1,23 @@
+﻿<MudDialog>
+    <TitleContent>
+        <MudStack Row AlignItems="AlignItems.Center" Justify="Justify.FlexStart" Spacing="1" Class="pl-0 pr-4 pt-1">
+            <MudText Color="Color.Default" Style="font-weight: bold" Typo="Typo.h6">Xóa Nhân Viên</MudText>
+        </MudStack>
+    </TitleContent>
+    <DialogContent>
+        Bạn muốn xóa nhân viên này?
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel" Variant="Variant.Filled">Hủy</MudButton>
+        <MudButton Color="Color.Error" OnClick="Submit" Variant="Variant.Filled">Xóa</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [CascadingParameter]
+    private MudDialogInstance MudDialog { get; set; }
+
+    private void Submit() => MudDialog.Close(DialogResult.Ok(true));
+
+    private void Cancel() => MudDialog.Cancel();
+}
