@@ -14,6 +14,7 @@
 
 
   <ItemGroup>
+    <ProjectReference Include="..\CMS.Shared\CMS.Shared.csproj" />
     <ProjectReference Include="..\KLPVN.Core\KLPVN.Core.csproj" />
   </ItemGroup>
 </Project>
