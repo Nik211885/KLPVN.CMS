@@ -17,14 +17,14 @@ public class UserController : ControllerBase
   [HttpPost("create")]
   public async Task<ActionResult<Guid>> CreateNewUserAsync(CreateUserRequest request)
   {
-    var result = await _services.User.CreateNewUserAsync(request);
+    var result = await _services.User.CreateAsync(request);
     return Ok(result);
   }
 
   [HttpPut("update")]
   public async Task<ActionResult<Guid>> UpdateUserAsync(UpdateUserInformationRequest request)
   {
-    var result = await _services.User.UpdateUserAsync(request);
+    var result = await _services.User.UpdateAsync(request);
     return Ok(result);
   }
 
@@ -45,7 +45,7 @@ public class UserController : ControllerBase
   [HttpPut("reset-password")]
   public async Task<ActionResult<string>> ResetPasswordAsync(string userName)
   {
-    var result = await _services.User.RestPasswordAsync(userName);
+    var result = await _services.User.ResetPasswordAsync(userName);
     return Ok(result);
   }
 

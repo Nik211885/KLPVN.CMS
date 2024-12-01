@@ -63,4 +63,17 @@ public class Services : IServices
     await _context.SaveChangesAsync();
     return subject.Id;
   }
+
+  public async Task<Guid> ActiveAsync(Guid id)
+  {
+    var subject = await _context.Subjects.FirstOrDefaultAsync(x => x.Id == id);
+    if (subject is null)
+    {
+      throw new NotFoundException(nameof(subject));
+    }
+    subject.IsActive = !subject.IsActive;
+    _context.Subjects.Update(subject);
+    await _context.SaveChangesAsync();
+    return subject.Id;
+  }
 }

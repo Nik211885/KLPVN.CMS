@@ -4,7 +4,7 @@ namespace CMS.API.Services.Role;
 
 public interface IServices
 {
-  Task<Guid> CreateRoleAsync(CreateRoleRequest request);
-  Task<Guid> UpdateRoleAsync(Guid roleId, UpdateRoleRequest request);
-  Task DeleteRoleAsync(Guid roleId);
+  Task<Guid> CreateAsync(CreateRoleRequest request);
+  Task<Guid> UpdateAsync(Guid roleId, UpdateRoleRequest request);
+  Task DeleteAsync(Guid roleId);
 }

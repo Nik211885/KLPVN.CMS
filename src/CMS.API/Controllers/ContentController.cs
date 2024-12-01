@@ -18,14 +18,21 @@ public class ContentController : ControllerBase
   [HttpPost("create")]
   public async Task<ActionResult<Guid>> CreateContentAsync(CreateContentRequest request)
   {
-    var result = await _services.Content.CreateContentAsync(request);
+    var result = await _services.Content.CreatetAsync(request);
     return Ok(result);
   }
   [HttpPut("update")]
 
   public async Task<ActionResult<Guid>> UpdateContentAsync([Required] Guid id, UpdateContentRequest request)
   {
-    var result = await _services.Content.UpdateContentAsync(id, request);
+    var result = await _services.Content.UpdateAsync(id, request);
+    return Ok(result);
+  }
+
+  [HttpPut("active")]
+  public async Task<ActionResult<Guid>> ActiveContentAsync([Required] Guid id)
+  {
+    var result = await _services.Content.ActiveAsync(id);
     return Ok(result);
   }
 }

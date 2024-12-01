@@ -18,21 +18,21 @@ public class RoleController : ControllerBase
   [HttpPost("create")]
   public async Task<ActionResult<Guid>> CreateRoleAsync(CreateRoleRequest request)
   {
-    var result = await _services.Role.CreateRoleAsync(request);
+    var result = await _services.Role.CreateAsync(request);
     return Ok(result);
   }
 
   [HttpPut("update")]
   public async Task<ActionResult<Guid>> UpdateRoleAsync([Required] Guid id, UpdateRoleRequest request)
   {
-    var result = await _services.Role.UpdateRoleAsync(id, request);
+    var result = await _services.Role.UpdateAsync(id, request);
     return Ok(result);
   }
 
   [HttpDelete("delete")]
   public async Task<IActionResult> DeleteRoleAsync([Required] Guid id)
   {
-    await _services.Role.DeleteRoleAsync(id);
+    await _services.Role.DeleteAsync(id);
     return NoContent();
   }
 }

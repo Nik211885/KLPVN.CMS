@@ -16,7 +16,7 @@ public class Services : IServices
     _userProvider = userProvider;
   }
 
-  public async Task<Guid> CreateFeedBackAsync(CreateFeedBackRequest request)
+  public async Task<Guid> CreateAsync(CreateFeedBackRequest request)
   {
     if (!request.IsValid(out var errors))
     {

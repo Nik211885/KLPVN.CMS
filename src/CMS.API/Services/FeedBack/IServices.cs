@@ -4,5 +4,5 @@ namespace CMS.API.Services.FeedBack;
 
 public interface IServices
 {
-  Task<Guid> CreateFeedBackAsync(CreateFeedBackRequest request);
+  Task<Guid> CreateAsync(CreateFeedBackRequest request);
 }

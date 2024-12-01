@@ -18,7 +18,7 @@ public class Services : IServices
     _userProvider = userProvider;
   }
 
-  public async Task<Guid> CreateContentAsync(CreateContentRequest request)
+  public async Task<Guid> CreatetAsync(CreateContentRequest request)
   {
     if (!request.IsValid(out var errors))
     {
@@ -50,7 +50,7 @@ public class Services : IServices
     }
   }
 
-  public async Task<Guid> UpdateContentAsync(Guid id, UpdateContentRequest request)
+  public async Task<Guid> UpdateAsync(Guid id, UpdateContentRequest request)
   {
     if (!request.IsValid(out var errors))
     {
@@ -85,5 +85,18 @@ public class Services : IServices
       await _context.Database.RollbackTransactionAsync();
       throw new ErrorProcessing();
     }
+  }
+
+  public async Task<Guid> ActiveAsync(Guid id)
+  {
+    var content = await _context.Contents.FirstOrDefaultAsync(x => x.Id == id);
+    if (content is null)
+    {
+      throw new NotFoundException(nameof(content));
+    }
+    content.IsActive = !content.IsActive;
+    _context.Contents.Update(content);
+    await _context.SaveChangesAsync();
+    return content.Id;
   }
 }

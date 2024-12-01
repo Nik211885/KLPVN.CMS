@@ -17,7 +17,7 @@ public class FeedBackController : ControllerBase
   [HttpPost("create")]
   public async Task<ActionResult<Guid>> CreateFeedBackAsync(CreateFeedBackRequest request)
   {
-    var result = await _services.FeedBack.CreateFeedBackAsync(request);
+    var result = await _services.FeedBack.CreateAsync(request);
     return Ok(result);
   }
 }
