@@ -1,4 +1,4 @@
-﻿using CMS.API.DTOs.Role.Request;
+﻿using CMS.Shared.DTOs.Role.Request;
 
 namespace CMS.API.Services.Role;
 
