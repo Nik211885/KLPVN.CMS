@@ -1,8 +1,5 @@
-﻿using CMS.API.DTOs.Au.Request;
-using CMS.API.DTOs.Au.Response;
+﻿using CMS.Shared.DTOs.Au.Request;
 using KLPVN.Core.Models;
-using Microsoft.AspNetCore.Identity.Data;
-using LoginRequest = CMS.API.DTOs.Au.Request.LoginRequest;
 
 namespace CMS.API.Services.Au;
 

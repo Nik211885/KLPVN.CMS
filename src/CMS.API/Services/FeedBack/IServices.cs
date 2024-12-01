@@ -1,4 +1,4 @@
-﻿using CMS.API.DTOs.FeedBack.Request;
+﻿using CMS.Shared.DTOs.FeedBack.Request;
 
 namespace CMS.API.Services.FeedBack;
 

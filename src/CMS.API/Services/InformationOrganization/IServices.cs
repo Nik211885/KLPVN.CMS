@@ -1,4 +1,4 @@
-﻿using CMS.API.DTOs.InfromationOrgaization.Request;
+﻿using CMS.Shared.DTOs.InfromationOrgaization.Request;
 
 namespace CMS.API.Services.InformationOrganization;
 

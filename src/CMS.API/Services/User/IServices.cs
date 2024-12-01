@@ -1,4 +1,4 @@
-﻿using CMS.API.DTOs.User.Request;
+﻿using CMS.Shared.DTOs.User.Request;
 
 namespace CMS.API.Services.User;
 

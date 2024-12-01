@@ -1,5 +1,5 @@
-﻿using CMS.API.DTOs.User.Request;
-using CMS.API.Services;
+﻿using CMS.API.Services;
+using CMS.Shared.DTOs.User.Request;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CMS.API.Controllers;
