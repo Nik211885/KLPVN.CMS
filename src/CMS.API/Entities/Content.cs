@@ -1,4 +1,4 @@
-﻿using CMS.API.Common;
+﻿using CMS.Shared.Enums;
 using KLPVN.Core.Models;
 
 namespace CMS.API.Entities;

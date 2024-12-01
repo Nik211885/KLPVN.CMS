@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using CMS.API.DTOs.Content.Request;
 using CMS.API.Services;
+using CMS.Shared.DTOs.Content.Request;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CMS.API.Controllers;

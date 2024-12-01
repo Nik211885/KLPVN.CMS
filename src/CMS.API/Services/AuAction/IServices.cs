@@ -1,4 +1,4 @@
-﻿using CMS.API.DTOs.AuAction.Request;
+﻿using CMS.Shared.DTOs.AuAction.Request;
 
 namespace CMS.API.Services.AuAction;
 

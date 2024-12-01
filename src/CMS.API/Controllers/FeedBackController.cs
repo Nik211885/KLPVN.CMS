@@ -1,5 +1,5 @@
-﻿using CMS.API.DTOs.FeedBack.Request;
-using CMS.API.Services;
+﻿using CMS.API.Services;
+using CMS.Shared.DTOs.FeedBack.Request;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CMS.API.Controllers;
