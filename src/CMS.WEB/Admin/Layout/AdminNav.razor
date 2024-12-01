@@ -1,0 +1,36 @@
+﻿<style>
+    .mud-list-item-icon {
+        min-width: auto;
+    }
+</style>
+
+<MudPaper Width="250px" Class="py-3" Elevation="0">
+    <MudNavMenu>
+        <MudStack Row>
+            <MudItem>
+                <MudText Typo="Typo.h6" Class="px-4">Tên Nhân Viên</MudText>
+                <MudText Typo="Typo.body2" Class="px-4 mud-text-secondary">Chức vụ</MudText>
+            </MudItem>
+            <MudMenu Icon="@Icons.Material.Filled.Settings" AnchorOrigin="Origin.BottomCenter" TransformOrigin="Origin.TopCenter">
+                <MudMenuItem Icon="@Icons.Material.Filled.ManageAccounts">
+                    <MudText>Thông tin tài khoản</MudText>
+                </MudMenuItem>
+                <MudMenuItem Icon="@Icons.Material.Filled.LockReset" Href="/changepassword">
+                    <MudText>Đổi mật khẩu</MudText>
+                </MudMenuItem>
+                <MudMenuItem Icon="@Icons.Material.Filled.Logout" IconColor="Color.Error">
+                    <MudText Color="Color.Error">Đăng xuất</MudText>
+                </MudMenuItem>
+            </MudMenu>
+        </MudStack>
+        <MudDivider Class="my-2" />
+        <MudNavLink Href="/admin">Dashboard</MudNavLink>
+        <MudNavLink Href="/quanlynhanvien">Danh sách nhân viên</MudNavLink>
+        <MudNavLink Href="/billing" Disabled="true">Billing</MudNavLink>
+        <MudNavGroup Title="Quản lý bài viết">
+            <MudNavLink Href="">Chủ đề</MudNavLink>
+            <MudNavLink Href="">Danh sách bài viết</MudNavLink>
+        </MudNavGroup>
+        <MudNavLink Href="/about">About</MudNavLink>
+    </MudNavMenu>
+</MudPaper>
