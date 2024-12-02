@@ -2,34 +2,6 @@
 @layout CMS.WEB.Admin.Layout.AccountLayout
 @using System.ComponentModel.DataAnnotations
 
-@* <style>
-    .mud-button-label {
-        text-transform: none;
-    }
-</style>
-
-<MudGrid Class="mt-md-8 px-0 ma-0 mb-4" Spacing="2" Style="width:100%" Justify="Justify.Center">
-    <MudItem xs="12" sm="8" md="6" lg="4">
-        <MudPaper Elevation="0" Class="pa-2 rounded-3">
-            <MudText Typo="Typo.h6" Style="font-weight: 500; white-space: nowrap" Align="Align.Center">
-                Đăng nhập
-            </MudText>
-            <MudText Typo="Typo.body2" Style="color: red">@errorMessage</MudText>
-            <EditForm Model="Input">
-                <DataAnnotationsValidator />
-                <MudTextField Class="my-5 mx-3" @bind-Value="@Input.UserName" For="@(() => Input.UserName)"
-                              Label="Tên đăng nhập" MaxLength="50" Variant="Variant.Outlined" />
-                <MudTextField Class="mx-3" @bind-Value="@Input.Password" For="@(() => Input.Password)" Label="Mật khẩu"
-                              MaxLength="50" InputType="@passType" Adornment="Adornment.End" AdornmentIcon="@passIcon"
-                              OnAdornmentClick="ShowPass" Variant="Variant.Outlined" />
-                <MudButton FullWidth ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary">
-                    Đăng nhập
-                </MudButton>
-            </EditForm>
-        </MudPaper>
-    </MudItem>
-</MudGrid> *@
-
 <style>
     .mud-main-content{
         padding: 0px !important;
