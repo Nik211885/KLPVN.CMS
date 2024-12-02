@@ -74,4 +74,15 @@ public class Services : IServices
     await _context.SaveChangesAsync();
     return id;
   }
+
+  public async Task DeleteAsync(Guid id)
+  {
+    var informationOr = await _context.InformationOrganizations.FirstOrDefaultAsync(x => x.Id == id);
+    if (informationOr is null)
+    {
+      throw new NotFoundException(nameof(InformationOrganization));
+    }
+    _context.InformationOrganizations.Remove(informationOr);
+    await _context.SaveChangesAsync();
+  }
 }

@@ -7,4 +7,5 @@ public interface IServices
   Task<Guid> CreateAsync(CreateInformationOrganizationRequest request);
   Task<Guid> UpdateAsync(Guid id, UpdateInformationOrganizationRequest request);
   Task<Guid> ActiveAsync(Guid id);
+  Task DeleteAsync(Guid id);
 }

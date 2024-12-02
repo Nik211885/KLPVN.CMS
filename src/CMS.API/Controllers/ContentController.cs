@@ -18,7 +18,7 @@ public class ContentController : ControllerBase
   [HttpPost("create")]
   public async Task<ActionResult<Guid>> CreateContentAsync(CreateContentRequest request)
   {
-    var result = await _services.Content.CreatetAsync(request);
+    var result = await _services.Content.CreateAsync(request);
     return Ok(result);
   }
   [HttpPut("update")]

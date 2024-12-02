@@ -21,7 +21,7 @@ public class Services : IServices
     _userProvider = userProvider;
   }
 
-  public async Task<Guid> CreatetAsync(CreateContentRequest request)
+  public async Task<Guid> CreateAsync(CreateContentRequest request)
   {
     request.IsValid();
 
@@ -82,6 +82,17 @@ public class Services : IServices
       await _context.Database.RollbackTransactionAsync();
       throw new ErrorProcessing();
     }
+  }
+
+  public async Task DeleteAsync(Guid id)
+  {
+    var content = await _context.Contents.FirstOrDefaultAsync(x => x.Id == id);
+    if (content is null)
+    {
+      throw new NotFoundException(nameof(content));
+    }
+    _context.Contents.Remove(content);
+    await _context.SaveChangesAsync();
   }
 
   public async Task<Guid> ActiveAsync(Guid id)

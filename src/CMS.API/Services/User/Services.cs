@@ -29,6 +29,7 @@ public class Services : IServices
       throw new BadRequestException(ConstMessage.USER_NAME_NOT_EXITS);
     }
     var user = request.Mapping();
+    user.Id = user.Id;
     user.IsActive = true;
     user.Salt = SecurityHelper.GenerateSalt();
     user.PasswordHash = SecurityHelper.HashPassword(request.Password,user.Salt);
@@ -69,7 +70,7 @@ public class Services : IServices
 
   public async Task<Guid> ActiveUserAsync(string userName)
   {
-    var user = await _context.Users.FirstOrDefaultAsync(x=>x.UserName == userName);
+    var user = await _context.Users.FirstOrDefaultAsync(x => x.UserName == userName);
     if (user is null)
     {
       throw new NotFoundException(nameof(user));
@@ -101,7 +102,8 @@ public class Services : IServices
     {
       throw new NotFoundException(nameof(user));
     }
-    var role = await _context.Roles.FirstOrDefaultAsync(x=>x.Id == roleId);
+
+    var role = await _context.Roles.FirstOrDefaultAsync(x => x.Id == roleId);
     if (role is null)
     {
       throw new NotFoundException(nameof(role));
@@ -124,11 +126,6 @@ public class Services : IServices
     {
       throw new NotFoundException(nameof(user));
     }
-    var role = await _context.Roles.FirstOrDefaultAsync(x => x.Id == roleId);
-    if (role is null)
-    {
-      throw new NotFoundException(nameof(role));
-    }
     var userRole = await _context.UserRoles.FirstOrDefaultAsync(x=>x.RoleId == roleId && x.UserId == user.Id);
     if (userRole is null)
     {
@@ -137,5 +134,17 @@ public class Services : IServices
     _context.UserRoles.Remove(userRole);
     await _context.SaveChangesAsync();
     return user.Id;
+  }
+
+  public async Task DeleteAsync(Guid id)
+  {
+    var user = await _context.Users.FirstOrDefaultAsync(x => x.Id == id);
+    if (user is null)
+    {
+      throw new NotFoundException(nameof(user));
+    }
+
+    _context.Users.Remove(user);
+    await _context.SaveChangesAsync();
   }
 }

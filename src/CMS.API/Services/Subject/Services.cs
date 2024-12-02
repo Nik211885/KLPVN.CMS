@@ -73,4 +73,16 @@ public class Services : IServices
     await _context.SaveChangesAsync();
     return subject.Id;
   }
+
+  public async Task DeleteAsync(Guid id)
+  {
+    var subject = await _context.Subjects.FirstOrDefaultAsync(x => x.Id == id);
+    if (subject is null)
+    {
+      throw new NotFoundException(nameof(subject));
+    }
+
+    _context.Subjects.Remove(subject);
+    await _context.SaveChangesAsync();
+  }
 }

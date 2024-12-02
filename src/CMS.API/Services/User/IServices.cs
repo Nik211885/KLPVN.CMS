@@ -11,4 +11,5 @@ public interface IServices
   Task<Guid> UpdateAsync(UpdateUserInformationRequest request);
   Task<Guid> AddRoleForUserAsync(string userName, Guid roleId);
   Task<Guid> RemoveRoleForUserAsync(string userName, Guid roleId);
+  Task DeleteAsync(Guid id);
 }

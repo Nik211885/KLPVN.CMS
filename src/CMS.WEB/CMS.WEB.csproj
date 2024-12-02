@@ -8,12 +8,15 @@
 
 
   <ItemGroup>
+    <PackageReference Include="CloudinaryDotNet" Version="1.26.2" />
+    <PackageReference Include="dotenv.net" Version="3.2.1" />
     <PackageReference Include="MudBlazor" Version="7.*" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
   </ItemGroup>
 
 
   <ItemGroup>
+    <ProjectReference Include="..\CMS.API\CMS.API.csproj" />
     <ProjectReference Include="..\CMS.Shared\CMS.Shared.csproj" />
     <ProjectReference Include="..\KLPVN.Core\KLPVN.Core.csproj" />
   </ItemGroup>

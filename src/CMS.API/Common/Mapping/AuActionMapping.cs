@@ -12,4 +12,10 @@ public static class AuActionMapping
       Name = request.Name
     };
   }
+
+  public static void Mapping(this UpdateAuActionRequest request, Entities.AuAction auAction)
+  {
+    auAction.Code = request.Code;
+    auAction.Name = request.Name;
+  }
 }

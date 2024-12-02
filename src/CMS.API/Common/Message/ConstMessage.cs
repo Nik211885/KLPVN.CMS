@@ -34,4 +34,7 @@ public abstract class ConstMessage
   public const string INFORMATION_ORGANIZATION_HAS_ACTIVE_BEFORE = "Đang có thông tin của tổ chức đang hoạt động trước đó rồi hãy tắt cái cũ trước khi bật lại";
   public const string PARENT_SUBJECT_NOT_SUPPORT = "chủ đề cha hoặc đã không còn hỗ trợ";
   public const string USER_HAS_ROLE = "User này đã có quyền này rồi";
+  public const string NOT_FOUND_OBJECT = "Không tìm thấy đối tượng";
+  public const string NAME_MENU_EMPTY = "Tên của menu không được để trống";
+  public const string NAME_MENU_MAX_LENGTH_50 = "Tên của menu không lớn hơn 50 ký tự";
 }
