@@ -1,0 +1,182 @@
+﻿@page "/login"
+@layout CMS.WEB.Admin.Layout.AccountLayout
+@using System.ComponentModel.DataAnnotations
+
+@* <style>
+    .mud-button-label {
+        text-transform: none;
+    }
+</style>
+
+<MudGrid Class="mt-md-8 px-0 ma-0 mb-4" Spacing="2" Style="width:100%" Justify="Justify.Center">
+    <MudItem xs="12" sm="8" md="6" lg="4">
+        <MudPaper Elevation="0" Class="pa-2 rounded-3">
+            <MudText Typo="Typo.h6" Style="font-weight: 500; white-space: nowrap" Align="Align.Center">
+                Đăng nhập
+            </MudText>
+            <MudText Typo="Typo.body2" Style="color: red">@errorMessage</MudText>
+            <EditForm Model="Input">
+                <DataAnnotationsValidator />
+                <MudTextField Class="my-5 mx-3" @bind-Value="@Input.UserName" For="@(() => Input.UserName)"
+                              Label="Tên đăng nhập" MaxLength="50" Variant="Variant.Outlined" />
+                <MudTextField Class="mx-3" @bind-Value="@Input.Password" For="@(() => Input.Password)" Label="Mật khẩu"
+                              MaxLength="50" InputType="@passType" Adornment="Adornment.End" AdornmentIcon="@passIcon"
+                              OnAdornmentClick="ShowPass" Variant="Variant.Outlined" />
+                <MudButton FullWidth ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary">
+                    Đăng nhập
+                </MudButton>
+            </EditForm>
+        </MudPaper>
+    </MudItem>
+</MudGrid> *@
+
+<style>
+    .mud-main-content{
+        padding: 0px !important;
+        margin: 0px !important;
+    }
+
+    .limiter {
+        width: 100%;
+        margin: 0 auto;
+    }
+
+    .container-login100 {
+        width: 100%;
+        min-height: 100vh;
+        display: -webkit-box;
+        display: -webkit-flex;
+        display: -moz-box;
+        display: -ms-flexbox;
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        align-items: center;
+        padding: 15px;
+        background-repeat: no-repeat;
+        background-position: center;
+        background-size: cover;
+        position: relative;
+        z-index: 1;
+    }
+
+        .container-login100::before {
+            content: "";
+            display: block;
+            position: absolute;
+            z-index: -1;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            background-color: rgba(0,0,0,0.65);
+        }
+
+    .login100-form-title {
+        font-family: Ubuntu-Bold;
+        font-size: 28px;
+        color: #fff;
+        line-height: 1.2;
+        text-align: center;
+        text-transform: uppercase;
+        display: block;
+        padding-bottom: 30px;
+    }
+
+    .center-image {
+        display: block;
+        margin: 0 auto;
+    }
+
+    .login100-form {
+        width: 100%;
+        border-radius: 10px;
+        background-color: #fff;
+    }
+
+    .wrap-login100 {
+        width: 390px;
+        border-radius: 10px;
+        overflow: hidden;
+        background: transparent;
+    }
+</style>
+
+<div class="limiter">
+    <div class="container-login100" style="background-image: url('imgs/background-login.png');">
+        <div class="wrap-login100">
+            <span class="login100-form-title p-b-41">
+                Đăng nhập
+            </span>
+            <MudPaper Elevation="0" Class="login100-form pa-2 rounded-3">
+                <div class="d-flex justify-content-center align-items-center mb-2" style="width: 100%; height: auto;">
+                    <MudImage Class="center-image" Style="width:20%; height: auto" Src="imgs/no-image-icon-6.png" Alt="Icon" />
+                </div>
+                <MudText Typo="Typo.body2" Style="color: red">@errorMessage</MudText>
+                <EditForm Model="Input">
+                    <DataAnnotationsValidator />
+                    <MudTextField Class="my-5 mx-3" @bind-Value="@Input.UserName" For="@(() => Input.UserName)"
+                                  Label="Tên đăng nhập" MaxLength="50" Variant="Variant.Outlined" />
+                    <MudTextField Class="mx-3" @bind-Value="@Input.Password" For="@(() => Input.Password)" Label="Mật khẩu"
+                                  MaxLength="50" InputType="@passType" Adornment="Adornment.End" AdornmentIcon="@passIcon"
+                                  OnAdornmentClick="ShowPass" Variant="Variant.Outlined" />
+                    <MudStack Justify="Justify.Center" AlignItems="AlignItems.Center" Style="padding-top: 20px">
+                        <MudButton Style="text-transform: none; border-radius:20px !important" ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary">
+                            Đăng nhập
+                        </MudButton>
+                    </MudStack>
+                </EditForm>
+            </MudPaper>
+        </div>
+    </div>
+</div>
+
+@code {
+    private string UserName { get; set; }
+    private string Password { get; set; }
+    private bool RememberMe { get; set; }
+}
+
+
+@code {
+    private string? errorMessage;
+
+    [SupplyParameterFromForm]
+    private InputModel Input { get; set; } = new();
+
+
+    bool isShowPass = false;
+    InputType passType = InputType.Password;
+    string passIcon = Icons.Material.Filled.VisibilityOff;
+
+    protected override async Task OnInitializedAsync()
+    {
+
+    }
+
+    public void ShowPass()
+    {
+        if (isShowPass)
+        {
+            isShowPass = false;
+            passType = InputType.Password;
+            passIcon = Icons.Material.Filled.VisibilityOff;
+        }
+        else
+        {
+            isShowPass = true;
+            passType = InputType.Text;
+            passIcon = Icons.Material.Filled.Visibility;
+        }
+    }
+
+    private sealed class InputModel
+    {
+        [Required(ErrorMessage = "Tên đăng nhập không được để trống")]
+        public string UserName { get; set; } = "";
+
+        [Required(ErrorMessage = "Mật khẩu không được để trống")]
+        [DataType(DataType.Password)]
+        public string Password { get; set; } = "";
+    }
+}
