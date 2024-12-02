@@ -1,30 +1,30 @@
-﻿using CMS.Shared.DTOs.AuAction.Request;
+﻿using CMS.API.Common.Message;
+using CMS.API.Exceptions;
+using CMS.Shared.DTOs.AuAction.Request;
 
 namespace CMS.API.Common.Validation;
 
 public static class AuActionValidation
 {
-  public static bool IsValid(this CreateAuActionRequest request, out List<string> error)
+  public static void IsValid(this CreateAuActionRequest request)
   {
-    error = [];
     if (String.IsNullOrWhiteSpace(request.Code))
     {
-      error.Add("Mã action không được để trống");
+      throw new BadRequestException(ConstMessage.CODE_IS_EMPTY);
     }
     if(string.IsNullOrWhiteSpace(request.Name))
     {
-      error.Add("Tên của action không được để trống");
+        throw new BadRequestException(ConstMessage.NAME_IS_EMPTY);
     }
 
     if (request.Code.Length > 50)
     {
-      error.Add("Mã action không lớn hơn 50 ký tự");
+      throw new BadRequestException(ConstMessage.CODE_LENGTH_MAX_50);
     }
 
     if (request.Name.Length > 50)
     {
-      error.Add("Tên của action không lơn hơn 50 ký tự");
+      throw new BadRequestException(ConstMessage.NAME_LENGTH_MAX_50);
     }
-    return error.Count == 0;
   }
 }

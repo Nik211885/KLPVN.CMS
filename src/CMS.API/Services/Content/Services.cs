@@ -1,4 +1,5 @@
 ﻿using CMS.API.Common.Mapping;
+using CMS.API.Common.Message;
 using CMS.API.Common.Validation;
 using CMS.API.Entities;
 using CMS.API.Exceptions;
@@ -22,17 +23,14 @@ public class Services : IServices
 
   public async Task<Guid> CreatetAsync(CreateContentRequest request)
   {
-    if (!request.IsValid(out var errors))
-    {
-      throw new BadRequestException(errors);
-    }
+    request.IsValid();
 
     var subjects = await _context.Subjects
       .Where(x => x.IsActive && request.SubjectId.Contains(x.Id))
       .CountAsync();
     if (request.SubjectId.Count() != subjects)
     {
-      throw new BadRequestException(["Có chủ đề không hợp lễ hoặc đã không hoạt động trước đấy"]);
+      throw new BadRequestException(ConstMessage.SUBJECT_IN_VALIDATION_OR_NOT_HAS_ACTIVE_BEFORE);
     }
     var content = request.Mapping();
     try
@@ -54,10 +52,7 @@ public class Services : IServices
 
   public async Task<Guid> UpdateAsync(Guid id, UpdateContentRequest request)
   {
-    if (!request.IsValid(out var errors))
-    {
-      throw new BadRequestException(errors);
-    }
+    request.IsValid();
     var content = await _context.Contents.FirstOrDefaultAsync(x=>x.Id == id);
     if (content is null)
     {
@@ -68,7 +63,7 @@ public class Services : IServices
       .CountAsync();
     if (request.SubjectId.Count() != subjects)
     {
-      throw new BadRequestException(["Có chủ đề không hợp lễ hoặc đã không hoạt động trước đấy"]);
+      throw new BadRequestException(ConstMessage.SUBJECT_IN_VALIDATION_OR_NOT_HAS_ACTIVE_BEFORE);
     }
     request.Mapping(content);
     try

@@ -1,21 +1,21 @@
-﻿using CMS.Shared.DTOs.Au.Request;
+﻿using CMS.API.Common.Message;
+using CMS.API.Exceptions;
+using CMS.Shared.DTOs.Au.Request;
 
 namespace CMS.API.Common.Validation;
 
 public static class AuValidation
 {
-  public static bool IsValid(this LoginRequest request, out List<string> errors)
+  public static void IsValid(this LoginRequest request)
   {
-    errors = [];
     if (string.IsNullOrWhiteSpace(request.UserName))
     {
-      errors.Add("User name không được để trống");
+      throw new BadRequestException(ConstMessage.USER_NAME_EMPTY);
     }
 
     if (string.IsNullOrWhiteSpace(request.Password))
     {
-      errors.Add("Mật khẩu không được để trống");
+      throw new BadRequestException(ConstMessage.PASSWORD_EMPTY);
     }
-    return errors.Count == 0;
   }
 }

@@ -1,4 +1,5 @@
 ﻿using CMS.API.Common.Mapping;
+using CMS.API.Common.Message;
 using CMS.API.Common.Validation;
 using CMS.API.Exceptions;
 using CMS.API.Infrastructure.Data;
@@ -21,10 +22,7 @@ public class Services : IServices
 
   public async Task<Guid> CreateAsync(CreateInformationOrganizationRequest request)
   {
-    if (request.IsValid(out var errors))
-    {
-      throw new BadRequestException(errors);
-    }
+    request.IsValid();
     var informationOr = request.Mapping();
     var informationOrAfter = await _context.InformationOrganizations
       .FirstOrDefaultAsync(x => x.IsActive);
@@ -36,10 +34,7 @@ public class Services : IServices
 
   public async Task<Guid> UpdateAsync(Guid id, UpdateInformationOrganizationRequest request)
   {
-    if (request.IsValid(out var errors))
-    {
-      throw new BadRequestException(errors);
-    }
+    request.IsValid();
 
     var informationOr = await _context.InformationOrganizations
       .FirstOrDefaultAsync(x => x.Id == id);
@@ -69,7 +64,7 @@ public class Services : IServices
         .FirstOrDefaultAsync(x => x.IsActive);
       if (informationActive is not null)
       {
-        throw new BadRequestException(["Đang có thông tin của tổ chức đang hoạt động trước đó rồi hãy tắt cái cũ trước khi bật lại"]);
+        throw new BadRequestException(ConstMessage.INFORMATION_ORGANIZATION_HAS_ACTIVE_BEFORE);
       }
       informationOr.IsActive = true;
     }

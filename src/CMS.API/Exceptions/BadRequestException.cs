@@ -1,3 +1,3 @@
 ﻿namespace CMS.API.Exceptions;
 
-public class BadRequestException(List<string> errors) : Exception(string.Join("\r\n", errors));
+public class BadRequestException(string error) : Exception(error);

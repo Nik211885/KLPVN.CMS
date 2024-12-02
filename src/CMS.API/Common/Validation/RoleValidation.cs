@@ -1,55 +1,53 @@
-﻿using CMS.Shared.DTOs.Role.Request;
+﻿using CMS.API.Common.Message;
+using CMS.API.Exceptions;
+using CMS.Shared.DTOs.Role.Request;
 
 namespace CMS.API.Common.Validation;
 
 public static class RoleValidation
 {
-  public static bool IsValid(this CreateRoleRequest request, out List<string> errors)
+  public static void IsValid(this CreateRoleRequest request)
   {
-    errors = [];
     if (string.IsNullOrWhiteSpace(request.Code))
     {
-      errors.Add("Mã role không được để trống");
+      throw new BadRequestException(ConstMessage.CODE_IS_EMPTY);
     }
 
     if (string.IsNullOrWhiteSpace(request.Name))
     {
-      errors.Add("Tên của role không được để trống");
+      throw new BadRequestException(ConstMessage.NAME_IS_EMPTY);
     }
 
     if (request.Code.Length > 50)
     {
-      errors.Add("Mã của role không lớn hơn 50");
+      throw new BadRequestException(ConstMessage.CODE_LENGTH_MAX_50);
     }
 
     if (request.Name.Length > 50)
     {
-      errors.Add("Tên của role không lớn hơn 50");
+      throw new BadRequestException(ConstMessage.NAME_LENGTH_MAX_50);
     }
-    return errors.Count == 0;
   }
-  public static bool IsValid(this UpdateRoleRequest request, out List<string> errors)
+  public static void IsValid(this UpdateRoleRequest request)
   {
-    errors = [];
     if (string.IsNullOrWhiteSpace(request.Code))
     {
-      errors.Add("Mã role không được để trống");
+      throw new BadRequestException(ConstMessage.CODE_IS_EMPTY);
     }
 
     if (string.IsNullOrWhiteSpace(request.Name))
     {
-      errors.Add("Tên của role không được để trống");
+      throw new BadRequestException(ConstMessage.NAME_IS_EMPTY);
     }
 
     if (request.Code.Length > 50)
     {
-      errors.Add("Mã của role không lớn hơn 50");
+      throw new BadRequestException(ConstMessage.CODE_LENGTH_MAX_50);
     }
 
     if (request.Name.Length > 50)
     {
-      errors.Add("Tên của role không lớn hơn 50");
+      throw new BadRequestException(ConstMessage.NAME_LENGTH_MAX_50);
     }
-    return errors.Count == 0;
   }
 }

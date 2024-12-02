@@ -20,10 +20,7 @@ public class Services : IServices
 
   public async Task<Guid> CreateAsync(CreateFeedBackRequest request)
   {
-    if (!request.IsValid(out var errors))
-    {
-      throw new BadRequestException(errors);
-    }
+    request.IsValid();
     var feedBack = request.Mapping();
     _context.FeedBacks.Add(feedBack);
     await _context.SaveChangesAsync();

@@ -26,20 +26,16 @@ public class Services : IServices
 
   public async Task<JwtResult> LoginAsync(LoginRequest request)
   {
-    if (!request.IsValid(out var errors))
-    {
-      throw new BadRequestException(errors);
-    }
-
+    request.IsValid();
     var user = await _context.Users.FirstOrDefaultAsync(x => x.UserName == request.UserName);
     if (user is null || !user.IsActive)
     {
-      throw new UnauthorizedException(ConstFailure.LOGIN_FAILURE_USER_NAME);
+      throw new UnauthorizedException(ConstMessage.USER_NAME_NOT_EXITS);
     }
 
     if (!SecurityHelper.VerifyPassword(request.Password, user.Salt, user.PasswordHash))
     {
-      throw new UnauthorizedException(ConstFailure.LOGIN_FAILURE_PASSWORD);
+      throw new UnauthorizedException(ConstMessage.PASSORD_NOT_CORRECT);
     }
     var roles = await _context.UserRoles
       .Include(x=>x.Role)

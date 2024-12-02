@@ -1,4 +1,5 @@
 ﻿using CMS.API.Common.Message;
+using CMS.API.Exceptions;
 using CMS.Shared.DTOs.User.Request;
 using KLPVN.Core.Helper;
 
@@ -6,101 +7,95 @@ namespace CMS.API.Common.Validation;
 
 public static class UserValidation
 {
-  public static bool IsValid(this ChangePasswordRequest request, out List<string> errors)
+  public static void IsValid(this ChangePasswordRequest request)
   {
-    errors = [];
     if(!RegularExpressionsHelper.IsValidPassword(request.NewPassword))
     {
-      errors.Add(ConstFailure.IN_VALID_PASSWORD);
+      throw new BadRequestException(ConstMessage.IN_VALID_PASSWORD);
     }
 
     if (request.Password.Equals(request.NewPassword))
     {
-      errors.Add(ConstFailure.IN_DUPLICATE_PASSWORD);
+      throw new BadRequestException(ConstMessage.DUPLICATE_PASSWORD);
     }
 
     if (request.NewPassword.Equals(request.PasswordConfirm))
     {
-      errors.Add(ConstFailure.IN_MATCH_PASSWORD);
+      throw new BadRequestException(ConstMessage.NOT_DUPLICATE_PASSWORD);
     }
-    return errors.Count == 0;
   }
-  public static bool IsValid(this CreateUserRequest request, out List<string> errors)
+  public static void IsValid(this CreateUserRequest request)
   {
-    errors = [];
     if (string.IsNullOrWhiteSpace(request.UserName))
     {
-      errors.Add("User name không được để trống");
+      throw new BadRequestException(ConstMessage.USER_NAME_EMPTY);
     }
     if (string.IsNullOrWhiteSpace(request.FullName))
     {
-      errors.Add("Tên không được để trống");
+      throw new BadRequestException(ConstMessage.NAME_IS_EMPTY);
     }
     if (!RegularExpressionsHelper.IsValidPhoneNumberInVietNam(request.PhoneNumber))
     {
-      errors.Add(ConstFailure.IN_VALID_PHONE_NUMBER);
+      throw new BadRequestException(ConstMessage.IN_VALID_PHONE_VN);
     }
 
     if (!RegularExpressionsHelper.IsValidEmail(request.Email))
     {
-      errors.Add(ConstFailure.IN_VALID_EMAIL);
+      throw new BadRequestException(ConstMessage.IN_VALID_EMAIL);
     }
 
     if (!RegularExpressionsHelper.IsValidPassword(request.Password))
     {
-      errors.Add(ConstFailure.IN_VALID_PASSWORD);
+      throw new BadRequestException(ConstMessage.IN_VALID_PASSWORD);
     }
 
     if (request.UserName.Length > 50)
     {
-      errors.Add("User name không lớn hơn 50 ký tự");
+      throw new BadRequestException(ConstMessage.USER_NAME_MAX_LENGTH_50);
     }
 
-    if (request?.Email?.Length > 100)
+    if (request.Email?.Length > 100)
     {
-      errors.Add("Email không lớn hơn 100 kí tự");
+      throw new BadRequestException(ConstMessage.EMAIL_MAX_LENGTH_100);
     }
 
-    if (request?.Address?.Length > 150)
+    if (request.Address?.Length > 150)
     {
-      errors.Add("Địa chỉ không lớn hơn 150 kí tự");
+      throw new BadRequestException(ConstMessage.ADDRESS_MAX_LENGTH_150);
     }
 
-    if (request?.FullName?.Length > 100)
+    if (request.FullName?.Length > 100)
     {
-      errors.Add("Tên không lớn hơn 100 kí tự");
+      throw new BadRequestException(ConstMessage.NAME_LENGTH_MAX_100);
     }
-    return errors.Count == 0;
   }
-  public static bool IsValid(this UpdateUserInformationRequest request, out List<string> errors)
+  public static void IsValid(this UpdateUserInformationRequest request)
   {
-    errors = [];
     if (string.IsNullOrWhiteSpace(request.FullName))
     {
-      errors.Add("Tên không được để trống");
+      throw new BadRequestException(ConstMessage.NAME_IS_EMPTY);
     }
     if (!RegularExpressionsHelper.IsValidPhoneNumberInVietNam(request.PhoneNumber))
     {
-      errors.Add(ConstFailure.IN_VALID_PHONE_NUMBER);
+      throw new BadRequestException(ConstMessage.IN_VALID_EMAIL);
     }
     if (!RegularExpressionsHelper.IsValidEmail(request.Email))
     {
-      errors.Add(ConstFailure.IN_VALID_EMAIL);
+      throw new BadRequestException(ConstMessage.IN_VALID_EMAIL);
     }
-    if (request?.Email?.Length > 100)
+    if (request.Email?.Length > 100)
     {
-      errors.Add("Email không lớn hơn 100 kí tự");
+      throw new BadRequestException(ConstMessage.EMAIL_MAX_LENGTH_100);
     }
 
-    if (request?.Address?.Length > 150)
+    if (request.Address?.Length > 150)
     {
-      errors.Add("Địa chỉ không lớn hơn 150 kí tự");
+      throw new BadRequestException(ConstMessage.ADDRESS_MAX_LENGTH_150);
     }
 
-    if (request?.FullName?.Length > 100)
+    if (request.FullName?.Length > 100)
     {
-      errors.Add("Tên không lớn hơn 100 kí tự");
+      throw new BadRequestException(ConstMessage.NAME_LENGTH_MAX_100);
     }
-    return errors.Count == 0;
   }
 }

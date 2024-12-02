@@ -21,10 +21,7 @@ public class Services : IServices
 
   public async Task<Guid> CreateAsync(CreateRoleRequest request)
   {
-    if (!request.IsValid(out var errors))
-    {
-      throw new BadRequestException(errors);
-    }
+    request.IsValid();
 
     if (request.ParentId is not null)
     {
@@ -42,10 +39,7 @@ public class Services : IServices
 
   public async Task<Guid> UpdateAsync(Guid roleId, UpdateRoleRequest request)
   {
-    if (!request.IsValid(out var errors))
-    {
-      throw new BadRequestException(errors);
-    }
+    request.IsValid();
     var role = _context.Roles.FirstOrDefault(x => x.Id == roleId);
     if (role is null)
     {

@@ -19,10 +19,7 @@ public class Services : IServices
 
   public async Task<Guid> CreateAsync(CreateAuActionRequest request)
   {
-    if (!request.IsValid(out var errors))
-    {
-      throw new ArgumentException(string.Join(", ", errors));  
-    }
+    request.IsValid();
     var auAction = request.Mapping();
     var result = _context.Add(auAction);
     await _context.SaveChangesAsync();

@@ -1,53 +1,51 @@
-﻿using CMS.Shared.DTOs.Subject.Request;
+﻿using CMS.API.Common.Message;
+using CMS.API.Exceptions;
+using CMS.Shared.DTOs.Subject.Request;
 
 namespace CMS.API.Common.Validation;
 
 public static class SubjectValidation
 {
-  public static bool IsValid(this CreateSubjectRequest request, out List<string> error)
+  public static void IsValid(this CreateSubjectRequest request)
   {
-    error = [];
     if (String.IsNullOrWhiteSpace(request.Code))
     {
-      error.Add("Mã chủ đề không được để trống");
+      throw new BadRequestException(ConstMessage.CODE_IS_EMPTY);
     }
     if(string.IsNullOrWhiteSpace(request.Name))
     {
-      error.Add("Tên của chủ đề không được để trống");
+      throw new BadRequestException(ConstMessage.NAME_IS_EMPTY);
     }
 
     if (request.Code.Length > 50)
     {
-      error.Add("Mã của chủ đề không lớn hơn 50 ký tự");
+      throw new BadRequestException(ConstMessage.CODE_LENGTH_MAX_50);
     }
 
     if (request.Name.Length > 75)
     {
-      error.Add("Tên của chủ đề không lớn hơn 75 kí tự");
+      throw new BadRequestException(ConstMessage.NAME_LENGTH_MAX_75);
     }
-    return error.Count == 0;
   }
-  public static bool IsValid(this UpdateSubjectRequest request, out List<string> error)
+  public static void IsValid(this UpdateSubjectRequest request)
   {
-    error = [];
     if (String.IsNullOrWhiteSpace(request.Code))
     {
-      error.Add("Mã chủ đề không được để trống");
+      throw new BadRequestException(ConstMessage.CODE_IS_EMPTY);
     }
     if(string.IsNullOrWhiteSpace(request.Name))
     {
-      error.Add("Tên của chủ đề không được để trống");
+      throw new BadRequestException(ConstMessage.NAME_IS_EMPTY);
     }
 
     if (request.Code.Length > 50)
     {
-      error.Add("Mã của chủ đề không lớn hơn 50 ký tự");
+      throw new BadRequestException(ConstMessage.CODE_LENGTH_MAX_50);
     }
 
     if (request.Name.Length > 75)
     {
-      error.Add("Tên của chủ đề không lớn hơn 75 kí tự");
+      throw new BadRequestException(ConstMessage.NAME_LENGTH_MAX_75);
     }
-    return error.Count == 0;
   }
 }

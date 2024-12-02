@@ -22,14 +22,11 @@ public class Services : IServices
   }
   public async Task<Guid> CreateAsync(CreateUserRequest request)
   {
-    if (!request.IsValid(out var errors))
-    {
-      throw new BadRequestException(errors);
-    }
+    request.IsValid();
     var requestUerName = await _context.Users.FirstOrDefaultAsync(x => x.UserName == request.UserName);
     if (requestUerName is not null)
     {
-      throw new BadRequestException([ConstFailure.LOGIN_FAILURE_USER_NAME]);
+      throw new BadRequestException(ConstMessage.USER_NAME_NOT_EXITS);
     }
     var user = request.Mapping();
     user.IsActive = true;
@@ -57,10 +54,7 @@ public class Services : IServices
 
   public async Task<Guid> ChangePasswordAsync(ChangePasswordRequest request)
   {
-    if (!request.IsValid(out var errors))
-    {
-      throw new BadRequestException(errors);
-    }
+    request.IsValid();
     var user = await _context.Users.FirstOrDefaultAsync(x => x.UserName == _userProvider.UserName);
     if (user is null)
     {
@@ -88,10 +82,7 @@ public class Services : IServices
 
   public async Task<Guid> UpdateAsync(UpdateUserInformationRequest request)
   {
-    if (!request.IsValid(out var errors))
-    {
-      throw new BadRequestException(errors);
-    }
+    request.IsValid();
     var user = await _context.Users.FirstOrDefaultAsync(x => x.UserName == _userProvider.UserName);
     if (user is null)
     {
@@ -118,7 +109,7 @@ public class Services : IServices
     var userRoleExits = await _context.UserRoles.FirstOrDefaultAsync(x=>x.UserId == user.Id && x.RoleId == role.Id);
     if (userRoleExits is not null)
     {
-      throw new BadRequestException(["User này đã có quyền này rồi"]);
+      throw new BadRequestException(ConstMessage.USER_HAS_ROLE);
     }
     var userRole = new Entities.UserRole(user.Id, role.Id);
     _context.UserRoles.Add(userRole);

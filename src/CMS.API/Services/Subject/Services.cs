@@ -1,4 +1,5 @@
 ﻿using CMS.API.Common.Mapping;
+using CMS.API.Common.Message;
 using CMS.API.Common.Validation;
 using CMS.API.Exceptions;
 using CMS.API.Infrastructure.Data;
@@ -21,17 +22,14 @@ public class Services : IServices
 
   public async Task<Guid> CreateAsync(CreateSubjectRequest request)
   {
-    if (!request.IsValid(out var errors))
-    {
-      throw new BadRequestException(errors);
-    }
+    request.IsValid();
 
     if (request.ParentId is not null)
     {
       var parentSubject = await _context.Subjects.FirstOrDefaultAsync(x=>x.Id == request.ParentId && x.IsActive);
       if (parentSubject is null)
       {
-        throw new NotFoundException("chủ đề cha hoặc đã không còn hỗ trợ");
+        throw new NotFoundException(ConstMessage.PARENT_SUBJECT_NOT_SUPPORT);
       }
     }
     var subject = request.Mapping();
@@ -43,10 +41,7 @@ public class Services : IServices
 
   public async Task<Guid> UpdateAsync(Guid id, UpdateSubjectRequest request)
   {
-    if (request.IsValid(out var errors))
-    {
-      throw new BadRequestException(errors);
-    }
+    request.IsValid();
     var subject = await _context.Subjects.FirstOrDefaultAsync(x=>x.Id == id);
     if (subject is null)
     {
@@ -57,7 +52,7 @@ public class Services : IServices
       var parentSubject = await _context.Subjects.FirstOrDefaultAsync(x=>x.Id == request.ParentId && x.IsActive);
       if (parentSubject is null)
       {
-        throw new NotFoundException("chủ đề cha hoặc đã không còn hỗ trợ");
+        throw new NotFoundException(ConstMessage.PARENT_SUBJECT_NOT_SUPPORT);
       }
     }
     request.Mapping(subject);

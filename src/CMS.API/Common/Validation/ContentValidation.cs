@@ -1,81 +1,79 @@
-﻿using CMS.Shared.DTOs.Content.Request;
+﻿using CMS.API.Common.Message;
+using CMS.API.Exceptions;
+using CMS.Shared.DTOs.Content.Request;
 
 namespace CMS.API.Common.Validation;
 
 public static class ContentValidation
 {
-  public static bool IsValid(this CreateContentRequest request, out List<string> errors)
+  public static void IsValid(this CreateContentRequest request)
   {
-    errors = [];
     if (!request.SubjectId.Any())
     {
-      errors.Add("Bài viết chưa chọn chủ đề");
+      throw new BadRequestException(ConstMessage.CONTENT_INVALID_SUBJECT);
     }
-    if (string.IsNullOrEmpty(request.Code))
+    if (string.IsNullOrWhiteSpace(request.Code))
     {
-      errors.Add("Mã code không đuược đễ trống");
+      throw new BadRequestException(ConstMessage.CODE_IS_EMPTY);
     }
 
     if (request.Code.Length > 50)
     {
-      errors.Add("Mã code không được lớn hơn 50 ký tự");
+      throw new BadRequestException(ConstMessage.CODE_LENGTH_MAX_50);
     }
 
     if (request.Title.Length > 500)
     {
-      errors.Add("Tiêu đề không lớn hơn 500 ký tự");
+      throw new BadRequestException(ConstMessage.TITLE_MAX_LENGTH_500);
     }
 
     if (request.Description?.Length > 500)
     {
-      errors.Add("Mô tả không lớn hơn 500 kí tự");
+      throw new BadRequestException(ConstMessage.DESCRIPTION_MAX_LENGTH_500);
     }
     if (string.IsNullOrWhiteSpace(request.Title))
     {
-      errors.Add("Tiêu đề không được để trống");
+      throw new BadRequestException(ConstMessage.TITLE_EMPTY);
     }
 
     if (string.IsNullOrWhiteSpace(request.Contents))
     {
-      errors.Add("Nội dung bài viết không được để trống");
+      throw new BadRequestException(ConstMessage.CONTENT_EMPTY);
     }
-    return errors.Count == 0;
   }
-  public static bool IsValid(this UpdateContentRequest request, out List<string> errors)
+  public static void IsValid(this UpdateContentRequest request)
   {
-    errors = [];
     if (!request.SubjectId.Any())
     {
-      errors.Add("Bài viết chưa chọn chủ đề");
+      throw new BadRequestException(ConstMessage.CONTENT_INVALID_SUBJECT);
     }
-    if (string.IsNullOrEmpty(request.Code))
+    if (string.IsNullOrWhiteSpace(request.Code))
     {
-      errors.Add("Mã code không đuược đễ trống");
+      throw new BadRequestException(ConstMessage.CODE_IS_EMPTY);
     }
 
     if (request.Code.Length > 50)
     {
-      errors.Add("Mã code không được lớn hơn 50 ký tự");
+      throw new BadRequestException(ConstMessage.CODE_LENGTH_MAX_50);
     }
 
     if (request.Title.Length > 500)
     {
-      errors.Add("Tiêu đề không lớn hơn 500 ký tự");
+      throw new BadRequestException(ConstMessage.TITLE_MAX_LENGTH_500);
     }
 
     if (request.Description?.Length > 500)
     {
-      errors.Add("Mô tả không lớn hơn 500 kí tự");
+      throw new BadRequestException(ConstMessage.DESCRIPTION_MAX_LENGTH_500);
     }
     if (string.IsNullOrWhiteSpace(request.Title))
     {
-      errors.Add("Tiêu đề không được để trống");
+      throw new BadRequestException(ConstMessage.TITLE_EMPTY);
     }
 
     if (string.IsNullOrWhiteSpace(request.Contents))
     {
-      errors.Add("Nội dung bài viết không được để trống");
+      throw new BadRequestException(ConstMessage.CONTENT_EMPTY);
     }
-    return errors.Count == 0;
   }
 }

@@ -17,4 +17,9 @@
     <ProjectReference Include="..\CMS.Shared\CMS.Shared.csproj" />
     <ProjectReference Include="..\KLPVN.Core\KLPVN.Core.csproj" />
   </ItemGroup>
+
+
+  <ItemGroup>
+    <_ContentIncludedByDefault Remove="Error\Pages\Unauthorized.cs.cshtml" />
+  </ItemGroup>
 </Project>

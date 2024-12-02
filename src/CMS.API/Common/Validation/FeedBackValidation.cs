@@ -1,50 +1,50 @@
-﻿using CMS.Shared.DTOs.FeedBack.Request;
+﻿using CMS.API.Common.Message;
+using CMS.API.Exceptions;
+using CMS.Shared.DTOs.FeedBack.Request;
 using KLPVN.Core.Helper;
 
 namespace CMS.API.Common.Validation;
 
 public static class FeedBackValidation
 {
-  public static bool IsValid(this CreateFeedBackRequest request, out List<string> errors)
+  public static void IsValid(this CreateFeedBackRequest request)
   {
-    errors = [];
     if (string.IsNullOrWhiteSpace(request.FullName))
     {
-      errors.Add("Tên không được để trống");
+      throw new BadRequestException(ConstMessage.NAME_IS_EMPTY);
     }
 
-    if (!RegularExpressionsHelper.IsValidEmail(request.Phone))
+    if (!RegularExpressionsHelper.IsValidPhoneNumberInVietNam(request.Phone))
     {
-      errors.Add("Số điện thoại không đúng định dạng");
+      throw new BadRequestException(ConstMessage.IN_VALID_PHONE_VN);
     }
 
     if (string.IsNullOrWhiteSpace(request.Title))
     {
-      errors.Add("Tiêu đề không được để trống");
+      throw new BadRequestException(ConstMessage.TITLE_EMPTY);
     }
 
     if (request.FullName.Length > 50)
     {
-      errors.Add("Tên không được quá 50 ký tự");
+      throw new BadRequestException(ConstMessage.NAME_LENGTH_MAX_50);
     }
 
     if (request.Title.Length > 100)
     {
-      errors.Add("Tiêu đề không được quá 100 ký tự");
+      throw new BadRequestException(ConstMessage.TITLE_MAX_LENGTH_100);
     }
 
     if (!string.IsNullOrWhiteSpace(request.Email))
     {
       if (!RegularExpressionsHelper.IsValidEmail(request.Email) || request.Email.Length > 100)
       {
-        errors.Add("Email không đúng định dạng hoặc lớn hơn 100 kí tự");
+        throw new BadRequestException(ConstMessage.IN_VALID_EMAIL);
       }
     }
 
     if (request.Address?.Length > 100)
     {
-      errors.Add("Địa chỉ không quá 100 ký tự"); 
+      throw new BadRequestException(ConstMessage.ADDRESS_MAX_LENGTH_100); 
     }
-    return errors.Count == 0;
   }
 }
