@@ -1,0 +1,62 @@
+﻿@using System.ComponentModel.DataAnnotations
+
+<style>
+    .mud-button-label {
+        text-transform: none;
+    }
+</style>
+
+<MudDialog>
+    <TitleContent>
+        <MudStack Row AlignItems="AlignItems.Center" Justify="Justify.Center" Spacing="1" Class="pl-0 pr-4 pt-1">
+            <MudText Color="Color.Default" Style="font-weight: bold" Typo="Typo.h6">Sửa Chủ Đề</MudText>
+        </MudStack>
+    </TitleContent>
+    <DialogContent>
+        <MudForm @ref="form" Model="topic">
+            <MudGrid Justify="Justify.FlexStart" Spacing="1">
+                <MudItem xs="12">
+                    <MudTextField @bind-Value="topic.Code" Variant="Variant.Outlined" Label="Mã chủ đề"></MudTextField>
+                </MudItem>
+                <MudItem xs="12">
+                    <MudTextField @bind-Value="topic.Name" Variant="Variant.Outlined" Label="Tên chủ đề"></MudTextField>
+                </MudItem>
+                <MudItem xs="12">
+                    <MudTextField @bind-Value="topic.Code" Variant="Variant.Outlined" Label="Thứ tự hiển thị"></MudTextField>
+                </MudItem>
+                <MudItem xs="12">
+                    <MudStack Row AlignItems="AlignItems.Center">
+                        <MudText>Trạng thái:</MudText>
+                        <MudRadioGroup @bind-Value="topic.IsActive">
+                            <MudRadio Value="@(true)">Hoạt động</MudRadio>
+                            <MudRadio Value="@(false)">Không hoạt động</MudRadio>
+                        </MudRadioGroup>
+                    </MudStack>
+                </MudItem>
+            </MudGrid>
+        </MudForm>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel" Variant="Variant.Filled">Hủy</MudButton>
+        <MudButton Color="Color.Primary" OnClick="Submit" Variant="Variant.Filled">Lưu</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [CascadingParameter]
+    private MudDialogInstance MudDialog { get; set; }
+    private MudForm form;
+    public Topic topic { get; set; } = new();
+
+    private void Submit() => MudDialog.Close(DialogResult.Ok(true));
+
+    private void Cancel() => MudDialog.Cancel();
+
+    public class Topic
+    {
+        public string Code { get; set; }
+        public string Name { get; set; }
+        public bool IsActive { get; set; }
+        public int DisplayOrder { get; set; }
+    }
+}
