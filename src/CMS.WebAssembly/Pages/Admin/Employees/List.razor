@@ -1,0 +1,79 @@
+﻿@page "/quanlynhanvien"
+@layout CMS.WebAssembly.Layout.Admin.AdminLayout
+
+@inject IDialogService DialogService
+
+<style>
+    .mud-grid-spacing-xs-6 > .mud-grid-item {
+        padding-top: 10px;
+    }
+
+    .mud-button-label {
+        text-transform: none;
+    }
+
+    .mud-grid-spacing-xs-2 {
+        margin-top: 0px;
+    }
+</style>
+
+<PageTitle>Danh sách nhân viên</PageTitle>
+
+<MudStack Row>
+    <MudStack Justify="Justify.FlexStart">
+        <MudTextField T="string" Margin="Margin.Dense" Variant="Variant.Outlined" Placeholder="Tìm kiếm" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" />
+    </MudStack>
+    <MudSpacer/>
+    <MudStack Justify="Justify.FlexEnd">
+        <MudFab StartIcon="@Icons.Material.Filled.Add" Color="Color.Primary" Style="width:45px; height:45px" OnClick="OpenAddDialog"></MudFab>
+    </MudStack>
+</MudStack>
+<MudGrid Spacing="2" Class="pa-0">
+    @for(int i=1; i<=16; i++)
+    {
+        <MudItem xs="12" sm="6" lg="3" xl="3">
+            <MudCard Class="rounded-3 my-1" Style="border: 3px" Elevation="2">
+                <MudStack Row>
+                    <MudAvatar>
+                        <MudImage ObjectFit="ObjectFit.ScaleDown" Style="width: 100%; max-width: 5rem" Src="imgs/no-image-icon-6.png" Alt="img" />
+                    </MudAvatar>
+                    <MudItem>
+                        <MudText Typo="Typo.body1" Style="font-weight:bold">Tên Nhân Viên</MudText>
+                        <MudText Typo="Typo.body2">Chức vụ</MudText>
+                    </MudItem>
+                    <MudSpacer/>
+                    <MudItem>
+                        <MudMenu Icon="@Icons.Material.Filled.MoreVert" AnchorOrigin="Origin.BottomCenter" TransformOrigin="Origin.TopCenter">
+                            <MudButton StartIcon="@Icons.Material.Filled.Edit" OnClick="OpenEditDialog">Sửa</MudButton>
+                            <hr/>
+                            <MudButton StartIcon="@Icons.Material.Filled.Delete" OnClick="OpenDeleteDialog">Xóa</MudButton>
+                        </MudMenu>
+                    </MudItem>
+                </MudStack>
+            </MudCard>
+        </MudItem>
+    }
+</MudGrid>
+
+@code {
+    private Task OpenAddDialog()
+    {
+        var options = new DialogOptions { CloseOnEscapeKey = true, CloseButton = true, FullWidth=true};
+
+        return DialogService.ShowAsync<AddDialog>("", options);
+    }
+
+    private Task OpenEditDialog()
+    {
+        var options = new DialogOptions { CloseOnEscapeKey = true, CloseButton = true, FullWidth = true };
+
+        return DialogService.ShowAsync<EditDialog>("", options);
+    }
+
+    private Task OpenDeleteDialog()
+    {
+        var options = new DialogOptions { CloseOnEscapeKey = true, CloseButton = true };
+
+        return DialogService.ShowAsync<DeleteDialog>("", options);
+    }
+}

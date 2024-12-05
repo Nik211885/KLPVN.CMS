@@ -3,6 +3,7 @@ using CMS.API.Common.Validation;
 using CMS.API.Exceptions;
 using CMS.API.Infrastructure.Data;
 using CMS.Shared.DTOs.AuAction.Request;
+using CMS.Shared.DTOs.AuAction.Response;
 using KLPVN.Core.Interface;
 using Microsoft.EntityFrameworkCore;
 
@@ -40,6 +41,25 @@ public class Services : IServices
     _context.AuActions.Update(auAction);
     await _context.SaveChangesAsync();
     return id;
+  }
+
+  public async Task<AuActionResponse> GetByIdAsync(Guid id)
+  {
+    var auAction = await _context.AuActions.FirstOrDefaultAsync(x => x.Id == id);
+    if (auAction is null)
+    {
+      throw new NotFoundException(nameof(auAction));
+    }
+    
+    var auActionResponse = AuActionMapping.Mapping(auAction);
+    return auActionResponse;
+  }
+
+  public async Task<IEnumerable<AuActionResponse>> GetAllAsync()
+  {
+    var auActions = await _context.AuActions.ToListAsync();
+    var auActionsResponse = AuActionMapping.Mapping(auActions);
+    return auActionsResponse;
   }
 
   public async Task DeleteAsync(Guid id)

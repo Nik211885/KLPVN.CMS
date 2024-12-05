@@ -1,6 +1,8 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using CMS.API.Services;
 using CMS.Shared.DTOs.AuAction.Request;
+using CMS.Shared.DTOs.AuAction.Response;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CMS.API.Controllers;
@@ -34,5 +36,19 @@ public class AuActionController : ControllerBase
   {
     await _services.AuAction.DeleteAsync(id);
     return NoContent();
+  }
+
+  [HttpGet("detail")]
+  public async Task<ActionResult<AuActionResponse>> GetAuActionByIdAsync([Required] Guid id)
+  {
+    var result = await _services.AuAction.GetByIdAsync(id);
+    return Ok(result);
+  }
+
+  [HttpGet("all")]
+  public async Task<ActionResult<IEnumerable<AuActionResponse>>> GetAllAuActionAsync()
+  {
+    var result = await _services.AuAction.GetAllAsync();
+    return Ok(result);
   }
 }

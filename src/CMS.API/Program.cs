@@ -11,6 +11,7 @@ using KLPVN.Core.Interface;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -34,7 +35,8 @@ builder.Services.AddMemoryCache();
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
 {
   options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")
-                    ?? throw new ArgumentException("Not config connection string"));
+                    ?? throw new ArgumentException("Not config connection string"),
+    optionsBuilder => optionsBuilder.CommandTimeout(60000));
 });
 builder.Services.AddScoped(typeof(IServicesWrapper), typeof(ServicesWrapper));
 builder.Services.AddAuthentication(options =>
@@ -58,6 +60,34 @@ builder.Services.AddAuthentication(options =>
       ClockSkew = TimeSpan.Zero
     };
   });
+builder.Services.AddSwaggerGen(c =>
+{
+  c.SwaggerDoc("v1", new OpenApiInfo
+  {
+    Title = "KLPVN.CMS",
+    Version = "v1"
+  });
+  var securityScheme = new OpenApiSecurityScheme
+  {
+    Name = "JWT Authentication",
+    Description = "Enter JWT Bearer token **_only_**",
+    In = ParameterLocation.Header,
+    Type = SecuritySchemeType.Http,
+    Scheme = "bearer",
+    BearerFormat = "JWT",
+    Reference = new OpenApiReference
+    {
+      Id = JwtBearerDefaults.AuthenticationScheme,
+      Type = ReferenceType.SecurityScheme
+    }
+  };
+  c.AddSecurityDefinition(securityScheme.Reference.Id, securityScheme);
+  c.AddSecurityRequirement(new OpenApiSecurityRequirement
+  {
+    {securityScheme, new string[] { }}
+  });
+  c.CustomSchemaIds(i => i.FullName);
+});
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

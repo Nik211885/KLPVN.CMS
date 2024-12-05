@@ -1,4 +1,5 @@
 ﻿using System.Net.Http.Headers;
+using System.Text;
 using Newtonsoft.Json;
 
 namespace KLPVN.Core.Helper;
@@ -13,7 +14,8 @@ public static class HttpContentHelper
   }
   public static StringContent EncodeStringContent(this object obj, string contentType)
   {
-    var stringContent = new StringContent(JsonConvert.SerializeObject(obj));
+    var json = JsonConvert.SerializeObject(obj); 
+    var stringContent = new StringContent(json, Encoding.UTF8);
     stringContent.Headers.ContentType = new MediaTypeHeaderValue(contentType);
     return stringContent;
   }

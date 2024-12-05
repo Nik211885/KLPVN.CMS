@@ -1,0 +1,38 @@
+<Project Sdk="Microsoft.NET.Sdk.BlazorWebAssembly">
+
+    <PropertyGroup>
+        <TargetFramework>net8.0</TargetFramework>
+        <Nullable>enable</Nullable>
+        <ImplicitUsings>enable</ImplicitUsings>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="8.0.11" />
+        <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="8.0.11" PrivateAssets="all" />
+        <PackageReference Include="Microsoft.Extensions.Http" Version="8.0.0" />
+        <PackageReference Include="MudBlazor" Version="7.15.0" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <AdditionalFiles Include="Pages\Admin\Account\ChangePassword.razor" />
+      <AdditionalFiles Include="Pages\Admin\Account\Login.razor" />
+      <AdditionalFiles Include="Pages\Admin\ArticleTopic\AddDialog.razor" />
+      <AdditionalFiles Include="Pages\Admin\ArticleTopic\DeleteDialog.razor" />
+      <AdditionalFiles Include="Pages\Admin\ArticleTopic\EditDialog.razor" />
+      <AdditionalFiles Include="Pages\Admin\ArticleTopic\List.razor" />
+      <AdditionalFiles Include="Pages\Admin\Article\AddDialog.razor" />
+      <AdditionalFiles Include="Pages\Admin\Article\DeleteDialog.razor" />
+      <AdditionalFiles Include="Pages\Admin\Article\EditDialog.razor" />
+      <AdditionalFiles Include="Pages\Admin\Article\List.razor" />
+      <AdditionalFiles Include="Pages\Admin\Employees\AddDialog.razor" />
+      <AdditionalFiles Include="Pages\Admin\Employees\DeleteDialog.razor" />
+      <AdditionalFiles Include="Pages\Admin\Employees\EditDialog.razor" />
+      <AdditionalFiles Include="Pages\Admin\Employees\List.razor" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\CMS.Shared\CMS.Shared.csproj" />
+      <ProjectReference Include="..\KLPVN.Core\KLPVN.Core.csproj" />
+    </ItemGroup>
+
+</Project>

@@ -1,4 +1,5 @@
 ﻿using CMS.API.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CMS.API.Controllers;
@@ -17,5 +18,11 @@ public class SampleController : ControllerBase
   public IActionResult Get()
   {
     return Ok("I'm fine");
+  }
+  [Authorize]
+  [HttpGet("api/sample")]
+  public IActionResult GetApi()
+  {
+    return Ok("I'm fine sample");
   }
 }

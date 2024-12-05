@@ -1,4 +1,5 @@
 using CMS.Shared.DTOs.AuAction.Request;
+using CMS.Shared.DTOs.AuAction.Response;
 
 namespace CMS.API.Common.Mapping;
 
@@ -8,7 +9,7 @@ public static class AuActionMapping
   {
     return new Entities.AuAction()
     {
-      Code = request.Code,
+      Code = request.Code, 
       Name = request.Name
     };
   }
@@ -17,5 +18,19 @@ public static class AuActionMapping
   {
     auAction.Code = request.Code;
     auAction.Name = request.Name;
+  }
+
+  public static AuActionResponse Mapping(Entities.AuAction auAction)
+  {
+    return new AuActionResponse(
+      Id: auAction.Id,
+      Code: auAction.Code,
+      Name: auAction.Name
+    );
+  }
+  
+  public static IEnumerable<AuActionResponse> Mapping(IEnumerable<Entities.AuAction> auActions)
+  {
+    return auActions.Select(Mapping);
   }
 }

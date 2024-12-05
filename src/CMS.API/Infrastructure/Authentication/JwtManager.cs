@@ -1,7 +1,8 @@
-﻿using System.IdentityModel.Tokens.Jwt;
+﻿﻿using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using CMS.API.Common;
+using CMS.API.Exceptions;
 using CMS.API.Infrastructure.Caching.Memory;
 using KLPVN.Core.Helper;
 using KLPVN.Core.Interface;
@@ -35,8 +36,7 @@ public class JwtManager : IJwtManager
     var accessToken = new JwtSecurityTokenHandler().WriteToken(jwtToken);
     var refreshToken = GenerateRefreshToken();
     _memoryCache.Set(userName, refreshToken, DateTime.Now.AddMinutes(_identityAuthentication.RefreshTokenExpiration));
-    return new JwtResult(accessToken, refreshToken);
-    // add in memory caching
+    return new JwtResult(accessToken, refreshToken); // add in memory caching
   }
 
   public JwtResult RefreshToken(string refreshToken, string accessToken)
@@ -45,18 +45,18 @@ public class JwtManager : IJwtManager
       var (principal, jwtToken) = DecodeJwtToken(accessToken);
       if (jwtToken is null || jwtToken.Header.Alg != SecurityAlgorithms.HmacSha256)
       {
-        throw new ArgumentException("Invalid JWT token");
+        throw new UnauthorizedException("Invalid JWT token");
       }
       var userName = principal.Claims.FirstOrDefault(x => x.Type.Equals(ClaimTypes.NameIdentifier))?.Value
-        ?? throw new ArgumentException("Not find user name");
+        ?? throw new UnauthorizedException("user name");
       // want check access still express
       if (!_memoryCache.TryGetValue(userName, out var refresh))
       {
-        throw new ArgumentException("Invalid refresh token");
+        throw new UnauthorizedException("Invalid refresh token");
       }
       if (refresh is null || !refresh.Equals(refreshToken))
       {
-        throw new ArgumentException("Invalid refresh token");
+        throw new UnauthorizedException("Invalid refresh token");
       }
       return GenerateTokens(userName, principal.Claims.ToList());
   }
