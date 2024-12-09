@@ -8,6 +8,7 @@ using CMS.API.Infrastructure.Data;
 using KLPVN.Core.Helper;
 using KLPVN.Core.Interface;
 using KLPVN.Core.Models;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using LoginRequest = CMS.Shared.DTOs.Au.Request.LoginRequest;
@@ -60,8 +61,9 @@ public class AuController : ControllerBase
     };
     claims.AddRange(role.OfType<Role>().Select(r => new Claim(ClaimTypes.Role, r.Code)));
     claims.AddRange(action.OfType<AuActionClass>().Select(a=>new Claim(ClaimTypes.Actor, a.Code)));
-    var jwt = _jwtManager.GenerateTokens(user.UserName, claims);
-    return jwt;
+    var tokens = _jwtManager.GenerateTokens(user.UserName, claims);
+    SetCookie(tokens);
+    return tokens;
   }
 
   [HttpPost("refresh")]
@@ -72,7 +74,30 @@ public class AuController : ControllerBase
     {
       throw new UnauthorizedException("Access token is invalid");
     }
-    var token = _jwtManager.RefreshToken(refreshToken, accessToken);
-    return token;
+    var tokens = _jwtManager.RefreshToken(refreshToken, accessToken);
+    SetCookie(tokens);
+    return tokens;
+  }
+
+  private void SetCookie(JwtResult jwt)
+  {
+    HttpContext.Response.Cookies.Append("Token",jwt.AccessToken, new CookieOptions()
+    {
+      Secure = true,
+      IsEssential = true,
+      Domain = _identity.Audience,
+      HttpOnly = true,
+      Path = "api/",
+      Expires = DateTimeOffset.UtcNow.AddMinutes(_identity.AccessTokenExpiration)
+    });
+    HttpContext.Response.Cookies.Append("Token",jwt.RefreshToken, new CookieOptions()
+    {
+      Secure = true,
+      IsEssential = true,
+      HttpOnly = true,
+      Path = "api/refresh",
+      Domain = _identity.Audience,
+      Expires = DateTimeOffset.UtcNow.AddMinutes(_identity.RefreshTokenExpiration)
+    });
   }
 }
