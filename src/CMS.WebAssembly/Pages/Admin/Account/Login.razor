@@ -6,10 +6,7 @@
 @using CMS.Shared.DTOs.Au.Request
 @using CMS.WEB.Common
 @using CMS.WebAssembly.Common
-@inject ISnackbar Snack
 @using KLPVN.Core.Helper
-@inject NavigationManager Navigation
-@inject IJSRuntime Js
 @inject IHttpClientFactory Factory
 @using KLPVN.Core.Models
 
@@ -215,28 +212,38 @@ else
             else
             {
                 client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-                var sampleResponse = await client.GetAsync("sample");
-                if (sampleResponse.IsSuccessStatusCode)
+                try
                 {
-                    Navigation.NavigateTo("/admin");
-                }
-                if (sampleResponse.StatusCode == HttpStatusCode.Unauthorized)
-                {
-                    var refreshToken = await Js.InvokeAsync<string?>("localStorage.getItem", "Refresh");
-                    if (refreshToken is null)
+                    var sampleResponse = await client.GetAsync("sample");
+                    if (sampleResponse.IsSuccessStatusCode)
                     {
-                        isPageReady = true;
-                        StateHasChanged();
-                        return;
-                    }
-
-                    var tokenResponse = await client.PostAsync(ConstRequestUri.auRefresh + $"?refreshToken={refreshToken}", null);
-                    if (tokenResponse.IsSuccessStatusCode)
-                    {
-                        var jwtResult = await tokenResponse.Content.DecodeAsync<JwtResult>();
-                        await Js.InvokeVoidAsync("localStorage.setItem", "Token", jwtResult.AccessToken);
-                        await Js.InvokeVoidAsync("localStorage.setItem", "Refresh", jwtResult.RefreshToken);
                         Navigation.NavigateTo("/admin");
+                    }
+                    else if (sampleResponse.StatusCode == HttpStatusCode.Unauthorized)
+                    {
+                        var refreshToken = await Js.InvokeAsync<string?>("localStorage.getItem", "Refresh");
+                        if (refreshToken is null)
+                        {
+                            isPageReady = true;
+                            StateHasChanged();
+                            return;
+                        }
+
+                        var tokenResponse = await client.PostAsync(ConstRequestUri.auRefresh + $"?refreshToken={refreshToken}", null);
+                        if (tokenResponse.IsSuccessStatusCode)
+                        {
+                            var jwtResult = await tokenResponse.Content.DecodeAsync<JwtResult>();
+                            await Js.InvokeVoidAsync("localStorage.setItem", "Token", jwtResult.AccessToken);
+                            await Js.InvokeVoidAsync("localStorage.setItem", "Refresh", jwtResult.RefreshToken);
+                            Navigation.NavigateTo("/admin");
+                        }
+                        else
+                        {
+                            await Js.InvokeVoidAsync("localStorage.removeItem", "Token");
+                            await Js.InvokeVoidAsync("localStorage.removeItem", "Refresh");
+                            isPageReady = true;
+                            StateHasChanged();
+                        }
                     }
                     else
                     {
@@ -244,7 +251,16 @@ else
                         await Js.InvokeVoidAsync("localStorage.removeItem", "Refresh");
                         isPageReady = true;
                         StateHasChanged();
+                        return;
                     }
+                }
+                catch (Exception)
+                {
+                    await Js.InvokeVoidAsync("localStorage.removeItem", "Token");
+                    await Js.InvokeVoidAsync("localStorage.removeItem", "Refresh");
+                    isPageReady = true;
+                    StateHasChanged();
+                    return;
                 }
             }
         }

@@ -2,7 +2,6 @@
 
 public interface IServicesWrapper
 {
-  AuAction.IServices AuAction  { get; }
   AuClass.IServices AuClass { get; }
   Content.IServices Content { get; }
   FeedBack.IServices FeedBack { get; }

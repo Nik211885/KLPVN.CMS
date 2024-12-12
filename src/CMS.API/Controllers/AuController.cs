@@ -8,6 +8,7 @@ using CMS.API.Infrastructure.Data;
 using KLPVN.Core.Helper;
 using KLPVN.Core.Interface;
 using KLPVN.Core.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -42,7 +43,6 @@ public class AuController : ControllerBase
     {
       throw new UnauthorizedException(ConstMessage.PASSORD_NOT_CORRECT);
     }
-
     var role = await _context.UserRoles
       .Where(x => x.UserId == user.Id)
       .Include(x => x.Role)
@@ -79,6 +79,19 @@ public class AuController : ControllerBase
     return tokens;
   }
 
+  [HttpPost("logout")]
+  [Authorize]
+  public IActionResult Logout()
+  {
+    var userName = HttpContext.User.Claims
+      .FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier);
+    if (userName is null)
+    {
+      throw new Exception("Token has not user name");
+    }
+    _jwtManager.RemoveRefreshTokenByUserName(userName.Value);
+    return Ok();
+  }
   private void SetCookie(JwtResult jwt)
   {
     HttpContext.Response.Cookies.Append("Token",jwt.AccessToken, new CookieOptions()

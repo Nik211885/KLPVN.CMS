@@ -15,8 +15,7 @@ public class ApplicationDbContext : DbContext
   {
     _userProvider = userProviders;
   }
-
-  public DbSet<AuAction> AuActions { get; set; }
+  
   public DbSet<AuActionClass> AuActionClasses { get; set; }
   public DbSet<AuClass> AuClasses { get; set; }
   public DbSet<Content> Contents { get; set; }

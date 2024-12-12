@@ -1,11 +1,15 @@
-﻿using CMS.API.Common.Mapping;
+﻿using System.Security.Claims;
+using CMS.API.Common.Mapping;
 using CMS.API.Common.Message;
 using CMS.API.Common.Validation;
+using CMS.API.Entities;
 using CMS.API.Exceptions;
 using CMS.API.Infrastructure.Data;
+using CMS.Shared.DTOs.AuClass.Response;
 using CMS.Shared.DTOs.User.Request;
 using KLPVN.Core.Helper;
 using KLPVN.Core.Interface;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 
 namespace CMS.API.Services.User;
@@ -146,5 +150,62 @@ public class Services : IServices
 
     _context.Users.Remove(user);
     await _context.SaveChangesAsync();
+  }
+  public async Task<MenuTreeResponse> GetMenuTreeForUserAsync(IEnumerable<string>? permissionCode)
+  {
+    // have permission code => return permission id 
+    //=>  step 1: au action class for permission id
+    // get parent menu or in top level
+    // please logout after add role or permission
+    //
+    var menuResponses = new MenuTreeResponse();
+    permissionCode ??= [];
+    var auAction = await _context.AuActionClasses
+      .Where(x => permissionCode.Contains(x.Code))
+      .ToListAsync();
+    foreach (var a  in auAction)
+    {
+      var auClass = await _context.AuClasses
+        .FirstOrDefaultAsync(x => x.Id == a.ClassId);
+      var menuBottom = new MenuResponse()
+      {
+        NameAction = a.Name,
+        Path = a.Path
+      };
+      await GetTreeMenuAsync(auClass, menuBottom, menuResponses);
+    }
+
+    return menuResponses;
+  }
+
+  private async Task GetTreeMenuAsync(Entities.AuClass? auClass, MenuResponse menuBottom
+    , MenuTreeResponse menuResponses)
+  {
+    if (auClass is null)
+    {
+      menuResponses.Menu.Add(menuBottom);
+      return;
+    }
+    var menuNew = new MenuResponse()
+    {
+      MenuCode = auClass.Code, 
+      MenuName = auClass.MenuName,
+      MenuChild = [menuBottom],
+    };
+    foreach (var m in menuResponses.Menu)
+    {
+      var menuExits = m.MenuChild.FirstOrDefault(x => x.MenuCode == auClass.Code);
+      if (menuExits is null)
+      {
+        continue;
+      }
+      menuExits.MenuChild.Add(menuBottom);
+      return;
+    }
+    var menuParent = await _context.AuClasses
+      .FirstOrDefaultAsync(x=>x.Id == auClass.ParentId);
+    // if in tree have node just add action for this node and break recursive
+    // else create new node and add action for this node and recursive make get parent menu
+    await GetTreeMenuAsync(menuParent, menuNew ,menuResponses);
   }
 }

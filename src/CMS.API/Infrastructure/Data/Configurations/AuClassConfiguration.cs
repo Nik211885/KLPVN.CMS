@@ -13,6 +13,8 @@ public class AuClassConfiguration : IEntityTypeConfiguration<AuClass>
     builder.Property(x=>x.Code).HasMaxLength(50).IsRequired();
     builder.Property(x=>x.Name).HasMaxLength(50).IsRequired();
     builder.Property(x=>x.MenuName).HasMaxLength(50).IsRequired();
-    builder.HasOne(x=>x.Parent).WithMany(x=>x.Child).HasForeignKey(x=>x.ParentId);
+    builder.HasOne(x=>x.Parent)
+      .WithMany(x=>x.Child)
+      .HasForeignKey(x=>x.ParentId);
   }
 }

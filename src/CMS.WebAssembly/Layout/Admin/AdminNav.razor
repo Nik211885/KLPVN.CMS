@@ -1,4 +1,7 @@
-﻿<style>
+﻿@using CMS.WEB.Common
+@using CMS.WebAssembly.Common
+@using HttpMethod = CMS.WebAssembly.Common.HttpMethod
+<style>
     .mud-list-item-icon {
         min-width: auto;
     }
@@ -18,7 +21,7 @@
                 <MudMenuItem Icon="@Icons.Material.Filled.LockReset" Href="/changepassword">
                     <MudText>Đổi mật khẩu</MudText>
                 </MudMenuItem>
-                <MudMenuItem Icon="@Icons.Material.Filled.Logout" IconColor="Color.Error">
+                <MudMenuItem OnClick="HandlerLogoutAsync" Icon="@Icons.Material.Filled.Logout" IconColor="Color.Error">
                     <MudText Color="Color.Error">Đăng xuất</MudText>
                 </MudMenuItem>
             </MudMenu>
@@ -33,3 +36,39 @@
         <MudNavLink Href="/about">About</MudNavLink>
     </MudNavMenu>
 </MudPaper>
+
+@code{
+    protected override void OnAfterRender(bool firstRender)
+    {
+        base.OnAfterRender(firstRender);
+    }
+
+    private async Task HandlerLogoutAsync()
+    {
+        try
+        {
+            var logoutResponseMessage = await Client
+                .SendAsync(HttpMethod.POST, ConstRequestUri.auLogout, null);
+            if (logoutResponseMessage is null)
+            {
+                return;
+            }
+        
+            if (logoutResponseMessage.IsSuccessStatusCode)
+            {
+                await Js.InvokeVoidAsync("localStorage.removeItem", "Token");
+                await Js.InvokeVoidAsync("localStorage.removeItem", "Refresh");
+                Navigation.NavigateTo("/login");
+            }
+            else
+            {
+                Snack.Add("Có lỗi xãy ra",Severity.Warning);
+            }
+        }
+        catch (Exception ex)
+        {
+            Snack.Add("Có lỗi server xãy ra",Severity.Error);
+        }
+        
+    }
+}

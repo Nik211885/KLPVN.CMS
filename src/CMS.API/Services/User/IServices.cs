@@ -1,4 +1,5 @@
-﻿using CMS.Shared.DTOs.User.Request;
+﻿using CMS.Shared.DTOs.AuClass.Response;
+using CMS.Shared.DTOs.User.Request;
 
 namespace CMS.API.Services.User;
 
@@ -12,4 +13,5 @@ public interface IServices
   Task<Guid> AddRoleForUserAsync(string userName, Guid roleId);
   Task<Guid> RemoveRoleForUserAsync(string userName, Guid roleId);
   Task DeleteAsync(Guid id);
+  Task<MenuTreeResponse> GetMenuTreeForUserAsync(IEnumerable<string>? permissionCode);
 }

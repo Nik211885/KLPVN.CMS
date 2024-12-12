@@ -15,7 +15,6 @@ public class ServicesWrapper : IServicesWrapper
     _context = context;
     _userProvider = userProvider;
   }
-  private AuAction.IServices _auAction;
   private AuClass.IServices _auClass;
   private Content.IServices _content;
   private FeedBack.IServices _feedBack;
@@ -25,8 +24,7 @@ public class ServicesWrapper : IServicesWrapper
   private sample.IServices _sample;
   private Subject.IServices _subject;
   private User.IServices _user;
-
-  public AuAction.IServices AuAction => _auAction ??= new AuAction.Services(_context, _userProvider);
+  
   public AuClass.IServices AuClass => _auClass ??= new AuClass.Services(_context, _userProvider);
   public Content.IServices Content => _content ??= new Content.Services(_context, _userProvider);
   public FeedBack.IServices FeedBack => _feedBack ??= new FeedBack.Services(_context, _userProvider);

@@ -4,6 +4,7 @@ using CMS.API.Exceptions;
 using CMS.API.Infrastructure.Authentication;
 using CMS.API.Infrastructure.Caching.Memory;
 using CMS.API.Infrastructure.Data;
+using CMS.API.Infrastructure.Data.Seeder;
 using CMS.API.Infrastructure.Notification;
 using CMS.API.Services;
 using KLPVN.Core.Commons;
@@ -17,7 +18,10 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
-builder.Services.AddControllers();
+builder.Services.AddControllers().AddJsonOptions(options =>
+{
+  options.JsonSerializerOptions.IgnoreNullValues = true;
+});
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
@@ -88,6 +92,7 @@ builder.Services.AddSwaggerGen(c =>
   });
   c.CustomSchemaIds(i => i.FullName);
 });
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -97,9 +102,9 @@ if (app.Environment.IsDevelopment())
   app.UseSwaggerUI();
 }
 
-app.UseCors(builder =>
+app.UseCors(b =>
 {
-  builder.WithOrigins("http://localhost:5217")
+    b.WithOrigins(builder.Configuration.GetValue<string>("CorsWebApp")?? "localhost")
     .AllowAnyHeader()
     .AllowAnyMethod()
     .AllowCredentials();
@@ -112,4 +117,5 @@ app.MapControllers();
 
 app.UseMiddleware<ExceptionHandlingMiddleware>();
 
+await SeederData.SeederAsync(app.Services);
 app.Run();

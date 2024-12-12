@@ -17,4 +17,9 @@ public class UserRole
     UserId = userId;
     RoleId = roleId;
   }
+  // ctor make sedder data
+  public UserRole(Guid roleId)
+  {
+    RoleId = roleId;
+  }
 }

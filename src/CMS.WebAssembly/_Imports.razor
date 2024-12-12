@@ -7,6 +7,11 @@
 @using Microsoft.AspNetCore.Components.WebAssembly.Http
 @using Microsoft.JSInterop
 @using CMS.WebAssembly
+@using CMS.WebAssembly.Common
 @using CMS.WebAssembly.Layout
 @using MudBlazor
 @using MudBlazor.Services
+@inject IJSRuntime Js
+@inject NavigationManager Navigation
+@inject ISnackbar Snack
+@inject CommonHttpClientHelper Client

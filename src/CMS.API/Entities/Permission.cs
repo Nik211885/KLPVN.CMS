@@ -18,4 +18,9 @@ public class Permission
     ActionClassId = actionClassId;
     ObjectId = objectId;
   }
+
+  public Permission(Guid objectId)
+  {
+    ObjectId = objectId;
+  }
 }
