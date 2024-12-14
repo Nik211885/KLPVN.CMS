@@ -3,6 +3,9 @@
 @layout CMS.WebAssembly.Layout.Admin.AdminLayout
 
 @inject IDialogService DialogService
+@inject NavigationManager nav
+
+<PageTitle>Danh sách bài viết</PageTitle>
 
 <MudTable Items="articles" Dense="true" Virtualize="false" FixedHeader="true" Bordered="true" HorizontalScrollbar="true">
     <ColGroup>
@@ -106,18 +109,14 @@
         }
     }
 
-    private Task OpenAddDialog()
+    private void OpenAddDialog()
     {
-        var options = new DialogOptions { CloseOnEscapeKey = true, CloseButton = true, FullWidth = true };
-
-        return DialogService.ShowAsync<AddDialog>("", options);
+        nav.NavigateTo("/addarticle");
     }
 
-    private Task OpenEditDialog()
+    private void OpenEditDialog()
     {
-        var options = new DialogOptions { CloseOnEscapeKey = true, CloseButton = true, FullWidth = true };
-
-        return DialogService.ShowAsync<EditDialog>("", options);
+        nav.NavigateTo("/editarticle");
     }
 
     private Task OpenDeleteDialog()
