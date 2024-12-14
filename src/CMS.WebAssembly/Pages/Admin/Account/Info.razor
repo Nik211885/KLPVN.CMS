@@ -1,0 +1,100 @@
+﻿@page "/thongtintaikhoan"
+
+@layout CMS.WebAssembly.Layout.Admin.AdminLayout
+@using System.ComponentModel.DataAnnotations
+@inject ISnackbar snackbar
+@inject NavigationManager navigation
+
+<style>
+    .mud-main-content {
+        margin-top: 40px !important
+    }
+
+    .mud-badge.mud-badge-top.right.mud-badge-overlap {
+        inset: auto auto calc(100% - 20px) calc(100% - 20px);
+    }
+</style>
+
+<PageTitle>Thông tin tài khoản</PageTitle>
+
+<MudGrid Class="md-8 px-0 ma-0 mb-4" Spacing="2" Style="width:100%" Justify="Justify.Center">
+    <MudItem xs="12" sm="8" md="6" lg="4">
+        <MudPaper Elevation="0" Class="pa-2 rounded-3">
+            <div class="d-flex justify-content-center align-items-center mb-2" style="width: 100%; height: auto;">
+                <MudBadge Color="Color.Success" Overlap="true" Bordered="true">
+                    <MudAvatar Style="width:100px; height:100px">
+                        <MudImage Class="center-image" Style="width:100%; height: auto" Src="imgs/no-image-icon-6.png" Alt="Icon" />
+                    </MudAvatar>
+                </MudBadge>
+            </div>
+            <MudForm @ref="form" Model="Input">
+                <div class="d-flex justify-content-center align-items-center mb-2" style="width: 100%; height: auto;">
+                    <MudFileUpload Disabled="isDisable" T="IBrowserFile" FilesChanged="UploadFiles">
+                        <ActivatorContent>
+                            <MudFab Color="Color.Secondary"
+                                    StartIcon="@Icons.Material.Filled.Image"
+                                    Label="Chọn ảnh" Style="text-transform: none"/>
+                        </ActivatorContent>
+                    </MudFileUpload>
+                </div>
+                <MudTextField Class="mb-4" Disabled="@isDisable" @bind-Value="Input.FullName" For="(() => Input.FullName)" Required Variant="Variant.Outlined" Margin="Margin.Dense" Label="Họ tên"></MudTextField>
+                <MudRadioGroup @bind-Value="Input.Gender" Disabled="@isDisable">
+                    <MudRadio Value="@(true)">Nam</MudRadio>
+                    <MudRadio Value="@(false)">Nữ</MudRadio>
+                </MudRadioGroup>
+                <MudTextField Class="mb-4" Disabled="@isDisable" @bind-Value="Input.Email" For="(() => Input.Email)" Variant="Variant.Outlined" Margin="Margin.Dense" Label="Email"></MudTextField>
+                <MudTextField Class="mb-4" Disabled="@isDisable" @bind-Value="Input.PhoneNumber" For="(() => Input.PhoneNumber)" Required Variant="Variant.Outlined" Margin="Margin.Dense" Label="Số điện thoại"></MudTextField>
+                <MudTextField Class="mb-4" Disabled="@isDisable" @bind-Value="Input.Address" For="(() => Input.Address)" Required Variant="Variant.Outlined" Margin="Margin.Dense" Label="Địa chỉ"></MudTextField>
+                @if (isDisable)
+                {
+                    <MudButton Style="text-transform:none"  Color="Color.Primary" Variant="Variant.Filled" OnClick="CapNhat">Cập nhập</MudButton>
+                }
+                else
+                {
+                    <MudButton Style="text-transform:none"  Color="Color.Primary" Variant="Variant.Filled" ButtonType="ButtonType.Submit">Hoàn tất</MudButton>
+                }
+            </MudForm>
+        </MudPaper>
+    </MudItem>
+</MudGrid>
+
+@code {
+    [SupplyParameterFromForm]
+    private InputModel Input { get; set; } = new();
+    private MudForm form;
+    public bool isDisable = true;
+    IList<IBrowserFile> _files = new List<IBrowserFile>();
+
+    public void CapNhat()
+    {
+        isDisable = false;
+    }
+
+    private void UploadFiles(IBrowserFile file)
+    {
+        _files.Add(file);
+    }
+
+    private async void SaveProfile()
+    {
+        
+    }
+
+    private sealed class InputModel
+    {
+        [Required(ErrorMessage = "Vui lòng nhập số điện thoại")]
+        [RegularExpression("^(0?)(3[2-9]|5[6|8|9]|7[0|6-9]|8[0-6|8|9]|9[0-4|6-9])[0-9]{7}$", ErrorMessage = "Số điện thoại không đúng định dạng")]
+        [DataType(DataType.PhoneNumber, ErrorMessage = "Số điện thoại không đúng định dạng")]
+        public string PhoneNumber { get; set; } = null!;
+        [RegularExpression(@"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$", ErrorMessage = "Email không đúng định dạng")]
+        public string? Email { get; set; }
+        [Required(ErrorMessage = "Nhập địa chỉ")]
+        public string? Address { get; set; }
+        [Required(ErrorMessage = "Vui lòng nhập Họ tên")]
+        public string FullName { get; set; } = null!;
+        public bool Gender { get; set; }
+        public bool IsActive { get; set; }
+        public string? Avatar { get; set; }
+    }
+}
+
