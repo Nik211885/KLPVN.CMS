@@ -1,4 +1,5 @@
-﻿@using CMS.Shared.DTOs.AuClass.Response
+﻿@using CMS.Shared.DTOs.Au.Response
+@using CMS.Shared.DTOs.AuClass.Response
 @using CMS.WEB.Common
 @using CMS.WebAssembly.Components.Admin
 @using KLPVN.Core.Helper
@@ -17,11 +18,11 @@ else{
         <MudNavMenu>
             <MudStack Row>
                 <MudItem>
-                    <MudText Typo="Typo.h6" Class="px-4">Tên Nhân Viên</MudText>
-                    <MudText Typo="Typo.body2" Class="px-4 mud-text-secondary">Chức vụ</MudText>
+                    <MudText Typo="Typo.h6" Class="px-4">@_user.UserName</MudText>
+                    <MudText Typo="Typo.body2" Class="px-4 mud-text-secondary">@String.Join("|", _user.Roles??[])</MudText>
                 </MudItem>
                 <MudMenu Icon="@Icons.Material.Filled.Settings" AnchorOrigin="Origin.BottomCenter" TransformOrigin="Origin.TopCenter">
-                    <MudMenuItem Icon="@Icons.Material.Filled.ManageAccounts">
+                    <MudMenuItem Icon="@Icons.Material.Filled.ManageAccounts" Href="/thongtintaikhoan">
                         <MudText>Thông tin tài khoản</MudText>
                     </MudMenuItem>
                     <MudMenuItem Icon="@Icons.Material.Filled.LockReset" Href="/changepassword">
@@ -43,8 +44,10 @@ else{
 }
 
 @code{
+    private UserDecodeAccessToken _user;
     private bool _isReadPage = false;
     private MenuTreeResponse? _menu;
+
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
@@ -53,18 +56,22 @@ else{
             if (menuLocalStorage is not null)
             {
                 _menu = JsonConvert.DeserializeObject<MenuTreeResponse>(menuLocalStorage);
+                var user = await GetUserDecodeAsync();
+                _user = user ?? new UserDecodeAccessToken("Guest", []);
                 _isReadPage = true;
                 StateHasChanged();
                 return;
             }
+
             try
             {
                 var menu = await Client.SendAsync(HttpMethod.GET,
-                    ConstRequestUri.userMenu, null, true);
+                    ConstRequestUri.UserMenu, null, true);
                 if (menu is null)
                 {
                     return;
                 }
+
                 if (menu.IsSuccessStatusCode)
                 {
                     var menuResponse = await menu.Content.DecodeAsync<MenuTreeResponse?>();
@@ -73,14 +80,17 @@ else{
                         Snack.Add("Có lỗi xãy ra hãy login lại xem");
                         return;
                     }
-            
+
                     _menu = menuResponse;
                     var menuJson = JsonConvert.SerializeObject(_menu);
                     await Js.InvokeVoidAsync("localStorage.setItem", "Menu", menuJson);
+                    var user = await GetUserDecodeAsync();
+                    _user = user ?? new UserDecodeAccessToken("Guest", []);
                     _isReadPage = true;
                     StateHasChanged();
                     return;
                 }
+
                 Snack.Add("Có lỗi xãy ra hãy login lại xem");
             }
             catch (Exception ex)
@@ -95,12 +105,12 @@ else{
         try
         {
             var logoutResponseMessage = await Client
-                .SendAsync(HttpMethod.POST, ConstRequestUri.auLogout, null);
+                .SendAsync(HttpMethod.POST, ConstRequestUri.AuLogout, null);
             if (logoutResponseMessage is null)
             {
                 return;
             }
-        
+
             if (logoutResponseMessage.IsSuccessStatusCode)
             {
                 await Js.InvokeVoidAsync("localStorage.removeItem", "Token");
@@ -110,13 +120,41 @@ else{
             }
             else
             {
-                Snack.Add("Có lỗi xãy ra",Severity.Warning);
+                Snack.Add("Có lỗi xãy ra", Severity.Warning);
             }
         }
         catch (Exception ex)
         {
-            Snack.Add("Có lỗi server xãy ra",Severity.Error);
+            Snack.Add("Có lỗi server xãy ra", Severity.Error);
         }
-        
+
     }
+
+    private async Task<UserDecodeAccessToken?> GetUserDecodeAsync()
+    {
+        try
+        {
+            var userInforHttpMessage = await Client.SendAsync(HttpMethod.GET, 
+                ConstRequestUri.AuUser, null, true);
+            if (userInforHttpMessage is null)
+            {
+                return null;
+            }
+
+            if (userInforHttpMessage.IsSuccessStatusCode)
+            {
+                var user = await userInforHttpMessage.Content.DecodeAsync<UserDecodeAccessToken>();
+                return user;
+            }
+
+            Snack.Add("Có lỗi xãy ra hãy login lại xem");
+        }
+        catch (Exception ex)
+        {
+            Snack.Add("Có lỗi server xãy ra", Severity.Error);
+        }
+
+        return null;
+    }
+
 }

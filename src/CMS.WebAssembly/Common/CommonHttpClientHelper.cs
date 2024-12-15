@@ -48,7 +48,7 @@ public class CommonHttpClientHelper
         return null;
       }
 
-      var jwtTokenResponse = await _client.PostAsync(ConstRequestUri.auRefresh + $"?refreshToken={refreshToken}", null);
+      var jwtTokenResponse = await _client.PostAsync(ConstRequestUri.AuRefresh + $"?refreshToken={refreshToken}", null);
       if (jwtTokenResponse.IsSuccessStatusCode)
       {
         var jwtResult = await jwtTokenResponse.Content.DecodeAsync<JwtResult>();

@@ -2,6 +2,8 @@
 using CMS.API.Services;
 using CMS.Shared.DTOs.AuClass.Response;
 using CMS.Shared.DTOs.User.Request;
+using CMS.Shared.DTOs.User.Response;
+using KLPVN.Core.Interface;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -11,9 +13,11 @@ namespace CMS.API.Controllers;
 public class UserController : ControllerBase
 {
   private readonly IServicesWrapper _services;
+  private readonly IUserProvider _userProvider;
 
-  public UserController(IServicesWrapper services)
+  public UserController(IServicesWrapper services, IUserProvider userProvider)
   {
+    _userProvider = userProvider;
     _services = services;
   }
 
@@ -73,6 +77,13 @@ public class UserController : ControllerBase
     var permissionCode = HttpContext.User.Claims.Where(x => x.Type == ClaimTypes.Actor)
       .Select(x=>x.Value);
     var result = await _services.User.GetMenuTreeForUserAsync(permissionCode);
+    return result;
+  }
+
+  [HttpGet("information")]
+  public async Task<UserDetailResponse> GetUserDetailAsync()
+  {
+    var result = await _services.User.GetUserDetailsAsync(_userProvider.UserName);
     return result;
   }
 }

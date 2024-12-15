@@ -5,6 +5,8 @@ using CMS.API.Common.Validation;
 using CMS.API.Entities;
 using CMS.API.Exceptions;
 using CMS.API.Infrastructure.Data;
+using CMS.Shared.DTOs.Au.Response;
+using CMS.Shared.DTOs.User.Response;
 using KLPVN.Core.Helper;
 using KLPVN.Core.Interface;
 using KLPVN.Core.Models;
@@ -91,6 +93,18 @@ public class AuController : ControllerBase
     }
     _jwtManager.RemoveRefreshTokenByUserName(userName.Value);
     return Ok();
+  }
+
+  [HttpGet("user")]
+  [Authorize]
+  public ActionResult<UserDecodeAccessToken> GetUserDecodeAccessToken()
+  {
+    var userName = HttpContext.User.Claims
+      .FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier)?.Value;
+    var role = HttpContext.User.Claims
+      .Where(x => x.Type == ClaimTypes.Role)
+      .Select(x => x.Value);
+    return Ok(new UserDecodeAccessToken(userName ?? "Guest", role));
   }
   private void SetCookie(JwtResult jwt)
   {

@@ -60,7 +60,7 @@ public partial class Login
     var data = loginRequest.EncodeJsonContent();
     try
     {
-      var httpResponse = await client.PostAsync(ConstRequestUri.auLogin, data);
+      var httpResponse = await client.PostAsync(ConstRequestUri.AuLogin, data);
       if (httpResponse.IsSuccessStatusCode)
       {
         // save in local storgage
@@ -75,8 +75,6 @@ public partial class Login
         var errors = await httpResponse.Content.DecodeAsync<ErrorResponse>();
         Snack.Add(errors.Detail, Severity.Warning);
       }
-
-      Snack.Add("Đăng nhập thành công", Severity.Success);
     }
     catch (Exception ex)
     {
@@ -117,7 +115,7 @@ public partial class Login
             }
 
             var tokenResponse =
-              await client.PostAsync(ConstRequestUri.auRefresh + $"?refreshToken={refreshToken}", null);
+              await client.PostAsync(ConstRequestUri.AuRefresh + $"?refreshToken={refreshToken}", null);
             if (tokenResponse.IsSuccessStatusCode)
             {
               var jwtResult = await tokenResponse.Content.DecodeAsync<JwtResult>();
@@ -129,6 +127,7 @@ public partial class Login
             {
               await Js.InvokeVoidAsync("localStorage.removeItem", "Token");
               await Js.InvokeVoidAsync("localStorage.removeItem", "Refresh");
+              await Js.InvokeVoidAsync("localStorage.removeItem", "Menu");
               isPageReady = true;
               StateHasChanged();
             }
@@ -137,6 +136,7 @@ public partial class Login
           {
             await Js.InvokeVoidAsync("localStorage.removeItem", "Token");
             await Js.InvokeVoidAsync("localStorage.removeItem", "Refresh");
+            await Js.InvokeVoidAsync("localStorage.removeItem", "Menu");
             isPageReady = true;
             StateHasChanged();
             return;
@@ -146,6 +146,7 @@ public partial class Login
         {
           await Js.InvokeVoidAsync("localStorage.removeItem", "Token");
           await Js.InvokeVoidAsync("localStorage.removeItem", "Refresh");
+          await Js.InvokeVoidAsync("localStorage.removeItem", "Menu");
           isPageReady = true;
           StateHasChanged();
           return;

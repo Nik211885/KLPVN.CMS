@@ -2,8 +2,9 @@
 
 @layout CMS.WebAssembly.Layout.Admin.AdminLayout
 @using System.ComponentModel.DataAnnotations
-@inject ISnackbar snackbar
-@inject NavigationManager navigation
+@using CMS.Shared.DTOs.User.Response
+@using CMS.WEB.Common
+@using KLPVN.Core.Helper
 
 <style>
     .mud-main-content {
@@ -14,53 +15,67 @@
         inset: auto auto calc(100% - 20px) calc(100% - 20px);
     }
 </style>
-
 <PageTitle>Thông tin tài khoản</PageTitle>
-
-<MudGrid Class="md-8 px-0 ma-0 mb-4" Spacing="2" Style="width:100%" Justify="Justify.Center">
-    <MudItem xs="12" sm="8" md="6" lg="4">
-        <MudPaper Elevation="0" Class="pa-2 rounded-3">
-            <div class="d-flex justify-content-center align-items-center mb-2" style="width: 100%; height: auto;">
-                <MudBadge Color="Color.Success" Overlap="true" Bordered="true">
-                    <MudAvatar Style="width:100px; height:100px">
-                        <MudImage Class="center-image" Style="width:100%; height: auto" Src="imgs/no-image-icon-6.png" Alt="Icon" />
-                    </MudAvatar>
-                </MudBadge>
-            </div>
-            <MudForm @ref="form" Model="Input">
+@if (!_isReadyPage)
+{
+    <p>Loading... </p>
+}
+else{
+    <MudGrid Class="md-8 px-0 ma-0 mb-4" Spacing="2" Style="width:100%" Justify="Justify.Center">
+        <MudItem xs="12" sm="8" md="6" lg="4">
+            <MudPaper Elevation="0" Class="pa-2 rounded-3">
                 <div class="d-flex justify-content-center align-items-center mb-2" style="width: 100%; height: auto;">
-                    <MudFileUpload Disabled="isDisable" T="IBrowserFile" FilesChanged="UploadFiles">
-                        <ActivatorContent>
-                            <MudFab Color="Color.Secondary"
-                                    StartIcon="@Icons.Material.Filled.Image"
-                                    Label="Chọn ảnh" Style="text-transform: none"/>
-                        </ActivatorContent>
-                    </MudFileUpload>
+                    <MudBadge Color="Color.Success" Overlap="true" Bordered="true">
+                        <MudAvatar Style="width:100px; height:100px">
+                            @if (Input.Avatar is null)
+                            {
+                                avatarUrl = Input.Gender ? "imgs/men.png" : "imgs/women.png";
+                            }
+                            else
+                            {
+                                avatarUrl = Input.Avatar;
+                            }
+                            <MudImage Class="center-image" Style="width:100%; height: auto" Src= "@avatarUrl" Alt="Icon"/>
+                        </MudAvatar>
+                    </MudBadge>
                 </div>
-                <MudTextField Class="mb-4" Disabled="@isDisable" @bind-Value="Input.FullName" For="(() => Input.FullName)" Required Variant="Variant.Outlined" Margin="Margin.Dense" Label="Họ tên"></MudTextField>
-                <MudRadioGroup @bind-Value="Input.Gender" Disabled="@isDisable">
-                    <MudRadio Value="@(true)">Nam</MudRadio>
-                    <MudRadio Value="@(false)">Nữ</MudRadio>
-                </MudRadioGroup>
-                <MudTextField Class="mb-4" Disabled="@isDisable" @bind-Value="Input.Email" For="(() => Input.Email)" Variant="Variant.Outlined" Margin="Margin.Dense" Label="Email"></MudTextField>
-                <MudTextField Class="mb-4" Disabled="@isDisable" @bind-Value="Input.PhoneNumber" For="(() => Input.PhoneNumber)" Required Variant="Variant.Outlined" Margin="Margin.Dense" Label="Số điện thoại"></MudTextField>
-                <MudTextField Class="mb-4" Disabled="@isDisable" @bind-Value="Input.Address" For="(() => Input.Address)" Required Variant="Variant.Outlined" Margin="Margin.Dense" Label="Địa chỉ"></MudTextField>
-                @if (isDisable)
-                {
-                    <MudButton Style="text-transform:none"  Color="Color.Primary" Variant="Variant.Filled" OnClick="CapNhat">Cập nhập</MudButton>
-                }
-                else
-                {
-                    <MudButton Style="text-transform:none"  Color="Color.Primary" Variant="Variant.Filled" ButtonType="ButtonType.Submit">Hoàn tất</MudButton>
-                }
-            </MudForm>
-        </MudPaper>
-    </MudItem>
-</MudGrid>
+                <MudForm @ref="form" Model="Input">
+                    <div class="d-flex justify-content-center align-items-center mb-2" style="width: 100%; height: auto;">
+                        <MudFileUpload Disabled="isDisable" T="IBrowserFile" FilesChanged="UploadFiles">
+                            <ActivatorContent>
+                                <MudFab Color="Color.Secondary"
+                                        StartIcon="@Icons.Material.Filled.Image"
+                                        Label="Chọn ảnh" Style="text-transform: none"/>
+                            </ActivatorContent>
+                        </MudFileUpload>
+                    </div>
+                    <MudTextField Class="mb-4" Disabled="@isDisable" @bind-Value="Input.FullName" For="(() => Input.FullName)" Required Variant="Variant.Outlined" Margin="Margin.Dense" Label="Họ tên"></MudTextField>
+                    <MudRadioGroup @bind-Value="Input.Gender" Disabled="@isDisable">
+                        <MudRadio Value="@(true)">Nam</MudRadio>
+                        <MudRadio Value="@(false)">Nữ</MudRadio>
+                    </MudRadioGroup>
+                    <MudTextField Class="mb-4" Disabled="@isDisable" @bind-Value="Input.Email" For="(() => Input.Email)" Variant="Variant.Outlined" Margin="Margin.Dense" Label="Email"></MudTextField>
+                    <MudTextField Class="mb-4" Disabled="@isDisable" @bind-Value="Input.PhoneNumber" For="(() => Input.PhoneNumber)" Required Variant="Variant.Outlined" Margin="Margin.Dense" Label="Số điện thoại"></MudTextField>
+                    <MudTextField Class="mb-4" Disabled="@isDisable" @bind-Value="Input.Address" For="(() => Input.Address)" Required Variant="Variant.Outlined" Margin="Margin.Dense" Label="Địa chỉ"></MudTextField>
+                    @if (isDisable)
+                    {
+                        <MudButton Style="text-transform:none"  Color="Color.Primary" Variant="Variant.Filled" OnClick="CapNhat">Cập nhập</MudButton>
+                    }
+                    else
+                    {
+                        <MudButton Style="text-transform:none"  Color="Color.Primary" Variant="Variant.Filled" ButtonType="ButtonType.Submit">Hoàn tất</MudButton>
+                    }
+                </MudForm>
+            </MudPaper>
+        </MudItem>
+    </MudGrid>
+}
 
 @code {
-    [SupplyParameterFromForm]
-    private InputModel Input { get; set; } = new();
+    private bool _isReadyPage = false;
+    private string avatarUrl;
+    [SupplyParameterFromForm] 
+    private InputModel Input { get; set; }
     private MudForm form;
     public bool isDisable = true;
     IList<IBrowserFile> _files = new List<IBrowserFile>();
@@ -93,8 +108,57 @@
         [Required(ErrorMessage = "Vui lòng nhập Họ tên")]
         public string FullName { get; set; } = null!;
         public bool Gender { get; set; }
-        public bool IsActive { get; set; }
         public string? Avatar { get; set; }
     }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            try
+            {
+                var informationHttpMessage = await Client.SendAsync(HttpMethod.GET,
+                    ConstRequestUri.UserInformation, null, true);
+                if (informationHttpMessage is null)
+                {
+                    return;
+                }
+
+                if (informationHttpMessage.IsSuccessStatusCode)
+                {
+                    var user = await informationHttpMessage.Content.DecodeAsync<UserDetailResponse>();
+                    if (user is null)
+                    {
+                        Snack.Add("Có lỗi xãy ra", Severity.Error);
+                        Navigation.NavigateTo("/admin");
+                        return;
+                    }
+
+                    Input = new()
+                    {
+                        Address = user.Address,
+                        Avatar = user.Avatar,
+                        Email = user.Email,
+                        FullName = user.FullName,
+                        PhoneNumber = user.Phone,
+                        Gender = user.Gender,
+                    };
+                    _isReadyPage = true;
+                    StateHasChanged();
+                    return;
+                }
+
+                Snack.Add("Có lỗi xãy ra", Severity.Warning);
+                Navigation.NavigateTo("/admin");
+
+            }
+            catch (Exception ex)
+            {
+                Snack.Add("Có lỗi xãy ra", Severity.Warning);
+                Navigation.NavigateTo("/admin");
+            }
+        }
+    }
+
 }
 

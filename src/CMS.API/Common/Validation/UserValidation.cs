@@ -19,7 +19,7 @@ public static class UserValidation
       throw new BadRequestException(ConstMessage.DUPLICATE_PASSWORD);
     }
 
-    if (request.NewPassword.Equals(request.PasswordConfirm))
+    if (!request.NewPassword.Equals(request.PasswordConfirm))
     {
       throw new BadRequestException(ConstMessage.NOT_DUPLICATE_PASSWORD);
     }

@@ -7,6 +7,7 @@ using CMS.API.Exceptions;
 using CMS.API.Infrastructure.Data;
 using CMS.Shared.DTOs.AuClass.Response;
 using CMS.Shared.DTOs.User.Request;
+using CMS.Shared.DTOs.User.Response;
 using KLPVN.Core.Helper;
 using KLPVN.Core.Interface;
 using Microsoft.AspNetCore.Authorization;
@@ -65,6 +66,12 @@ public class Services : IServices
     {
       throw new NotFoundException(nameof(user));
     }
+
+    if (!SecurityHelper.VerifyPassword(request.Password, user.Salt, user.PasswordHash))
+    {
+      throw new BadRequestException(ConstMessage.PASSORD_NOT_CORRECT);
+    }
+    
     user.Salt = SecurityHelper.GenerateSalt();
     user.PasswordHash = SecurityHelper.HashPassword(request.NewPassword, user.Salt);
     _context.Users.Update(user);
@@ -167,7 +174,7 @@ public class Services : IServices
     foreach (var a  in auAction)
     {
       var auClass = await _context.AuClasses
-                                                             .FirstOrDefaultAsync(x => x.Id == a.ClassId);
+        .FirstOrDefaultAsync(x => x.Id == a.ClassId);
       var menuBottom = new MenuResponse()
       {
         NameAction = a.Name,
@@ -177,6 +184,25 @@ public class Services : IServices
     }
 
     return menuResponses;
+  }
+
+  public async Task<UserDetailResponse> GetUserDetailsAsync(string userName)
+  {
+    var user = await _context.Users.Where(x => x.UserName == userName)
+      .Select(x => new UserDetailResponse(
+        x.FullName,
+        x.Email,
+        x.Gender,
+        x.PhoneNumber,
+        x.Address,
+        x.Avatar)).FirstOrDefaultAsync();
+    if (user is null)
+    {
+      throw new NotFoundException(nameof(user));
+      
+    }
+
+    return user;
   }
 
   private async Task GetTreeMenuAsync(Entities.AuClass? auClass, MenuResponse menuBottom
