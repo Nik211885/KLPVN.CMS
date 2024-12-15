@@ -1,100 +1,49 @@
-﻿@using CMS.Shared.DTOs.AuClass.Response
-@using CMS.WEB.Common
-@using KLPVN.Core.Helper
-@using Newtonsoft.Json
-@using CMS.WebAssembly.Components.Admin
+﻿@using CMS.WEB.Common
+@using CMS.WebAssembly.Common
+@using HttpMethod = CMS.WebAssembly.Common.HttpMethod
 <style>
     .mud-list-item-icon {
         min-width: auto;
     }
 </style>
-@if (!_isReadPage)
-{
-}
-else{
-    <MudPaper Width="250px" Class="py-3" Elevation="0">
-        <MudNavMenu>
-            <MudStack Row>
-                <MudItem>
-                    <MudText Typo="Typo.h6" Class="px-4">Tên Nhân Viên</MudText>
-                    <MudText Typo="Typo.body2" Class="px-4 mud-text-secondary">Chức vụ</MudText>
-                </MudItem>
-                <MudMenu Icon="@Icons.Material.Filled.Settings" AnchorOrigin="Origin.BottomCenter" TransformOrigin="Origin.TopCenter">
-                    <MudMenuItem Icon="@Icons.Material.Filled.ManageAccounts">
-                        <MudText>Thông tin tài khoản</MudText>
-                    </MudMenuItem>
-                    <MudMenuItem Icon="@Icons.Material.Filled.LockReset" Href="/changepassword">
-                        <MudText>Đổi mật khẩu</MudText>
-                    </MudMenuItem>
-                    <MudMenuItem OnClick="HandlerLogoutAsync" Icon="@Icons.Material.Filled.Logout" IconColor="Color.Error">
-                        <MudText Color="Color.Error">Đăng xuất</MudText>
-                    </MudMenuItem>
-                </MudMenu>
-            </MudStack>
-            <MudDivider Class="my-2" />
-            <MudNavLink Href="/admin">Dashboard</MudNavLink>
-            @foreach(var m in _menu is null ? [] : _menu.Menu)
-            {
-                <RecursiveRenderMenuTree Menu=@m/>
-            }
-        </MudNavMenu>
-    </MudPaper>
-}
+
+<MudPaper Width="250px" Class="py-3" Elevation="0">
+    <MudNavMenu>
+        <MudStack Row>
+            <MudItem>
+                <MudText Typo="Typo.h6" Class="px-4">Tên Nhân Viên</MudText>
+                <MudText Typo="Typo.body2" Class="px-4 mud-text-secondary">Chức vụ</MudText>
+            </MudItem>
+            <MudMenu Icon="@Icons.Material.Filled.Settings" AnchorOrigin="Origin.BottomCenter" TransformOrigin="Origin.TopCenter">
+                <MudMenuItem Icon="@Icons.Material.Filled.ManageAccounts">
+                    <MudText>Thông tin tài khoản</MudText>
+                </MudMenuItem>
+                <MudMenuItem Icon="@Icons.Material.Filled.LockReset" Href="/changepassword">
+                    <MudText>Đổi mật khẩu</MudText>
+                </MudMenuItem>
+                <MudMenuItem OnClick="HandlerLogoutAsync" Icon="@Icons.Material.Filled.Logout" IconColor="Color.Error">
+                    <MudText Color="Color.Error">Đăng xuất</MudText>
+                </MudMenuItem>
+            </MudMenu>
+        </MudStack>
+        <MudDivider Class="my-2" />
+        <MudNavLink Href="/admin">Dashboard</MudNavLink>
+        <MudNavLink Href="/quanlynhanvien">Danh sách nhân viên</MudNavLink>
+        <MudNavGroup Title="Quản lý bài viết">
+            <MudNavLink Href="/articletopic">Chủ đề</MudNavLink>
+            <MudNavLink Href="/article">Danh sách bài viết</MudNavLink>
+        </MudNavGroup>
+        <MudNavLink Href="/about">About</MudNavLink>
+    </MudNavMenu>
+</MudPaper>
 
 @code{
-    private bool _isReadPage = false;
-    private MenuTreeResponse? _menu;
-    
-    protected override async Task OnAfterRenderAsync(bool firstRender)
+    protected override void OnAfterRender(bool firstRender)
     {
-        if (firstRender)
-        {
-            var menuLocalStorage = await Js.InvokeAsync<string?>("localStorage.getItem", "Menu");
-            if (menuLocalStorage is not null)
-            {
-                _menu = JsonConvert.DeserializeObject<MenuTreeResponse>(menuLocalStorage);
-                _isReadPage = true;
-                StateHasChanged();
-                return;
-            }
+        base.OnAfterRender(firstRender);
+    }
 
-            try
-            {
-                var menu = await Client.SendAsync(HttpMethod.GET,
-                    ConstRequestUri.userMenu, null, true);
-                if (menu is null)
-                {
-                    return;
-                }
-
-                if (menu.IsSuccessStatusCode)
-                {
-                    var menuResponse = await menu.Content.DecodeAsync<MenuTreeResponse?>();
-                    if (menuResponse is null)
-                    {
-                        Snack.Add("Có lỗi xãy ra hãy login lại xem");
-                        return;
-                    }
-            
-                    _menu = menuResponse;
-                    var menuJson = JsonConvert.SerializeObject(_menu);
-                    await Js.InvokeVoidAsync("localStorage.setItem", "Menu", menuJson);
-                    _isReadPage = true;
-                    StateHasChanged();
-                    return;
-                }
-
-                Snack.Add("Có lỗi xãy ra hãy login lại xem");
-
-            }
-            catch (Exception ex)
-            {
-                Snack.Add("Có lỗi server", Severity.Error);
-            }
-        }
-    }    
-    
-    async Task HandlerLogoutAsync()
+    private async Task HandlerLogoutAsync()
     {
         try
         {
@@ -109,7 +58,6 @@ else{
             {
                 await Js.InvokeVoidAsync("localStorage.removeItem", "Token");
                 await Js.InvokeVoidAsync("localStorage.removeItem", "Refresh");
-                await Js.InvokeVoidAsync("localStorage.removeItem", "Menu");
                 Navigation.NavigateTo("/login");
             }
             else
@@ -122,6 +70,5 @@ else{
             Snack.Add("Có lỗi server xãy ra",Severity.Error);
         }
         
-    }
     }
 }

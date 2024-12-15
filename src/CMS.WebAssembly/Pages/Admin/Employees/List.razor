@@ -44,9 +44,12 @@
                     <MudSpacer/>
                     <MudItem>
                         <MudMenu Icon="@Icons.Material.Filled.MoreVert" AnchorOrigin="Origin.BottomCenter" TransformOrigin="Origin.TopCenter">
-                            <MudButton StartIcon="@Icons.Material.Filled.Edit" OnClick="OpenEditDialog">Sửa</MudButton>
-                            <hr/>
-                            <MudButton StartIcon="@Icons.Material.Filled.Delete" OnClick="OpenDeleteDialog">Xóa</MudButton>
+                            <MudMenuItem Icon="@Icons.Material.Filled.Edit">
+                                <MudText>Sửa</MudText>
+                            </MudMenuItem>
+                            <MudMenuItem Icon="@Icons.Material.Filled.Delete">
+                                <MudText>Xóa</MudText>
+                            </MudMenuItem>
                         </MudMenu>
                     </MudItem>
                 </MudStack>

@@ -3,6 +3,8 @@
 
 @inject IDialogService DialogService
 
+<PageTitle>Danh sách chủ đề</PageTitle>
+
 <MudTable Items="_items" Dense="true" Virtualize="false" FixedHeader="true" Bordered="true">
     <ColGroup>
         <col style="width: 2%; " class="pa-0" />
@@ -103,21 +105,21 @@
 
     private Task OpenAddDialog()
     {
-        var options = new DialogOptions { CloseOnEscapeKey = true, CloseButton = true, FullWidth = true };
+        var options = new DialogOptions { CloseOnEscapeKey = true, CloseButton = true};
 
         return DialogService.ShowAsync<AddDialog>("", options);
     }
 
     private Task OpenEditDialog()
     {
-        var options = new DialogOptions { CloseOnEscapeKey = true, CloseButton = true, FullWidth = true };
+        var options = new DialogOptions { CloseOnEscapeKey = true, CloseButton = true};
 
         return DialogService.ShowAsync<EditDialog>("", options);
     }
 
     private Task OpenDeleteDialog()
     {
-        var options = new DialogOptions { CloseOnEscapeKey = true, CloseButton = true, FullWidth = true };
+        var options = new DialogOptions { CloseOnEscapeKey = true, CloseButton = true};
 
         return DialogService.ShowAsync<DeleteDialog>("", options);
     }

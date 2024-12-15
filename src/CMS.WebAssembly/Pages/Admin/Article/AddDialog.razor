@@ -1,5 +1,55 @@
-﻿<h3>AddDialog</h3>
+﻿@page "/addarticle"
 
+@using System.ComponentModel.DataAnnotations
+@using CMS.Shared.Enums
+@using TinyMCE.Blazor
+@layout CMS.WebAssembly.Layout.Admin.AdminLayout
+
+<style>
+    .mud-button-label {
+        text-transform: none;
+    }
+</style>
+<MudItem xs="12">
+    <MudStack Row>
+        <MudIconButton Variant="Variant.Filled" Color="Color.Primary" Icon="@Icons.Material.Filled.ArrowBack" Href="/article"></MudIconButton>
+        <MudText Typo="Typo.h5">Thêm bài viết mới</MudText>
+        <MudSpacer/>
+        <MudButton Variant="Variant.Filled" Color="Color.Primary">Lưu</MudButton>
+    </MudStack>
+</MudItem>
+<MudItem xs="12">
+    <MudForm @ref="form" Model="article">
+        <MudGrid Style="padding-top: 24px">
+            <MudItem xs="12" sm="3" Style="padding-top:0px">
+                <MudTextField @bind-Value="article.Code" Variant="Variant.Outlined" Label="Mã bài viết" Margin="Margin.Dense"></MudTextField>
+            </MudItem>
+            <MudItem xs="12" sm="9" Style="padding-top:0px">
+                <MudTextField @bind-Value="article.Title" Variant="Variant.Outlined" Label="Tiêu đề" Margin="Margin.Dense"></MudTextField>
+            </MudItem>
+            <MudItem xs="12" Style="padding-top:0px">
+                <MudText>Nội dung</MudText>
+                <Editor JsConfSrc="editconfig" ApiKey="@PublicValues.ApiKeyTiny"></Editor>
+            </MudItem>
+            <MudItem xs="12" Style="padding-top:0px">
+                <MudTextField @bind-Value="article.Description" Variant="Variant.Outlined" Label="Mô tả" Margin="Margin.Dense"></MudTextField>
+            </MudItem>
+            <MudItem xs="12" Style="padding-top:0px">
+                <MudTextField @bind-Value="article.Comment" Variant="Variant.Outlined" Label="Ghi chú" Margin="Margin.Dense"></MudTextField>
+            </MudItem>
+        </MudGrid>
+    </MudForm>
+</MudItem>
 @code {
+    private MudForm form;
+    public Article article { get; set; } = new();
 
+    public class Article
+    {
+        public string Code { get; set; }
+        public string Title { get; set; }
+        public string? Description { get; set; }
+        public string Contents { get; set; }
+        public string? Comment { get; set; }
+    }
 }

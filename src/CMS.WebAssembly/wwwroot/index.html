@@ -29,5 +29,73 @@
     </div>
     <script src="_framework/blazor.webassembly.js"></script>
     <script src="_content/MudBlazor/MudBlazor.min.js"></script>
+    <script src="_content/TinyMCE.Blazor/tinymce-blazor.js"></script>
+
 </body>
 </html>
+<script>
+    window.editconfig = {
+        plugins: 'preview importcss searchreplace autolink autosave save directionality code visualblocks visualchars fullscreen image link media codesample table charmap pagebreak nonbreaking anchor insertdatetime advlist lists wordcount help charmap quickbars emoticons accordion',
+        editimage_cors_hosts: ['picsum.photos'],
+        menubar: 'file edit view insert format tools table help',
+        toolbar: "undo redo | accordion accordionremove | blocks fontfamily fontsize | bold italic underline strikethrough | align numlist bullist | link image | table media | lineheight outdent indent| forecolor backcolor removeformat | charmap emoticons | code fullscreen preview | save print | pagebreak anchor codesample | ltr rtl",
+        autosave_ask_before_unload: false,
+        autosave_interval: '30s',
+        // autosave_prefix: '{path}{query}-{id}-',
+        autosave_restore_when_empty: false,
+        autosave_retention: '2m',
+        image_advtab: true,
+        // link_list: [
+        //     { title: 'My page 1', value: 'https://www.tiny.cloud' },
+        //     { title: 'My page 2', value: 'http://www.moxiecode.com' }
+        // ],
+        // image_list: [
+        //     { title: 'My page 1', value: 'https://www.tiny.cloud' },
+        //     { title: 'My page 2', value: 'http://www.moxiecode.com' }
+        // ],
+        // image_class_list: [
+        //     { title: 'None', value: '' },
+        //     { title: 'Some class', value: 'class-name' }
+        // ],
+        importcss_append: true,
+        file_picker_callback: (cb, value, meta) => {
+            console.log(meta);
+            const input = document.createElement('input');
+            input.setAttribute('type', 'file');
+            input.setAttribute('accept', 'image/*');
+
+            input.addEventListener('change', (e) => {
+                const file = e.target.files[0];
+                console.log(file);
+                const reader = new FileReader();
+                reader.addEventListener('load', () => {
+                    /*
+                      Note: Now we need to register the blob in TinyMCEs image blob
+                      registry. In the next release this part hopefully won't be
+                      necessary, as we are looking to handle it internally.
+                    */
+                    const id = 'blobid' + (new Date()).getTime();
+                    const blobCache = tinymce.activeEditor.editorUpload.blobCache;
+                    const base64 = reader.result.split(',')[1];
+                    const blobInfo = blobCache.create(id, file, base64);
+                    blobCache.add(blobInfo);
+
+                    /* call the callback and populate the Title field with the file name */
+                    cb('data:' + file.type + ';base64,' + base64, { title: file.name });
+                });
+                reader.readAsDataURL(file);
+            });
+
+            input.click();
+        },
+        height: 600,
+        image_caption: true,
+        quickbars_selection_toolbar: 'bold italic | quicklink h2 h3 blockquote quickimage quicktable',
+        noneditable_class: 'mceNonEditable',
+        toolbar_mode: 'sliding',
+        contextmenu: 'link image table',
+        skin: 'oxide',
+        content_css: 'default',
+        content_style: 'body { font-family:Helvetica,Arial,sans-serif; font-size:16px }'
+    }
+</script>
