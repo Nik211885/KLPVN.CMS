@@ -103,7 +103,7 @@ public class AuController : ControllerBase
       Path = "api/",
       Expires = DateTimeOffset.UtcNow.AddMinutes(_identity.AccessTokenExpiration)
     });
-    HttpContext.Response.Cookies.Append("Token",jwt.RefreshToken, new CookieOptions()
+    HttpContext.Response.Cookies.Append("Refresh",jwt.RefreshToken, new CookieOptions()
     {
       Secure = true,
       IsEssential = true,

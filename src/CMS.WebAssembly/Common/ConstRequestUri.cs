@@ -6,4 +6,5 @@ public abstract class ConstRequestUri
   public const string auRefresh = "au/refresh";
   public const string userMenu = "user/menu";
   public const string auLogout = "au/logout";
+  public const string auSample = "sample";
 }

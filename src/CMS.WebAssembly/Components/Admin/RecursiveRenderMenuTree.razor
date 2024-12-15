@@ -1,0 +1,37 @@
+@using CMS.Shared.DTOs.AuClass.Response
+@switch (Menu.MenuChild.Count)
+{
+    case 1:
+        var mFirst = Menu.MenuChild.First();
+        if (mFirst.NameAction is not null)
+        {
+            <MudNavLink Href="@mFirst.Path">@mFirst.NameAction</MudNavLink>
+        }
+        else
+        {
+            <MudNavGroup Title="@Menu.MenuName">
+                <RecursiveRenderMenuTree Menu= "mFirst" />
+            </MudNavGroup>
+        }
+        break;
+    case > 1:
+        <MudNavGroup Title="@Menu.MenuName">
+            @foreach (var child in Menu.MenuChild)
+            {
+                if (child.MenuChild.Any())
+                {
+                    <RecursiveRenderMenuTree Menu="child" />
+                }
+                else
+                {
+                    <MudNavLink Href="@child.Path">@child.NameAction</MudNavLink>
+                }
+            }
+        </MudNavGroup>
+        break;
+}
+
+@code {
+    [Parameter] 
+    public MenuResponse Menu { get; set; }
+}

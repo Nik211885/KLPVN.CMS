@@ -159,6 +159,7 @@ public class Services : IServices
     // please logout after add role or permission
     //
     var menuResponses = new MenuTreeResponse();
+    Dictionary<string, MenuResponse> menuMemo = [];
     permissionCode ??= [];
     var auAction = await _context.AuActionClasses
       .Where(x => permissionCode.Contains(x.Code))
@@ -166,46 +167,43 @@ public class Services : IServices
     foreach (var a  in auAction)
     {
       var auClass = await _context.AuClasses
-        .FirstOrDefaultAsync(x => x.Id == a.ClassId);
+                                                             .FirstOrDefaultAsync(x => x.Id == a.ClassId);
       var menuBottom = new MenuResponse()
       {
         NameAction = a.Name,
         Path = a.Path
       };
-      await GetTreeMenuAsync(auClass, menuBottom, menuResponses);
+      await GetTreeMenuAsync(auClass, menuBottom, menuResponses, menuMemo);
     }
 
     return menuResponses;
   }
 
   private async Task GetTreeMenuAsync(Entities.AuClass? auClass, MenuResponse menuBottom
-    , MenuTreeResponse menuResponses)
+    , MenuTreeResponse menuResponses, Dictionary<string, MenuResponse> menusMemo)
   {
     if (auClass is null)
     {
       menuResponses.Menu.Add(menuBottom);
+      return ;
+    }
+
+    if (menusMemo.ContainsKey(auClass.Code))
+    {
+      menusMemo[auClass.Code].MenuChild.Add(menuBottom);
       return;
     }
+    
     var menuNew = new MenuResponse()
     {
-      MenuCode = auClass.Code, 
+      MenuCode = auClass.Code,
       MenuName = auClass.MenuName,
-      MenuChild = [menuBottom],
+      MenuChild = [menuBottom]
     };
-    foreach (var m in menuResponses.Menu)
-    {
-      var menuExits = m.MenuChild.FirstOrDefault(x => x.MenuCode == auClass.Code);
-      if (menuExits is null)
-      {
-        continue;
-      }
-      menuExits.MenuChild.Add(menuBottom);
-      return;
-    }
-    var menuParent = await _context.AuClasses
-      .FirstOrDefaultAsync(x=>x.Id == auClass.ParentId);
-    // if in tree have node just add action for this node and break recursive
-    // else create new node and add action for this node and recursive make get parent menu
-    await GetTreeMenuAsync(menuParent, menuNew ,menuResponses);
+    
+    menusMemo.Add(auClass.Code, menuNew);
+    var parentMenu = await _context.AuClasses
+      .FirstOrDefaultAsync(x => x.Id == auClass.ParentId);
+    await GetTreeMenuAsync(parentMenu,menuNew, menuResponses, menusMemo);
   }
 }
