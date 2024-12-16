@@ -1,19 +1,18 @@
-﻿@page "/article"
+﻿@page "/employeedraftlist"
+
 @using CMS.Shared.Enums
 @layout CMS.WebAssembly.Layout.Admin.AdminLayout
 
 @inject IDialogService DialogService
 @inject NavigationManager nav
 
-<PageTitle>Danh sách bài viết</PageTitle>
+<PageTitle>Danh sách bài nháp</PageTitle>
 
 <MudTable Items="articles" Dense="true" Virtualize="false" FixedHeader="true" Bordered="true" HorizontalScrollbar="true">
     <ColGroup>
         <col style="width: 1.5%; " class="pa-0" />
         <col style="width: 10%; " class="pa-0" />
-        <col style="width: 10%; " class="pa-0" />
-        <col style="width: 1%; " class="pa-0" />
-        <col style="width: 10%; " class="pa-0" />
+        <col style="width: 15%; " class="pa-0" />
         <col style="width: 1%; " class="pa-0" />
         <col style="width: 0.5%; " class="pa-0" />
     </ColGroup>
@@ -32,8 +31,6 @@
         <MudTh>Tiêu đề</MudTh>
         <MudTh>Mô tả</MudTh>
         <MudTh><MudTableSortLabel SortBy="new Func<Article, object>(x => x.Status)">Trạng thái</MudTableSortLabel></MudTh>
-        <MudTh>Ghi chú</MudTh>
-        <MudTh><MudTableSortLabel SortBy="new Func<Article, object>(x=>x.IsActive)">Hoạt động</MudTableSortLabel></MudTh>
         <MudTh></MudTh>
     </HeaderContent>
     <RowTemplate>
@@ -56,17 +53,6 @@
             @if (context.Status == StatusContent.Rejected)
             {
                 <MudChip Size="Size.Small" Variant="Variant.Text" Style="margin: 0px" T="string" Color="Color.Error">Từ chối</MudChip>
-            }
-        </MudTd>
-        <MudTd DataLabel="Ghi chú">@context.Comment</MudTd>
-        <MudTd DataLabel="Trạng thái">
-            @if (context.IsActive)
-            {
-                <MudChip Size="Size.Small" Variant="Variant.Text" Style="margin: 0px" T="string" Color="Color.Success">Đang hoạt động</MudChip>
-            }
-            else
-            {
-                <MudChip Size="Size.Small" Variant="Variant.Text" Style="margin: 0px" T="string" Color="Color.Error">Không hoạt động</MudChip>
             }
         </MudTd>
         <MudTd>
@@ -94,17 +80,15 @@
         Random random = new Random();
         for (int i = 0; i < 30; i++)
         {
-            // Sinh ngẫu nhiên một giá trị cho Status
-            StatusContent status = (StatusContent)random.Next(0, 4);
+            StatusContent status = StatusContent.Draft;
 
             articles.Add(new Article
                 {
-                    Code = "ART" + (i + 1).ToString("D3"), // Mã bài viết: ART001, ART002, ...
+                    Code = "ART" + (i + 1).ToString("D3"),
                     Title = "Tiêu đề bài viết " + (i + 1),
                     Description = "Mô tả chi tiết về bài viết số " + (i + 1),
-                    Status = status, // Gán trạng thái ngẫu nhiên
+                    Status = status,
                     Comment = "Bình luận về bài viết số " + (i + 1),
-                    IsActive = status == StatusContent.Accepted // Chỉ true nếu Status là Accepted
                 });
         }
     }
@@ -116,7 +100,7 @@
 
     private void OpenEditDialog()
     {
-        nav.NavigateTo("/editarticle");
+        nav.NavigateTo("/employeeeditarticle");
     }
 
     private Task OpenDeleteDialog()

@@ -1,0 +1,73 @@
+﻿@page "/feedback"
+@using CMS.Shared.Enums
+@layout CMS.WebAssembly.Layout.Admin.AdminLayout
+
+@inject IDialogService DialogService
+@inject NavigationManager nav
+
+<PageTitle>Danh sách bài viết</PageTitle>
+
+<MudTable Items="feedbacks" Dense="true" Virtualize="false" FixedHeader="true" Bordered="true" HorizontalScrollbar="true">
+
+    <ToolBarContent>
+        <MudItem xs="12" sm="4">
+            <MudTextField T="string" Placeholder="Tìm kiếm" Adornment="Adornment.Start"
+                          AdornmentIcon="@Icons.Material.Filled.Search"
+                          Variant="Variant.Outlined" Margin="Margin.Dense"
+                          Immediate="true"></MudTextField>
+        </MudItem>
+    </ToolBarContent>
+    <HeaderContent>
+        <MudTh><MudTableSortLabel SortBy="new Func<Feedback, object>(x => x.CreatedDateTime)">Ngày</MudTableSortLabel></MudTh>
+        <MudTh>Họ tên</MudTh>
+        <MudTh>Số điện thoại</MudTh>
+        <MudTh>Email</MudTh>
+        <MudTh>Địa chỉ</MudTh>
+        <MudTh>Ghi chú</MudTh>
+    </HeaderContent>
+    <RowTemplate>
+        <MudTd DataLabel="Ngày">@context.CreatedDateTime.ToString("dd/mm/yyyy")</MudTd>
+        <MudTd DataLabel="Họ tên">@context.FullName</MudTd>
+        <MudTd DataLabel="Số điện thoại">@context.Phone</MudTd>
+        <MudTd DataLabel="Email">@context.Email</MudTd>
+        <MudTd DataLabel="Địa chỉ">@context.Address</MudTd>
+        <MudTd DataLabel="Ghi chú">@context.Note</MudTd>
+    </RowTemplate>
+
+    <PagerContent>
+        <MudTablePager HidePageNumber HideRowsPerPage PageSizeOptions="new int[] {10}" />
+    </PagerContent>
+</MudTable>
+
+@code {
+    private List<Feedback> feedbacks = new List<Feedback>();
+
+    protected override void OnInitialized()
+    {
+        for (int i = 1; i <= 30; i++)
+        {
+            feedbacks.Add(new Feedback
+                {
+                    FullName = $"Người dùng {i}",
+                    Phone = $"01234567{i:D2}",
+                    Title = $"Phản hồi {i}",
+                    Email = $"user{i}@example.com",
+                    Note = $"Đây là ghi chú của phản hồi số {i}.",
+                    Address = $"Địa chỉ {i}, Việt Nam",
+                    CreatedDateTime = DateTimeOffset.Now.AddDays(-i)
+                });
+        }
+        base.OnInitialized();
+    }
+
+    public class Feedback
+    {
+        public string? FullName { get; set; }
+        public string? Phone { get; set; }
+        public string? Title { get; set; }
+        public string? Email { get; set; }
+        public string? Note { get; set; }
+        public string? Address { get; set; }
+        public DateTimeOffset CreatedDateTime { get; set; }
+    }
+}
