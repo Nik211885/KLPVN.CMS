@@ -31,7 +31,7 @@ public class UserController : ControllerBase
   [HttpPut("update")]
   public async Task<ActionResult<Guid>> UpdateUserAsync(UpdateUserInformationRequest request)
   {
-    var result = await _services.User.UpdateAsync(request);
+    var result = await _services.User.UpdateAsync(_userProvider.UserName, request);
     return Ok(result);
   }
 
@@ -45,7 +45,7 @@ public class UserController : ControllerBase
   [HttpPut("change-password")]
   public async Task<ActionResult<Guid>> ChangePasswordAsync(ChangePasswordRequest request)
   {
-    var result = await _services.User.ChangePasswordAsync(request);
+    var result = await _services.User.ChangePasswordAsync(_userProvider.UserName,request);
     return Ok(result);
   }
 

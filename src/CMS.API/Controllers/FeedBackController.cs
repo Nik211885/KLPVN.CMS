@@ -1,5 +1,6 @@
 ﻿using CMS.API.Services;
 using CMS.Shared.DTOs.FeedBack.Request;
+using KLPVN.Core.Interface;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CMS.API.Controllers;
@@ -8,9 +9,11 @@ namespace CMS.API.Controllers;
 public class FeedBackController : ControllerBase  
 {
   private readonly IServicesWrapper _services;
+  private readonly IUserProvider _userProvider;
 
-  public FeedBackController(IServicesWrapper services)
+  public FeedBackController(IServicesWrapper services, IUserProvider userProvider)
   {
+    _userProvider = userProvider;
     _services = services;
   }
 

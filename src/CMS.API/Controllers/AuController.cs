@@ -24,8 +24,10 @@ public class AuController : ControllerBase
   private readonly ApplicationDbContext _context;
   private readonly IJwtManager _jwtManager;
   private readonly IdentityAuthentication _identity;
-  public AuController(ApplicationDbContext context, IJwtManager jwtManager, IdentityAuthentication identity)
+  private readonly IUserProvider _userProvider;
+  public AuController(ApplicationDbContext context, IUserProvider userProvider ,IJwtManager jwtManager, IdentityAuthentication identity)
   {
+    _userProvider = userProvider;
     _identity = identity;
     _context = context;
     _jwtManager = jwtManager;

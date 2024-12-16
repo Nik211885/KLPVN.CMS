@@ -2,6 +2,7 @@
 using CMS.API.Services;
 using CMS.Shared.DTOs.AuClass.Request;
 using CMS.Shared.DTOs.AuClass.Response;
+using KLPVN.Core.Interface;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -12,9 +13,11 @@ namespace CMS.API.Controllers;
 public class AuClassController : ControllerBase
 {
   private readonly IServicesWrapper _services;
+  private readonly IUserProvider _userProvider;
 
-  public AuClassController(IServicesWrapper services)
+  public AuClassController(IServicesWrapper services, IUserProvider userProvider)
   {
+    _userProvider = userProvider;
    _services = services; 
   }
 

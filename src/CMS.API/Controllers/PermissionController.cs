@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using CMS.API.Services;
+using KLPVN.Core.Interface;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CMS.API.Controllers;
@@ -8,9 +9,10 @@ namespace CMS.API.Controllers;
 public class PermissionController : ControllerBase
 {
   private readonly IServicesWrapper _services;
-
-  public PermissionController(IServicesWrapper services)
+  private readonly IUserProvider _userProvider;
+  public PermissionController(IServicesWrapper services, IUserProvider userProvider)
   {
+    _userProvider = userProvider;
     _services = services;
   }
 

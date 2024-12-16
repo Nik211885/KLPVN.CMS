@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using CMS.API.Services;
 using CMS.Shared.DTOs.Role.Request;
+using KLPVN.Core.Interface;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CMS.API.Controllers;
@@ -9,9 +10,11 @@ namespace CMS.API.Controllers;
 public class RoleController : ControllerBase
 {
   private readonly IServicesWrapper _services;
+  private readonly IUserProvider _userProvider;
 
-  public RoleController(IServicesWrapper services)
+  public RoleController(IServicesWrapper services, IUserProvider userProvider)
   {
+    _userProvider = userProvider;
     _services = services;
   }
 

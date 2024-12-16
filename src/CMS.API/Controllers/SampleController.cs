@@ -1,4 +1,5 @@
 ﻿using CMS.API.Services;
+using KLPVN.Core.Interface;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -8,9 +9,11 @@ namespace CMS.API.Controllers;
 public class SampleController : ControllerBase
 {
   private readonly IServicesWrapper _services;
+  private readonly IUserProvider _userProvider;
 
-  public SampleController(IServicesWrapper services)
+  public SampleController(IServicesWrapper services, IUserProvider userProvider)
   {
+    _userProvider = userProvider;
     _services = services;
   }
 

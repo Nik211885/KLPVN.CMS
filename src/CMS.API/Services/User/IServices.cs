@@ -8,12 +8,12 @@ public interface IServices
 {
   Task<Guid> CreateAsync(CreateUserRequest request);
   Task<string> ResetPasswordAsync(string userName);
-  Task<Guid> ChangePasswordAsync(ChangePasswordRequest request);
+  Task<Guid> ChangePasswordAsync(string userName, ChangePasswordRequest request);
   Task<Guid> ActiveUserAsync(string userName);
-  Task<Guid> UpdateAsync(UpdateUserInformationRequest request);
+  Task<Guid> UpdateAsync(string userName, UpdateUserInformationRequest request);
   Task<Guid> AddRoleForUserAsync(string userName, Guid roleId);
   Task<Guid> RemoveRoleForUserAsync(string userName, Guid roleId);
-  Task DeleteAsync(Guid id);
+  Task DeleteAsync(string userName);
   Task<MenuTreeResponse> GetMenuTreeForUserAsync(IEnumerable<string>? permissionCode);
   Task<UserDetailResponse> GetUserDetailsAsync(string userName);
 }

@@ -13,12 +13,10 @@ namespace CMS.API.Services.Content;
 public class Services : IServices
 {
   private readonly ApplicationDbContext _context;
-  private readonly IUserProvider _userProvider;
 
-  public Services(ApplicationDbContext dbContext, IUserProvider userProvider)
+  public Services(ApplicationDbContext dbContext)
   {
     _context = dbContext;
-    _userProvider = userProvider;
   }
 
   public async Task<Guid> CreateAsync(CreateContentRequest request)

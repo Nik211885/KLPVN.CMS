@@ -1,11 +1,10 @@
-﻿using System.Security.Claims;
+using System.Security.Claims;
 using KLPVN.Core.Commons.Const;
 using KLPVN.Core.Interface;
-using Microsoft.AspNetCore.Http;
 
 namespace KLPVN.Core.Commons;
 
-public class UserProvider(IHttpContextAccessor httpContextAccessor) : IUserProvider
+public class UserProvider(IHttpContextAccessor context) : IUserProvider
 {
   public bool IsAuthenticated
   {
@@ -14,9 +13,9 @@ public class UserProvider(IHttpContextAccessor httpContextAccessor) : IUserProvi
       bool result = false;
       try
       {
-        if (httpContextAccessor.HttpContext.User.Identity != null)
+        if (context.HttpContext?.User.Identity != null)
         {
-          result = httpContextAccessor.HttpContext.User.Identity.IsAuthenticated;
+          result = context.HttpContext.User.Identity.IsAuthenticated;
         }
       }
       catch
@@ -35,7 +34,7 @@ public class UserProvider(IHttpContextAccessor httpContextAccessor) : IUserProvi
       Guid result = Guid.Empty;
       try
       {
-        var value = httpContextAccessor.HttpContext.User.FindFirst(x => x.Type.Equals(ClaimTypes.Name))
+        var value = context.HttpContext?.User.FindFirst(x => x.Type.Equals(ClaimTypes.Name))
           ?.Value;
         result = Guid.Parse(value ?? string.Empty);
       }
@@ -55,7 +54,7 @@ public class UserProvider(IHttpContextAccessor httpContextAccessor) : IUserProvi
       string result = string.Empty;
       try
       {
-        var value = httpContextAccessor.HttpContext.User.FindFirst(x => x.Type.Equals(ClaimTypes.NameIdentifier))
+        var value = context.HttpContext?.User.FindFirst(x => x.Type.Equals(ClaimTypes.NameIdentifier))
           ?.Value;
         result = value ?? Variables.DEFAULT_USER_NAME;
       }

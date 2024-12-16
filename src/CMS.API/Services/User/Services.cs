@@ -18,12 +18,10 @@ namespace CMS.API.Services.User;
 public class Services : IServices
 {
   private readonly ApplicationDbContext _context;
-  private readonly IUserProvider _userProvider;
 
-  public Services(ApplicationDbContext dbContext, IUserProvider userProvider)
+  public Services(ApplicationDbContext dbContext)
   {
     _context = dbContext;
-    _userProvider = userProvider;
   }
   public async Task<Guid> CreateAsync(CreateUserRequest request)
   {
@@ -58,10 +56,10 @@ public class Services : IServices
     return passwordRest;
   }
 
-  public async Task<Guid> ChangePasswordAsync(ChangePasswordRequest request)
+  public async Task<Guid> ChangePasswordAsync(string userName, ChangePasswordRequest request)
   {
     request.IsValid();
-    var user = await _context.Users.FirstOrDefaultAsync(x => x.UserName == _userProvider.UserName);
+    var user = await _context.Users.FirstOrDefaultAsync(x => x.UserName == userName);
     if (user is null)
     {
       throw new NotFoundException(nameof(user));
@@ -92,10 +90,10 @@ public class Services : IServices
     return user.Id;
   }
 
-  public async Task<Guid> UpdateAsync(UpdateUserInformationRequest request)
+  public async Task<Guid> UpdateAsync(string userName, UpdateUserInformationRequest request)
   {
     request.IsValid();
-    var user = await _context.Users.FirstOrDefaultAsync(x => x.UserName == _userProvider.UserName);
+    var user = await _context.Users.FirstOrDefaultAsync(x => x.UserName == userName);
     if (user is null)
     {
       throw new NotFoundException(nameof(user));
@@ -147,9 +145,9 @@ public class Services : IServices
     return user.Id;
   }
 
-  public async Task DeleteAsync(Guid id)
+  public async Task DeleteAsync(string userName)
   {
-    var user = await _context.Users.FirstOrDefaultAsync(x => x.Id == id);
+    var user = await _context.Users.FirstOrDefaultAsync(x => x.UserName == userName);
     if (user is null)
     {
       throw new NotFoundException(nameof(user));

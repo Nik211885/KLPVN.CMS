@@ -6,14 +6,10 @@ namespace CMS.API.Services;
 public class ServicesWrapper : IServicesWrapper
 {
   private readonly ApplicationDbContext _context;
-  private readonly IJwtManager _jwtManager;
-  private readonly IUserProvider _userProvider;
 
-  public ServicesWrapper(ApplicationDbContext context, IUserProvider userProvider, IJwtManager jwtManager)
+  public ServicesWrapper(ApplicationDbContext context)
   {
-    _jwtManager = jwtManager;
     _context = context;
-    _userProvider = userProvider;
   }
   private AuClass.IServices _auClass;
   private Content.IServices _content;
@@ -25,14 +21,14 @@ public class ServicesWrapper : IServicesWrapper
   private Subject.IServices _subject;
   private User.IServices _user;
   
-  public AuClass.IServices AuClass => _auClass ??= new AuClass.Services(_context, _userProvider);
-  public Content.IServices Content => _content ??= new Content.Services(_context, _userProvider);
-  public FeedBack.IServices FeedBack => _feedBack ??= new FeedBack.Services(_context, _userProvider);
+  public AuClass.IServices AuClass => _auClass ??= new AuClass.Services(_context);
+  public Content.IServices Content => _content ??= new Content.Services(_context);
+  public FeedBack.IServices FeedBack => _feedBack ??= new FeedBack.Services(_context);
   public InformationOrganization.IServices InformationOrganization => _informationOrganization 
-    ??= new InformationOrganization.Services(_context, _userProvider);
-  public Permission.IServices Permission => _permission ??= new Permission.Services(_context, _userProvider);
-  public Role.IServices Role => _role ??= new Role.Services(_context, _userProvider);
-  public sample.IServices Sample => _sample ??= new sample.Services(_context, _userProvider);
-  public Subject.IServices Subject => _subject ??= new Subject.Services(_context, _userProvider);
-  public User.IServices User => _user ??= new User.Services(_context, _userProvider);
+    ??= new InformationOrganization.Services(_context);
+  public Permission.IServices Permission => _permission ??= new Permission.Services(_context);
+  public Role.IServices Role => _role ??= new Role.Services(_context);
+  public sample.IServices Sample => _sample ??= new sample.Services(_context);
+  public Subject.IServices Subject => _subject ??= new Subject.Services(_context);
+  public User.IServices User => _user ??= new User.Services(_context);
 }

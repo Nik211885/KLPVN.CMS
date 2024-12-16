@@ -33,8 +33,8 @@ var identityAuthentication =
 builder.Services.AddSingleton(identityAuthentication);
 builder.Services.AddScoped<IUserProvider, UserProvider>();
 builder.Services.AddTransient<ExceptionHandlingMiddleware>();
-builder.Services.AddScoped<IJwtManager, JwtManager>();
 builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+builder.Services.AddScoped<IJwtManager, JwtManager>();
 builder.Services.AddMemoryCache();
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
 {
