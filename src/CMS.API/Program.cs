@@ -1,4 +1,5 @@
 using System.Text;
+using CloudinaryDotNet;
 using CMS.API.Common;
 using CMS.API.Exceptions;
 using CMS.API.Infrastructure.Authentication;
@@ -30,6 +31,16 @@ builder.Services.AddSingleton<IMemoryCacheManager, MemoryCacheManager>();
 var identityAuthentication =
   builder.Configuration.GetSection(nameof(IdentityAuthentication)).Get<IdentityAuthentication>()
   ?? throw new ArgumentException("IdentityAuthentication section not config or key not correct");
+// var cloudinaryConfig = builder.Configuration.GetSection("Cloud:CloudinaryUploadFile").Get<CloudConfig>()
+//                        ?? throw new ArgumentException("No Cloud Config found in appsettings.json");
+// var cloudinary = new Cloudinary(new Account()
+// {
+//   Cloud = cloudinaryConfig.CloudName, 
+//   ApiKey = cloudinaryConfig.ApiKey, 
+//   ApiSecret = cloudinaryConfig.ApiSecret,
+// }) 
+//   { Api = { Secure = true } };
+// builder.Services.AddSingleton(cloudinary);
 builder.Services.AddSingleton(identityAuthentication);
 builder.Services.AddScoped<IUserProvider, UserProvider>();
 builder.Services.AddTransient<ExceptionHandlingMiddleware>();
@@ -68,7 +79,7 @@ builder.Services.AddSwaggerGen(c =>
 {
   c.SwaggerDoc("v1", new OpenApiInfo
   {
-    Title = "KLPVN.CMS",
+    Title = "NINH",
     Version = "v1"
   });
   var securityScheme = new OpenApiSecurityScheme
