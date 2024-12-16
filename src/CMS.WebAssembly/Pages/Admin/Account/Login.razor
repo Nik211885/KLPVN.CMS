@@ -101,10 +101,10 @@ else
                     <EditForm Model="Input">
                         <DataAnnotationsValidator/>
                         <MudTextField Class="my-5 mx-3" @bind-Value="@Input.UserName" For="@(() => Input.UserName)"
-                                      Label="Tên đăng nhập" MaxLength="50" Variant="Variant.Outlined"/>
+                                      Label="Tên đăng nhập" MaxLength="50" Variant="Variant.Outlined" Margin="Margin.Dense"/>
                         <MudTextField Class="mx-3" @bind-Value="@Input.Password" For="@(() => Input.Password)" Label="Mật khẩu"
                                       MaxLength="50" InputType="@passType" Adornment="Adornment.End" AdornmentIcon="@passIcon"
-                                      OnAdornmentClick="ShowPass" Variant="Variant.Outlined"/>
+                                      OnAdornmentClick="ShowPass" Variant="Variant.Outlined" Margin="Margin.Dense" />
                         <MudStack Justify="Justify.Center" AlignItems="AlignItems.Center" Style="padding-top: 20px">
                             <MudButton OnClick="HandlerLoginAsync" Style="text-transform: none; border-radius:20px !important" ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary">
                                 Đăng nhập

@@ -1,4 +1,4 @@
-﻿@page "/editarticle"
+﻿@page "/employeeeditarticle"
 
 @using System.ComponentModel.DataAnnotations
 @using CMS.Shared.Enums
@@ -15,7 +15,8 @@
         <MudIconButton Variant="Variant.Filled" Color="Color.Primary" Icon="@Icons.Material.Filled.ArrowBack" Href="/article"></MudIconButton>
         <MudText Typo="Typo.h5">Sửa bài viết mới</MudText>
         <MudSpacer />
-        <MudButton Variant="Variant.Filled" Color="Color.Primary">Lưu</MudButton>
+        <MudButton Variant="Variant.Filled" Color="Color.Primary">Gửi bài viết</MudButton>
+        <MudButton Variant="Variant.Filled" Color="Color.Primary">Lưu nháp</MudButton>
     </MudStack>
 </MudItem>
 <MudItem xs="12">
@@ -28,14 +29,14 @@
                 <MudTextField @bind-Value="article.Title" Variant="Variant.Outlined" Label="Tiêu đề" Margin="Margin.Dense"></MudTextField>
             </MudItem>
             <MudItem xs="12" Style="padding-top:0px">
-                <MudText>Nội dung</MudText>
-                <Editor JsConfSrc="editconfig" ApiKey="@PublicValues.ApiKeyTiny"></Editor>
-            </MudItem>
-            <MudItem xs="12" Style="padding-top:0px">
                 <MudTextField @bind-Value="article.Description" Variant="Variant.Outlined" Label="Mô tả" Margin="Margin.Dense"></MudTextField>
             </MudItem>
             <MudItem xs="12" Style="padding-top:0px">
-                <MudTextField @bind-Value="article.Comment" Variant="Variant.Outlined" Label="Ghi chú" Margin="Margin.Dense"></MudTextField>
+                <MudTextField Disabled @bind-Value="article.Comment" Variant="Variant.Outlined" Label="Ghi chú" Margin="Margin.Dense"></MudTextField>
+            </MudItem>
+            <MudItem xs="12" Style="padding-top:0px">
+                <MudText>Nội dung</MudText>
+                <Editor JsConfSrc="editconfig" ApiKey="@PublicValues.ApiKeyTiny"></Editor>
             </MudItem>
         </MudGrid>
     </MudForm>

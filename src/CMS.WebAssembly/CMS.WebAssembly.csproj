@@ -23,7 +23,7 @@
       <AdditionalFiles Include="Pages\Admin\ArticleTopic\List.razor" />
       <AdditionalFiles Include="Pages\Admin\Article\AddDialog.razor" />
       <AdditionalFiles Include="Pages\Admin\Article\DeleteDialog.razor" />
-      <AdditionalFiles Include="Pages\Admin\Article\EditDialog.razor" />
+      <AdditionalFiles Include="Pages\Admin\Article\EmployeeEdit.razor" />
       <AdditionalFiles Include="Pages\Admin\Article\List.razor" />
       <AdditionalFiles Include="Pages\Admin\Employees\AddDialog.razor" />
       <AdditionalFiles Include="Pages\Admin\Employees\DeleteDialog.razor" />

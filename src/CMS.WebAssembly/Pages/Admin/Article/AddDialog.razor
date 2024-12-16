@@ -15,27 +15,43 @@
         <MudIconButton Variant="Variant.Filled" Color="Color.Primary" Icon="@Icons.Material.Filled.ArrowBack" Href="/article"></MudIconButton>
         <MudText Typo="Typo.h5">Thêm bài viết mới</MudText>
         <MudSpacer/>
-        <MudButton Variant="Variant.Filled" Color="Color.Primary">Lưu</MudButton>
+        <MudButton Variant="Variant.Filled" Color="Color.Primary">Gửi bài viết</MudButton>
+        <MudButton Variant="Variant.Filled" Color="Color.Primary">Lưu nháp</MudButton>
     </MudStack>
 </MudItem>
 <MudItem xs="12">
     <MudForm @ref="form" Model="article">
         <MudGrid Style="padding-top: 24px">
-            <MudItem xs="12" sm="3" Style="padding-top:0px">
-                <MudTextField @bind-Value="article.Code" Variant="Variant.Outlined" Label="Mã bài viết" Margin="Margin.Dense"></MudTextField>
+            <MudItem xs="12" sm="2" Style="padding-top: 10px">
+                <MudStack Justify="Justify.Center" AlignItems="AlignItems.Center">
+                    <MudImage ObjectFit="ObjectFit.Cover" Style="width: 150px; aspect-ratio:  1"></MudImage>
+                </MudStack>
             </MudItem>
-            <MudItem xs="12" sm="9" Style="padding-top:0px">
-                <MudTextField @bind-Value="article.Title" Variant="Variant.Outlined" Label="Tiêu đề" Margin="Margin.Dense"></MudTextField>
+            <MudItem xs="12" sm="10">
+                <MudGrid>
+                    <MudItem xs="12" Style="padding-top:0px">
+                        <MudFileUpload T="IBrowserFile" FilesChanged="UploadFiles">
+                            <ActivatorContent>
+                                <MudFab Color="Color.Secondary"
+                                        StartIcon="@Icons.Material.Filled.Image"
+                                        Label="Chọn ảnh" Style="text-transform: none" />
+                            </ActivatorContent>
+                        </MudFileUpload>
+                    </MudItem>
+                    <MudItem xs="12" sm="3" Style="padding-top:0px">
+                        <MudTextField @bind-Value="article.Code" Variant="Variant.Outlined" Label="Mã bài viết" Margin="Margin.Dense"></MudTextField>
+                    </MudItem>
+                    <MudItem xs="12" sm="9" Style="padding-top:0px">
+                        <MudTextField @bind-Value="article.Title" Variant="Variant.Outlined" Label="Tiêu đề" Margin="Margin.Dense"></MudTextField>
+                    </MudItem>
+                    <MudItem xs="12" Style="padding-top:0px">
+                        <MudTextField @bind-Value="article.Description" Variant="Variant.Outlined" Label="Mô tả" Margin="Margin.Dense"></MudTextField>
+                    </MudItem>
+                </MudGrid>
             </MudItem>
-            <MudItem xs="12" Style="padding-top:0px">
+            <MudItem xs="12" Style="padding-top:10px">
                 <MudText>Nội dung</MudText>
                 <Editor JsConfSrc="editconfig" ApiKey="@PublicValues.ApiKeyTiny"></Editor>
-            </MudItem>
-            <MudItem xs="12" Style="padding-top:0px">
-                <MudTextField @bind-Value="article.Description" Variant="Variant.Outlined" Label="Mô tả" Margin="Margin.Dense"></MudTextField>
-            </MudItem>
-            <MudItem xs="12" Style="padding-top:0px">
-                <MudTextField @bind-Value="article.Comment" Variant="Variant.Outlined" Label="Ghi chú" Margin="Margin.Dense"></MudTextField>
             </MudItem>
         </MudGrid>
     </MudForm>
@@ -43,6 +59,12 @@
 @code {
     private MudForm form;
     public Article article { get; set; } = new();
+    IList<IBrowserFile> _files = new List<IBrowserFile>();
+
+    private void UploadFiles(IBrowserFile file)
+    {
+        _files.Add(file);
+    }
 
     public class Article
     {
@@ -50,6 +72,5 @@
         public string Title { get; set; }
         public string? Description { get; set; }
         public string Contents { get; set; }
-        public string? Comment { get; set; }
     }
 }
