@@ -16,4 +16,5 @@ public interface IServices
   Task DeleteAsync(string userName);
   Task<MenuTreeResponse> GetMenuTreeForUserAsync(IEnumerable<string>? permissionCode);
   Task<UserDetailResponse> GetUserDetailsAsync(string userName);
+  Task<Guid> UploadAvatarAsync(string userName, string avatarUrl);
 }

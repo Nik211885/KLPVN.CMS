@@ -14,7 +14,6 @@ public static class UserMapping
       Address = request.Address,
       FullName = request.FullName,
       Gender = request.Gender,
-      Avatar = request.Avatar,
     };
   }
   public static void Mapping(this UpdateUserInformationRequest request, Entities.User user)
@@ -24,6 +23,5 @@ public static class UserMapping
     user.Address = request.Address;
     user.FullName = request.FullName;
     user.Gender = request.Gender;
-    user.Avatar = request.Avatar;
   }
 }

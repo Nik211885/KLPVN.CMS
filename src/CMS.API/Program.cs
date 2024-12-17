@@ -31,16 +31,17 @@ builder.Services.AddSingleton<IMemoryCacheManager, MemoryCacheManager>();
 var identityAuthentication =
   builder.Configuration.GetSection(nameof(IdentityAuthentication)).Get<IdentityAuthentication>()
   ?? throw new ArgumentException("IdentityAuthentication section not config or key not correct");
-// var cloudinaryConfig = builder.Configuration.GetSection("Cloud:CloudinaryUploadFile").Get<CloudConfig>()
-//                        ?? throw new ArgumentException("No Cloud Config found in appsettings.json");
-// var cloudinary = new Cloudinary(new Account()
-// {
-//   Cloud = cloudinaryConfig.CloudName, 
-//   ApiKey = cloudinaryConfig.ApiKey, 
-//   ApiSecret = cloudinaryConfig.ApiSecret,
-// }) 
-//   { Api = { Secure = true } };
-// builder.Services.AddSingleton(cloudinary);
+var cloudinaryConfig = builder.Configuration.GetSection("Cloud:Cloudinary").Get<CloudinaryConfig>()
+  ?? throw new ArgumentException("Cloudinary section not config or key not correct");
+builder.Services.AddSingleton(cloudinaryConfig);
+var account = new Account()
+{
+  Cloud = cloudinaryConfig.CloudName, 
+  ApiKey = cloudinaryConfig.ApiKey,
+  ApiSecret = cloudinaryConfig.ApiSecret,
+};
+var cloudinary = new Cloudinary(account);
+builder.Services.AddSingleton(cloudinary);
 builder.Services.AddSingleton(identityAuthentication);
 builder.Services.AddScoped<IUserProvider, UserProvider>();
 builder.Services.AddTransient<ExceptionHandlingMiddleware>();

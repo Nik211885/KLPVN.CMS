@@ -203,6 +203,19 @@ public class Services : IServices
     return user;
   }
 
+  public async Task<Guid> UploadAvatarAsync(string userName, string avatarUrl)
+  {
+    var user = await _context.Users.FirstOrDefaultAsync(x => x.UserName == userName);
+    if (user is null)
+    {
+      throw new NotFoundException(nameof(user));
+    }
+    user.Avatar = avatarUrl;
+    _context.Users.Update(user);
+    await _context.SaveChangesAsync();
+    return user.Id;
+  }
+
   private async Task GetTreeMenuAsync(Entities.AuClass? auClass, MenuResponse menuBottom
     , MenuTreeResponse menuResponses, Dictionary<string, MenuResponse> menusMemo)
   {

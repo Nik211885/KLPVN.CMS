@@ -5,6 +5,5 @@ public record UpdateUserInformationRequest(
   string? Email,
   string? Address,
   string FullName,
-  bool Gender,
-  string? Avatar);
+  bool Gender);
   

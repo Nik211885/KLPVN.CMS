@@ -2,9 +2,11 @@
 
 @layout CMS.WebAssembly.Layout.Admin.AdminLayout
 @using System.ComponentModel.DataAnnotations
+@using CMS.Shared.DTOs.User.Request
 @using CMS.Shared.DTOs.User.Response
 @using CMS.WEB.Common
 @using KLPVN.Core.Helper
+@using KLPVN.Core.Models
 
 <style>
     .mud-main-content {
@@ -41,7 +43,7 @@ else{
                 </div>
                 <MudForm @ref="form" Model="Input">
                     <div class="d-flex justify-content-center align-items-center mb-2" style="width: 100%; height: auto;">
-                        <MudFileUpload Disabled="isDisable" T="IBrowserFile" FilesChanged="UploadFiles">
+                        <MudFileUpload Accept="image/png, image/jpeg" Disabled="isDisable" T="IBrowserFile" FilesChanged="UploadFiles">
                             <ActivatorContent>
                                 <MudFab Color="Color.Secondary"
                                         StartIcon="@Icons.Material.Filled.Image"
@@ -63,7 +65,7 @@ else{
                     }
                     else
                     {
-                        <MudButton Style="text-transform:none"  Color="Color.Primary" Variant="Variant.Filled" ButtonType="ButtonType.Submit">Hoàn tất</MudButton>
+                        <MudButton Style="text-transform:none" OnClick="SaveProfile"  Color="Color.Primary" Variant="Variant.Filled" ButtonType="ButtonType.Submit">Hoàn tất</MudButton>
                     }
                 </MudForm>
             </MudPaper>
@@ -78,21 +80,103 @@ else{
     private InputModel Input { get; set; }
     private MudForm form;
     public bool isDisable = true;
-    IList<IBrowserFile> _files = new List<IBrowserFile>();
 
     public void CapNhat()
     {
         isDisable = false;
     }
 
-    private void UploadFiles(IBrowserFile file)
+    private async Task UploadFiles(IBrowserFile file)
     {
-        _files.Add(file);
+        try
+        {
+            var pesignedURLHttpMessage = await Client.SendAsync(HttpMethod.GET,
+                ConstRequestUri.AuUploadFile, null, true);
+            if (pesignedURLHttpMessage is null)
+            {
+                return;
+            }
+
+            if (pesignedURLHttpMessage.IsSuccessStatusCode)
+            {
+                var pesignedUrl = await pesignedURLHttpMessage.Content.ReadAsStringAsync();
+
+                var sendCloudinaryMessage = await CloudHelper.UploadFileAsync(pesignedUrl, file);
+                if (!sendCloudinaryMessage.IsSuccess)
+                {
+                    Snack.Add(sendCloudinaryMessage.Data, Severity.Warning);
+                }
+                else
+                {
+                    var urlImage = sendCloudinaryMessage.Data;
+                    var uploadAvatarParameter = $"{ConstRequestUri.UserUploadAvatar}?avatarUrl={urlImage}";
+                    var uploadImages = await Client.SendAsync(
+                        HttpMethod.PUT, uploadAvatarParameter,null, true
+                    );
+                    if (uploadImages is null)
+                    {
+                        return;
+                    }
+                    if(uploadImages.IsSuccessStatusCode)
+                    {
+                        Input.Avatar = urlImage;
+                        StateHasChanged();
+                        Snack.Add("Thay đổi ảnh thành công", Severity.Success);   
+                    }
+                    else
+                    {
+                        Snack.Add("Có lỗi xãy ra", Severity.Error);
+                    }
+                }
+            }
+            else
+            {
+                Snack.Add("Có lỗi xãy ra", Severity.Error);
+            }
+        }
+        catch (Exception ex)
+        {
+            Snack.Add("Có lỗi xãy ra", Severity.Error);
+        }
+
     }
 
-    private async void SaveProfile()
+    private async Task SaveProfile()
     {
-        
+        var profile = new UpdateUserInformationRequest(
+                Input.PhoneNumber,
+                Input.Email,
+                Input.Address,
+                Input.FullName,
+                Input.Gender
+            );
+        try
+        {
+            var updateMessage = await Client.SendAsync(HttpMethod.PUT, ConstRequestUri.UserUpdateProfile,
+                profile, true);
+            if (updateMessage is null)
+            {
+                return;
+            }
+
+            if (updateMessage.IsSuccessStatusCode)
+            {
+                Snack.Add("Cập nhận thành công", Severity.Success);
+            }
+            else
+            {
+                var errors = await updateMessage.Content.DecodeAsync<ErrorResponse>();
+                if (errors is null)
+                { 
+                    Snack.Add(errors is null ? "Cập nhật thất bại" :errors.Detail, Severity.Warning);
+                }
+            }
+
+        }
+        catch (Exception ex)
+        {
+            Snack.Add("Cập nhật thất bại", Severity.Error);
+        }
     }
 
     private sealed class InputModel
@@ -159,6 +243,7 @@ else{
             }
         }
     }
+    
 
 }
 

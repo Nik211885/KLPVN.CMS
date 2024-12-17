@@ -86,4 +86,12 @@ public class UserController : ControllerBase
     var result = await _services.User.GetUserDetailsAsync(_userProvider.UserName);
     return result;
   }
+
+  [HttpPut("upload-avatar")]
+  [Authorize]
+  public async Task<IActionResult> UploadAvatarAsync(string avatarUrl)
+  {
+    var result = await _services.User.UploadAvatarAsync(_userProvider.UserName, avatarUrl);
+    return Ok(result);
+  }
 }

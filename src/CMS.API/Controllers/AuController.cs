@@ -1,21 +1,17 @@
 ﻿using System.Security.Claims;
-using System.Security.Cryptography;
-using System.Text;
 using CloudinaryDotNet;
-using CloudinaryDotNet.Actions;
 using CMS.API.Common;
 using CMS.API.Common.Message;
 using CMS.API.Common.Validation;
+using CMS.API.Common.Variables;
 using CMS.API.Entities;
 using CMS.API.Exceptions;
 using CMS.API.Infrastructure.Data;
 using CMS.Shared.DTOs.Au.Response;
-using CMS.Shared.DTOs.User.Response;
 using KLPVN.Core.Helper;
 using KLPVN.Core.Interface;
 using KLPVN.Core.Models;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using LoginRequest = CMS.Shared.DTOs.Au.Request.LoginRequest;
@@ -29,50 +25,35 @@ public class AuController : ControllerBase
   private readonly ApplicationDbContext _context;
   private readonly IJwtManager _jwtManager;
   private readonly IdentityAuthentication _identity;
-  private readonly IUserProvider _userProvider;
-  private readonly CloudConfig _cloudConfig;
-  private readonly FolderStoreImagesConfig _folderStoreImagesConfig;
+  private readonly CloudinaryConfig _cloudinaryConfig;
+  private readonly Cloudinary _cloudinary;
   public AuController(ApplicationDbContext context, 
-    IConfiguration configuration,
-    IUserProvider userProvider,
     IJwtManager jwtManager, 
+    Cloudinary cloudinary,
+    CloudinaryConfig cloudinaryConfig,
     IdentityAuthentication identity)
   {
-    _folderStoreImagesConfig = configuration.GetSection("Cloud:UploadFile").Get<FolderStoreImagesConfig>()
-      ?? throw new ArgumentException("Folder Store Images Config");
-    _cloudConfig = configuration.GetSection("Cloud:Cloudinary").Get<CloudConfig>()
-                   ?? throw new ArgumentException("No Cloud Config found in appsettings.json");
-    _userProvider = userProvider;
+    _cloudinary = cloudinary;
+    _cloudinaryConfig = cloudinaryConfig;
     _identity = identity;
     _context = context;
     _jwtManager = jwtManager;
   }
-
-  // [HttpGet("upload-file")]
-  // public async Task<IActionResult> GetUploadFileUrlAsync()
-  // {
-  //   var timestamp = DateTime.UtcNow.AddMinutes(_folderStoreImagesConfig.Timestamp).ToString("yyyy-MM-ddTHH:mm:ssZ");
-  //   var parameters = new Dictionary<string, string>()
-  //   {
-  //     { "api_key", _cloudConfig.ApiKey },
-  //     { "timestamp", timestamp },
-  //     { "folder", _folderStoreImagesConfig.Folder },
-  //   };
-  //   var stringBuilder = new StringBuilder();
-  //   foreach (var param in parameters)
-  //   {
-  //     stringBuilder.Append(param.Key);
-  //     stringBuilder.Append('=');
-  //     stringBuilder.Append(param.Value);
-  //     stringBuilder.Append('&');
-  //   }
-  //   string unsignedString = stringBuilder.ToString().TrimEnd('&');
-  //   using var hmac = new HMACSHA1(Encoding.UTF8.GetBytes(_cloudConfig.ApiKey));
-  //   byte[] hashBytes = hmac.ComputeHash(Encoding.UTF8.GetBytes(unsignedString));
-  //   var signature  =  BitConverter.ToString(hashBytes).Replace("-", "").ToLower(); 
-  //   string presignedUrl = $"https://api.cloudinary.com/v1_1/{_cloudConfig.CloudName}/image/upload?api_key={_cloudConfig.ApiKey}&timestamp={timestamp}&signature={signature}&folder={_folderStoreImagesConfig.Folder}";
-  //   return Ok(presignedUrl);
-  // }
+  [HttpGet("upload-file")]
+  public ActionResult<string> GetUrlUploadFile()
+  {
+    var timeStamp = DateTimeOffset.UtcNow.ToUnixTimeSeconds().ToString();
+    var parameters = new SortedDictionary<string, object>
+    {
+      {"folder", _cloudinaryConfig.UploadFolder },
+      {"timestamp", timeStamp},
+    };
+    var stringSign = string.Join("&", parameters.Select(kvp => $"{kvp.Key}={kvp.Value}"));
+    var signature = _cloudinary.Api.SignParameters(parameters);
+    var url =
+      $"https://api.cloudinary.com/v1_1/{_cloudinaryConfig.CloudName}/image/upload?api_key={_cloudinaryConfig.ApiKey}&{stringSign}&signature={signature}";
+    return Ok(url);
+  }
   [HttpPost("login")]
   public async Task<ActionResult<JwtResult>> LoginAsync(LoginRequest request)
   {
