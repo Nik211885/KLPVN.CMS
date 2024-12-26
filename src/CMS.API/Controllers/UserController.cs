@@ -72,12 +72,12 @@ public class UserController : ControllerBase
 
   [HttpGet("menu")]
   [Authorize]
-  public async Task<ActionResult<MenuTreeResponse>> GetMenuTreeForUserAsync()
+  public async Task<IActionResult> GetMenuTreeForUserAsync()
   {
     var permissionCode = HttpContext.User.Claims.Where(x => x.Type == ClaimTypes.Actor)
       .Select(x=>x.Value);
     var result = await _services.User.GetMenuTreeForUserAsync(permissionCode);
-    return result;
+    return Ok(result);
   }
 
   [HttpGet("information")]

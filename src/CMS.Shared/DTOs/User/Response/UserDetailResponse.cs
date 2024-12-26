@@ -1,6 +1,10 @@
-﻿namespace CMS.Shared.DTOs.User.Response;
+﻿using CMS.Shared.DTOs.Role.Response;
 
-public record UserDetailResponse(string FullName, 
+namespace CMS.Shared.DTOs.User.Response;
+
+public record UserDetailResponse(
+  Guid Id,
+  string FullName, 
   string? Email, 
   bool Gender,
   string Phone, 

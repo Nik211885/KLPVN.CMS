@@ -180,27 +180,40 @@ public class Services : IServices
       };
       await GetTreeMenuAsync(auClass, menuBottom, menuResponses, menuMemo);
     }
-
+    
     return menuResponses;
+    // var auAction = await _context.AuActionClasses.Where(x => permissionCode.Contains(x.Code)).ToListAsync();
+    // var memo = new Dictionary<Guid, Guid?>();
+    // //uuid
+    // foreach (var a in auAction)
+    // {
+    //   var menuParent = await _context.AuClasses.FirstOrDefaultAsync(x => x.Id == a.ClassId);
+    //   if (memo.ContainsKey(a.Id))
+    //   {
+    //     while (menuParent.ParentId is not null)
+    //     {
+    //       var parent  = await _context.AuClasses.FirstOrDefaultAsync(x=>x)
+    //     }
+    //   }
+    //   else
+    //   {
+    //     memo.Add(a.Id,null);
+    //   }
+    // }
+    
   }
 
   public async Task<UserDetailResponse> GetUserDetailsAsync(string userName)
   {
-    var user = await _context.Users.Where(x => x.UserName == userName)
-      .Select(x => new UserDetailResponse(
-        x.FullName,
-        x.Email,
-        x.Gender,
-        x.PhoneNumber,
-        x.Address,
-        x.Avatar)).FirstOrDefaultAsync();
+    var user = await _context.Users.Where(x => x.UserName == userName).FirstOrDefaultAsync();
     if (user is null)
     {
       throw new NotFoundException(nameof(user));
       
     }
 
-    return user;
+    return null;
+    // return user;
   }
 
   public async Task<Guid> UploadAvatarAsync(string userName, string avatarUrl)
@@ -243,4 +256,5 @@ public class Services : IServices
       .FirstOrDefaultAsync(x => x.Id == auClass.ParentId);
     await GetTreeMenuAsync(parentMenu,menuNew, menuResponses, menusMemo);
   }
+  
 }

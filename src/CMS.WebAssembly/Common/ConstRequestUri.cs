@@ -15,4 +15,7 @@ public abstract class ConstRequestUri
   public const string UserInformation = "user/information";
   public const string UserUploadAvatar = "user/upload-avatar";
   public const string UserUpdateProfile = "user/update";
+  
+  //feedbacks
+  public const string FeedBacks = "feed-back/all";
 }

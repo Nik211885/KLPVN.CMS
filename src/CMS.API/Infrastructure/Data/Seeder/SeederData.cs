@@ -11,5 +11,6 @@ public static class SeederData
     await PermissionSeeder.SeederAsync(dbContext);
     await AuClassSeeder.SeederAsync(dbContext);
     await SubjectSeeder.SeedAsync(dbContext);
+    await FeedBack.SeedAsync(dbContext);
   }
 }

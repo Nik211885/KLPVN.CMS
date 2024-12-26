@@ -1,24 +1,25 @@
 ﻿@page "/feedback"
 @using CMS.Shared.Enums
+@using CMS.WEB.Common
+@using KLPVN.Core.Helper
 @layout CMS.WebAssembly.Layout.Admin.AdminLayout
 
 @inject IDialogService DialogService
 @inject NavigationManager nav
 
-<PageTitle>Danh sách bài viết</PageTitle>
-
-<MudTable Items="feedbacks" Dense="true" Virtualize="false" FixedHeader="true" Bordered="true" HorizontalScrollbar="true">
-
+<PageTitle>Danh sách phản hồi khách hàng</PageTitle>
+<MudTable @ref="@_table" RowsPerPage="10" Hover="true" Items="feedbacks" Dense="true" Virtualize="false" FixedHeader="true" Bordered="true" HorizontalScrollbar="true">
     <ToolBarContent>
         <MudItem xs="12" sm="4">
-            <MudTextField T="string" Placeholder="Tìm kiếm" Adornment="Adornment.Start"
-                          AdornmentIcon="@Icons.Material.Filled.Search"
+            <MudTextField T="string" Placeholder="Tìm kiếm" Adornment="Adornment.End"
+                          AdornmentIcon="@Icons.Material.Filled.Search" OnAdornmentClick="@(async () => await Js.InvokeVoidAsync("alert", "hello"))"
                           Variant="Variant.Outlined" Margin="Margin.Dense"
-                          Immediate="true"></MudTextField>
+                          Immediate="true">
+                </MudTextField>
         </MudItem>
     </ToolBarContent>
     <HeaderContent>
-        <MudTh><MudTableSortLabel SortBy="new Func<Feedback, object>(x => x.CreatedDateTime)">Ngày</MudTableSortLabel></MudTh>
+        <MudTh>Ngày</MudTh>
         <MudTh>Họ tên</MudTh>
         <MudTh>Số điện thoại</MudTh>
         <MudTh>Email</MudTh>
@@ -26,7 +27,7 @@
         <MudTh>Ghi chú</MudTh>
     </HeaderContent>
     <RowTemplate>
-        <MudTd DataLabel="Ngày">@context.CreatedDateTime.ToString("dd/mm/yyyy")</MudTd>
+        <MudTd DataLabel="Ngày">@context.CreatedDateTime.AddHours(7).ToString("dd/mm/yyyy")</MudTd>
         <MudTd DataLabel="Họ tên">@context.FullName</MudTd>
         <MudTd DataLabel="Số điện thoại">@context.Phone</MudTd>
         <MudTd DataLabel="Email">@context.Email</MudTd>
@@ -35,33 +36,39 @@
     </RowTemplate>
 
     <PagerContent>
-        <MudTablePager HidePageNumber HideRowsPerPage PageSizeOptions="new int[] {10}" />
+        <MudPagination SelectedChanged="PageChanged" Count="@((_table.GetFilteredItemsCount() + _table.RowsPerPage - 1) / _table.RowsPerPage)" Class="pa-4"/>
     </PagerContent>
 </MudTable>
 
 @code {
-    private List<Feedback> feedbacks = new List<Feedback>();
-
-    protected override void OnInitialized()
+    private MudTable<Feedback> _table;
+    private IReadOnlyCollection<Feedback> feedbacks;
+    protected override async Task OnInitializedAsync()
     {
-        for (int i = 1; i <= 30; i++)
+        try
         {
-            feedbacks.Add(new Feedback
-                {
-                    FullName = $"Người dùng {i}",
-                    Phone = $"01234567{i:D2}",
-                    Title = $"Phản hồi {i}",
-                    Email = $"user{i}@example.com",
-                    Note = $"Đây là ghi chú của phản hồi số {i}.",
-                    Address = $"Địa chỉ {i}, Việt Nam",
-                    CreatedDateTime = DateTimeOffset.Now.AddDays(-i)
-                });
+            var feedBacksMessage = await Client.SendAsync(HttpMethod.GET,
+            ConstRequestUri.FeedBacks, null, true);
+            if (feedBacksMessage is null)
+            {
+                return;
+            }
+            feedbacks = await feedBacksMessage.Content.DecodeAsync<IReadOnlyCollection<Feedback>>() ?? [];
         }
-        base.OnInitialized();
+        catch(Exception ex)
+        {
+            Snack.Add("Có lỗi xãy ra", Severity.Error);
+        }
+        await base.OnInitializedAsync();
+    }
+    private void PageChanged(int i)
+    {
+    _table.NavigateTo(i - 1);
     }
 
     public class Feedback
     {
+        public Guid Id { get; set; }
         public string? FullName { get; set; }
         public string? Phone { get; set; }
         public string? Title { get; set; }
