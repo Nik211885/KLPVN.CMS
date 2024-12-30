@@ -1,0 +1,108 @@
+﻿@page "/danhsachquyen"
+@layout CMS.WebAssembly.Layout.Admin.AdminLayout
+@inject IDialogService DialogService
+
+<MudStack Row>
+    <MudStack Justify="Justify.FlexStart">
+        <MudTextField T="string" Margin="Margin.Dense" Variant="Variant.Outlined" Placeholder="Tìm kiếm" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" />
+    </MudStack>
+    <MudSpacer />
+    <MudStack Justify="Justify.FlexEnd">
+        <MudFab OnClick="OpenAddDialog" StartIcon="@Icons.Material.Filled.Add" Color="Color.Primary" Style="width:45px; height:45px"></MudFab>
+    </MudStack>
+</MudStack>
+<MudGrid Spacing="2" Class="pa-0">
+    @foreach (var item in DSQuyen)
+    {
+        <MudItem xs="12" sm="6" lg="3" xl="3">
+            <MudCard Class="rounded-3 my-1" Style="border: 3px" Elevation="2">
+                <MudStack Row AlignItems="AlignItems.Center">
+                    <MudItem>
+                        <MudText Typo="Typo.h6">@item.Name</MudText>
+                    </MudItem>
+                    <MudSpacer />
+                    <MudItem>
+                        <MudMenu Icon="@Icons.Material.Filled.MoreVert" AnchorOrigin="Origin.BottomCenter" TransformOrigin="Origin.TopCenter">
+                            <MudMenuItem OnClick="OpenGanQuyenDialog" Icon="@Icons.Material.Filled.Feed">
+                                <MudText>Gán quyền</MudText>
+                            </MudMenuItem>
+                            <MudMenuItem OnClick="OpenEditDialog" Icon="@Icons.Material.Filled.Edit">
+                                <MudText>Sửa</MudText>
+                            </MudMenuItem>
+                            <MudMenuItem OnClick="OpenDeleteDialog" Icon="@Icons.Material.Filled.Delete" IconColor="Color.Error">
+                                <MudText Color="Color.Error">Xóa</MudText>
+                            </MudMenuItem>
+                        </MudMenu>
+                    </MudItem>
+                </MudStack>
+            </MudCard>
+        </MudItem>
+    }
+</MudGrid>
+
+@code {
+    public List<InputModel> DSQuyen = new List<InputModel>();
+
+    protected override Task OnInitializedAsync()
+    {
+        DSQuyen = new List<InputModel>
+        {
+            new InputModel { Code = "ADMIN", Name = "Administrator", ParentId = null },
+            new InputModel { Code = "USER", Name = "User Management", ParentId = Guid.NewGuid() },
+            new InputModel { Code = "REPORT", Name = "Reporting", ParentId = Guid.NewGuid() },
+            new InputModel { Code = "FINANCE", Name = "Finance", ParentId = null },
+            new InputModel { Code = "HR", Name = "Human Resources", ParentId = Guid.NewGuid() },
+            new InputModel { Code = "IT", Name = "IT Support", ParentId = null },
+            new InputModel { Code = "SALES", Name = "Sales", ParentId = Guid.NewGuid() },
+            new InputModel { Code = "MARKETING", Name = "Marketing", ParentId = null },
+            new InputModel { Code = "SUPPLY", Name = "Supply Chain", ParentId = Guid.NewGuid() },
+            new InputModel { Code = "OPERATIONS", Name = "Operations", ParentId = null },
+            new InputModel { Code = "LEGAL", Name = "Legal", ParentId = Guid.NewGuid() },
+            new InputModel { Code = "SECURITY", Name = "Security", ParentId = null },
+            new InputModel { Code = "DEV", Name = "Development", ParentId = Guid.NewGuid() },
+            new InputModel { Code = "TEST", Name = "Testing", ParentId = null },
+            new InputModel { Code = "PRODUCTION", Name = "Production", ParentId = Guid.NewGuid() },
+            new InputModel { Code = "TRAINING", Name = "Training", ParentId = null },
+            new InputModel { Code = "CUSTOMER", Name = "Customer Service", ParentId = Guid.NewGuid() },
+            new InputModel { Code = "PROCUREMENT", Name = "Procurement", ParentId = null },
+            new InputModel { Code = "RISK", Name = "Risk Management", ParentId = Guid.NewGuid() },
+            new InputModel { Code = "COMPLIANCE", Name = "Compliance", ParentId = null }
+        };
+        return base.OnInitializedAsync();
+    }
+
+    private Task OpenAddDialog()
+    {
+        var options = new DialogOptions { CloseOnEscapeKey = true, CloseButton = true, FullWidth = true };
+
+        return DialogService.ShowAsync<AddDialog>("", options);
+    }
+
+    private Task OpenEditDialog()
+    {
+        var options = new DialogOptions { CloseOnEscapeKey = true, CloseButton = true, FullWidth = true };
+
+        return DialogService.ShowAsync<EditDialog>("", options);
+    }
+
+    private Task OpenDeleteDialog()
+    {
+        var options = new DialogOptions { CloseOnEscapeKey = true, CloseButton = true, FullWidth = true };
+
+        return DialogService.ShowAsync<DeleteDialog>("", options);
+    }
+
+    private Task OpenGanQuyenDialog()
+    {
+        var options = new DialogOptions { CloseOnEscapeKey = true, CloseButton = true, MaxWidth=MaxWidth.Medium };
+
+        return DialogService.ShowAsync<GanQuyenDialog>("", options);
+    }
+
+    public class InputModel
+    {
+        public string Code { get; set; } = null!;
+        public string Name { get; set; } = null!;
+        public Guid? ParentId { get; set; }
+    }
+}

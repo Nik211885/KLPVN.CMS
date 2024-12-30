@@ -1,0 +1,144 @@
+﻿@page "/danhsachthongtintochuc"
+@layout CMS.WebAssembly.Layout.Admin.AdminLayout
+@inject IDialogService DialogService
+
+<PageTitle>Thông tin tổ chức</PageTitle>
+
+
+<MudTable Items="DSThongtin" Dense="true" Virtualize="false" FixedHeader="true" Bordered="true" HorizontalScrollbar="true">
+    <ToolBarContent>
+        <MudTextField T="string" Placeholder="Tìm kiếm" Adornment="Adornment.Start"
+                      AdornmentIcon="@Icons.Material.Filled.Search"
+                      Variant="Variant.Outlined" Margin="Margin.Dense"
+                      Immediate="true"></MudTextField>
+        <MudSpacer />
+        <MudTooltip Text="Tạo bài viết" Arrow Placement="Placement.End">
+            <MudFab OnClick="OpenAddDialog" StartIcon="@Icons.Material.Filled.Add" Color="Color.Primary" Style="width:45px; height:45px"></MudFab>
+        </MudTooltip>
+    </ToolBarContent>
+    <HeaderContent>
+        <MudTh>Icon</MudTh>
+        <MudTd>Mã</MudTd>
+        <MudTh>Tên tổ chức</MudTh>
+        <MudTh>Số điện thoại</MudTh>
+        <MudTh>Email</MudTh>
+        <MudTh>Địa chỉ</MudTh>
+        <MudTh>Facebook</MudTh>
+        <MudTh>Youtube</MudTh>
+        <MudTh>X?</MudTh>
+        <MudTh>Mạng xã hội?</MudTh>
+        <MudTh>Tiktok</MudTh>
+        <MudTh><MudTableSortLabel SortBy="new Func<InputModel, object>(x=>x.IsActive)">Trạng thái</MudTableSortLabel></MudTh>
+        <MudTh></MudTh>
+    </HeaderContent>
+    <RowTemplate>
+        <MudTd>
+            <MudImage Style="width: 100%; max-width: 3rem" Src="imgs/no-image-icon-6.png" Alt="img"></MudImage>
+        </MudTd>
+        <MudTd>@context.Code</MudTd>
+        <MudTd>@context.OrganizationName</MudTd>
+        <MudTd>@context.Phone</MudTd>
+        <MudTd>@context.Email</MudTd>
+        <MudTd>@context.Address</MudTd>
+        <MudTd>@context.RefFacebook</MudTd>
+        <MudTd>@context.RefYoutube</MudTd>
+        <MudTd>@context.RefX</MudTd>
+        <MudTd>@context.RefSocial</MudTd>
+        <MudTd>@context.RefTikTok</MudTd>
+        <MudTd>
+            @if (context.IsActive)
+            {
+                <MudChip Size="Size.Small" Variant="Variant.Text" Style="margin: 0px" T="string" Color="Color.Success">Đang hoạt động</MudChip>
+            }
+            else
+            {
+                <MudChip Size="Size.Small" Variant="Variant.Text" Style="margin: 0px" T="string" Color="Color.Error">Không hoạt động</MudChip>
+            }
+        </MudTd>
+        <MudTd>
+            <MudStack Row>
+                <MudTooltip Text="Sửa" Arrow Placement="Placement.Top">
+                    <MudIconButton OnClick="OpenEditDialog" Size="Size.Small" Icon="@Icons.Material.Filled.Edit"></MudIconButton>
+                </MudTooltip>
+                <MudTooltip Text="Xóa" Arrow Placement="Placement.Top">
+                    <MudIconButton OnClick="OpenDeleteDialog" Size="Size.Small" Icon="@Icons.Material.Filled.Delete" ></MudIconButton>
+                </MudTooltip>
+            </MudStack>
+        </MudTd>
+    </RowTemplate>
+
+    <PagerContent>
+        <MudTablePager HidePageNumber HideRowsPerPage PageSizeOptions="new int[] {10}" />
+    </PagerContent>
+</MudTable>
+
+@code {
+    private MudForm form;
+
+    public List<InputModel> DSThongtin { get; set; } = new List<InputModel>();
+
+    protected override Task OnInitializedAsync()
+    {
+        DSThongtin = new List<InputModel>
+        {
+            new InputModel { Code ="Code1" ,OrganizationName = "Org1", Address = "Address1", Phone = "1234567890", Email = "org1@example.com", Icon = "icon1.png", RefFacebook = "fb1", RefYoutube = "yt1", RefX = "x1", RefSocial = "social1", RefTikTok = "tiktok1", IsActive = true },
+            new InputModel { Code ="Code2" ,OrganizationName = "Org2", Address = "Address2", Phone = "2234567890", Email = "org2@example.com", Icon = "icon2.png", RefFacebook = "fb2", RefYoutube = "yt2", RefX = "x2", RefSocial = "social2", RefTikTok = "tiktok2", IsActive = false },
+            new InputModel { Code ="Code3" ,OrganizationName = "Org3", Address = "Address3", Phone = "3234567890", Email = "org3@example.com", Icon = "icon3.png", RefFacebook = "fb3", RefYoutube = "yt3", RefX = "x3", RefSocial = "social3", RefTikTok = "tiktok3", IsActive = true },
+            new InputModel { Code ="Code4" ,OrganizationName = "Org4", Address = "Address4", Phone = "4234567890", Email = "org4@example.com", Icon = "icon4.png", RefFacebook = "fb4", RefYoutube = "yt4", RefX = "x4", RefSocial = "social4", RefTikTok = "tiktok4", IsActive = false },
+            new InputModel { Code ="Code5" ,OrganizationName = "Org5", Address = "Address5", Phone = "5234567890", Email = "org5@example.com", Icon = "icon5.png", RefFacebook = "fb5", RefYoutube = "yt5", RefX = "x5", RefSocial = "social5", RefTikTok = "tiktok5", IsActive = true },
+            new InputModel { Code ="Code6" ,OrganizationName = "Org6", Address = "Address6", Phone = "6234567890", Email = "org6@example.com", Icon = "icon6.png", RefFacebook = "fb6", RefYoutube = "yt6", RefX = "x6", RefSocial = "social6", RefTikTok = "tiktok6", IsActive = false },
+            new InputModel { Code ="Code7" ,OrganizationName = "Org7", Address = "Address7", Phone = "7234567890", Email = "org7@example.com", Icon = "icon7.png", RefFacebook = "fb7", RefYoutube = "yt7", RefX = "x7", RefSocial = "social7", RefTikTok = "tiktok7", IsActive = true },
+            new InputModel { Code ="Code8" ,OrganizationName = "Org8", Address = "Address8", Phone = "8234567890", Email = "org8@example.com", Icon = "icon8.png", RefFacebook = "fb8", RefYoutube = "yt8", RefX = "x8", RefSocial = "social8", RefTikTok = "tiktok8", IsActive = false },
+            new InputModel { Code ="Code9" ,OrganizationName = "Org9", Address = "Address9", Phone = "9234567890", Email = "org9@example.com", Icon = "icon9.png", RefFacebook = "fb9", RefYoutube = "yt9", RefX = "x9", RefSocial = "social9", RefTikTok = "tiktok9", IsActive = true },
+            new InputModel { Code ="Code10" ,OrganizationName = "Org10", Address = "Address10", Phone = "1034567890", Email = "org10@example.com", Icon = "icon10.png", RefFacebook = "fb10", RefYoutube = "yt10", RefX = "x10", RefSocial = "social10", RefTikTok = "tiktok10", IsActive = false },
+            new InputModel { Code ="Code11" ,OrganizationName = "Org11", Address = "Address11", Phone = "1134567890", Email = "org11@example.com", Icon = "icon11.png", RefFacebook = "fb11", RefYoutube = "yt11", RefX = "x11", RefSocial = "social11", RefTikTok = "tiktok11", IsActive = true },
+            new InputModel { Code ="Code12" ,OrganizationName = "Org12", Address = "Address12", Phone = "1234567800", Email = "org12@example.com", Icon = "icon12.png", RefFacebook = "fb12", RefYoutube = "yt12", RefX = "x12", RefSocial = "social12", RefTikTok = "tiktok12", IsActive = false },
+            new InputModel { Code ="Code13" ,OrganizationName = "Org13", Address = "Address13", Phone = "1334567890", Email = "org13@example.com", Icon = "icon13.png", RefFacebook = "fb13", RefYoutube = "yt13", RefX = "x13", RefSocial = "social13", RefTikTok = "tiktok13", IsActive = true },
+            new InputModel { Code ="Code14" ,OrganizationName = "Org14", Address = "Address14", Phone = "1434567890", Email = "org14@example.com", Icon = "icon14.png", RefFacebook = "fb14", RefYoutube = "yt14", RefX = "x14", RefSocial = "social14", RefTikTok = "tiktok14", IsActive = false },
+            new InputModel { Code ="Code15" ,OrganizationName = "Org15", Address = "Address15", Phone = "1534567890", Email = "org15@example.com", Icon = "icon15.png", RefFacebook = "fb15", RefYoutube = "yt15", RefX = "x15", RefSocial = "social15", RefTikTok = "tiktok15", IsActive = true },
+            new InputModel { Code ="Code16" ,OrganizationName = "Org16", Address = "Address16", Phone = "1634567890", Email = "org16@example.com", Icon = "icon16.png", RefFacebook = "fb16", RefYoutube = "yt16", RefX = "x16", RefSocial = "social16", RefTikTok = "tiktok16", IsActive = false },
+            new InputModel { Code ="Code17" ,OrganizationName = "Org17", Address = "Address17", Phone = "1734567890", Email = "org17@example.com", Icon = "icon17.png", RefFacebook = "fb17", RefYoutube = "yt17", RefX = "x17", RefSocial = "social17", RefTikTok = "tiktok17", IsActive = true },
+            new InputModel { Code ="Code18" ,OrganizationName = "Org18", Address = "Address18", Phone = "1834567890", Email = "org18@example.com", Icon = "icon18.png", RefFacebook = "fb18", RefYoutube = "yt18", RefX = "x18", RefSocial = "social18", RefTikTok = "tiktok18", IsActive = false },
+            new InputModel { Code ="Code19" ,OrganizationName = "Org19", Address = "Address19", Phone = "1934567890", Email = "org19@example.com", Icon = "icon19.png", RefFacebook = "fb19", RefYoutube = "yt19", RefX = "x19", RefSocial = "social19", RefTikTok = "tiktok19", IsActive = true },
+            new InputModel { Code ="Code20" ,OrganizationName = "Org20", Address = "Address20", Phone = "2034567890", Email = "org20@example.com", Icon = "icon20.png", RefFacebook = "fb20", RefYoutube = "yt20", RefX = "x20", RefSocial = "social20", RefTikTok = "tiktok20", IsActive = false }
+        };
+        return base.OnInitializedAsync();
+    }
+
+    private Task OpenAddDialog()
+    {
+        var options = new DialogOptions { CloseOnEscapeKey = true, CloseButton = true, FullWidth = true };
+
+        return DialogService.ShowAsync<AddDialog>("", options);
+    }
+
+    private Task OpenEditDialog()
+    {
+        var options = new DialogOptions { CloseOnEscapeKey = true, CloseButton = true, FullWidth = true };
+
+        return DialogService.ShowAsync<EditDialog>("", options);
+    }
+
+    private Task OpenDeleteDialog()
+    {
+        var options = new DialogOptions { CloseOnEscapeKey = true, CloseButton = true, FullWidth = true };
+
+        return DialogService.ShowAsync<DeleteDialog>("", options);
+    }
+
+    public class InputModel
+    {
+        public string Code { get; set; }
+        public string OrganizationName { get; set; }
+        public string Address { get; set; }
+        public string Phone { get; set; }
+        public string? Email { get; set; }
+        public string? Icon { get; set; }
+        public string? RefFacebook { get; set; }
+        public string? RefYoutube { get; set; }
+        public string? RefX { get; set; }
+        public string? RefSocial { get; set; }
+        public string? RefTikTok { get; set; }
+        public bool IsActive { get; set; }
+    }
+}

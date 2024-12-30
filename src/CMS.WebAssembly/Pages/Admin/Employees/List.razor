@@ -10,6 +10,7 @@
 
     .mud-button-label {
         text-transform: none;
+        justify-content: left;
     }
 
     .mud-grid-spacing-xs-2 {
@@ -44,12 +45,32 @@
                     <MudSpacer/>
                     <MudItem>
                         <MudMenu Icon="@Icons.Material.Filled.MoreVert" AnchorOrigin="Origin.BottomCenter" TransformOrigin="Origin.TopCenter">
-                            <MudMenuItem Icon="@Icons.Material.Filled.Edit">
+                            @* <MudMenuItem Icon="@Icons.Material.Filled.Edit" OnClick="OpenEditDialog">
                                 <MudText>Sửa</MudText>
                             </MudMenuItem>
-                            <MudMenuItem Icon="@Icons.Material.Filled.Delete">
-                                <MudText>Xóa</MudText>
-                            </MudMenuItem>
+                            <MudMenuItem >
+                                <MudSwitch @bind-Value="isActive" Color="Color.Tertiary">
+                                    @if (isActive)
+                                    {
+                                        <span>Đang hoạt động</span>
+                                    }
+                                    else
+                                    {
+                                        <span>Không hoạt đô</span>
+                                    }
+                                </MudSwitch>
+                            </MudMenuItem> *@
+                            <MudButton StartIcon="@Icons.Material.Filled.Edit" OnClick="OpenEditDialog" Style="width:100%">Sửa</MudButton>
+                            <MudSwitch @bind-Value="isActive" Color="Color.Tertiary">
+                                @if (isActive)
+                                {
+                                    <span>Đang hoạt động</span>
+                                }
+                                else
+                                {
+                                    <span>Không hoạt động</span>
+                                }
+                            </MudSwitch>
                         </MudMenu>
                     </MudItem>
                 </MudStack>
@@ -59,6 +80,13 @@
 </MudGrid>
 
 @code {
+    public bool isActive = true;
+    public string active { get; set; }
+
+    protected override void OnInitialized()
+    {
+    }
+
     private Task OpenAddDialog()
     {
         var options = new DialogOptions { CloseOnEscapeKey = true, CloseButton = true, FullWidth=true};
