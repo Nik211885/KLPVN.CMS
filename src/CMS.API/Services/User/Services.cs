@@ -182,25 +182,6 @@ public class Services : IServices
     }
     
     return menuResponses;
-    // var auAction = await _context.AuActionClasses.Where(x => permissionCode.Contains(x.Code)).ToListAsync();
-    // var memo = new Dictionary<Guid, Guid?>();
-    // //uuid
-    // foreach (var a in auAction)
-    // {
-    //   var menuParent = await _context.AuClasses.FirstOrDefaultAsync(x => x.Id == a.ClassId);
-    //   if (memo.ContainsKey(a.Id))
-    //   {
-    //     while (menuParent.ParentId is not null)
-    //     {
-    //       var parent  = await _context.AuClasses.FirstOrDefaultAsync(x=>x)
-    //     }
-    //   }
-    //   else
-    //   {
-    //     memo.Add(a.Id,null);
-    //   }
-    // }
-    
   }
 
   public async Task<UserDetailResponse> GetUserDetailsAsync(string userName)
@@ -209,11 +190,10 @@ public class Services : IServices
     if (user is null)
     {
       throw new NotFoundException(nameof(user));
-      
     }
 
-    return null;
-    // return user;
+    var userResponse = user.Mapping();
+    return userResponse;
   }
 
   public async Task<Guid> UploadAvatarAsync(string userName, string avatarUrl)

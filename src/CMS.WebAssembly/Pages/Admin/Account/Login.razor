@@ -81,7 +81,7 @@
         background: transparent;
     }
 </style>
-@if (!isPageReady)
+@if (!isPassPage)
 {
     <p>Loading...</p>
 }
@@ -106,7 +106,7 @@ else
                                       MaxLength="50" InputType="@passType" Adornment="Adornment.End" AdornmentIcon="@passIcon"
                                       OnAdornmentClick="ShowPass" Variant="Variant.Outlined" Margin="Margin.Dense" />
                         <MudStack Justify="Justify.Center" AlignItems="AlignItems.Center" Style="padding-top: 20px">
-                            <MudButton OnClick="HandlerLoginAsync" Style="text-transform: none; border-radius:20px !important" ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary">
+                            <MudButton OnClick="HandlerLoginAsync" Style="text-transform: none; border-radius:20px !important" ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Disabled="@isLoginButton">
                                 Đăng nhập
                             </MudButton>
                         </MudStack>

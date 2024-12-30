@@ -14,7 +14,8 @@ namespace CMS.WebAssembly.Pages.Admin.Account;
 
 public partial class Login
 {
-  private bool isPageReady = false;
+  private bool isPassPage = false;
+  private bool isLoginButton = false;
   private string? errorMessage;
 
   [SupplyParameterFromForm] private InputModel Input { get; set; } = new();
@@ -55,6 +56,7 @@ public partial class Login
 
   private async Task HandlerLoginAsync()
   {
+    isLoginButton = true;
     var client = Factory.CreateClient(ApiKey.BaseAddress);
     var loginRequest = new LoginRequest(Input.UserName, Input.Password);
     var data = loginRequest.EncodeJsonContent();
@@ -69,6 +71,7 @@ public partial class Login
         await Js.InvokeVoidAsync("localStorage.setItem", "Refresh", jwtResult.RefreshToken);
         Navigation.NavigateTo("/admin");
         Snack.Add("Đăng nhập thành công", Severity.Success);
+        return;
       }
       else
       {
@@ -80,6 +83,8 @@ public partial class Login
     {
       Snack.Add("Có lỗi trong quá trình đăng nhập", Severity.Error);
     }
+
+    isLoginButton = false;
   }
 
   protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -90,7 +95,7 @@ public partial class Login
       var client = Factory.CreateClient(ApiKey.BaseAddress);
       if (token is null)
       {
-        isPageReady = true;
+        isPassPage = true;
         StateHasChanged();
         return;
       }
@@ -109,7 +114,7 @@ public partial class Login
             var refreshToken = await Js.InvokeAsync<string?>("localStorage.getItem", "Refresh");
             if (refreshToken is null)
             {
-              isPageReady = true;
+              isPassPage = true;
               StateHasChanged();
               return;
             }
@@ -128,7 +133,7 @@ public partial class Login
               await Js.InvokeVoidAsync("localStorage.removeItem", "Token");
               await Js.InvokeVoidAsync("localStorage.removeItem", "Refresh");
               await Js.InvokeVoidAsync("localStorage.removeItem", "Menu");
-              isPageReady = true;
+              isPassPage = true;
               StateHasChanged();
             }
           }
@@ -137,7 +142,7 @@ public partial class Login
             await Js.InvokeVoidAsync("localStorage.removeItem", "Token");
             await Js.InvokeVoidAsync("localStorage.removeItem", "Refresh");
             await Js.InvokeVoidAsync("localStorage.removeItem", "Menu");
-            isPageReady = true;
+            isPassPage = true;
             StateHasChanged();
             return;
           }
@@ -147,7 +152,7 @@ public partial class Login
           await Js.InvokeVoidAsync("localStorage.removeItem", "Token");
           await Js.InvokeVoidAsync("localStorage.removeItem", "Refresh");
           await Js.InvokeVoidAsync("localStorage.removeItem", "Menu");
-          isPageReady = true;
+          isPassPage = true;
           StateHasChanged();
           return;
         }
