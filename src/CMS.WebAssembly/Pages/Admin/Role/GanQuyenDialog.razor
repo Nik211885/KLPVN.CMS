@@ -1,0 +1,102 @@
+﻿
+<style>
+    .mud-button-label {
+        text-transform: none;
+    }
+</style>
+
+<MudDialog>
+    <TitleContent>
+        <MudText Typo="Typo.h6">
+            Gán quyền
+        </MudText>
+    </TitleContent>
+    <DialogContent>
+        <MudTable Items="dsKhachHang" Dense Virtualize Square Elevation="0" HorizontalScrollbar="true" Hover="true" Bordered>
+            <ToolBarContent>
+                <MudText Typo="Typo.h6">Danh sách nhân viên</MudText>
+                <MudSpacer />
+                <MudTextField T="string" Placeholder="Tìm kiếm" Variant="Variant.Outlined" Margin="Margin.Dense"
+                              Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0" />
+            </ToolBarContent>
+            <ColGroup>
+                <col style="min-width: 1rem; width: 1rem; position: sticky; left: 0px; z-index: 0" class="pa-1" />
+                <col style="min-width: 5rem; width: 11rem; max-width: 11rem" class="pa-1" />
+                <col style="min-width: 13rem; width: 25rem; max-width: 25rem" class="pa-1" />
+                <col style="min-width: 8rem; width: 10rem; max-width: 10rem" class="pa-1" />
+                <col style="min-width: 10rem; width: 20rem; max-width: 20rem" class="pa-1" />
+            </ColGroup>
+            <HeaderContent>
+                <MudTh></MudTh>
+                <MudTh Style="text-wrap: nowrap">Mã khách hàng</MudTh>
+                <MudTh Style="text-wrap: nowrap">Tên khách hàng</MudTh>
+                <MudTh Style="text-wrap: nowrap">Số điện thoại</MudTh>
+                <MudTh Style="text-wrap: nowrap">Email</MudTh>
+            </HeaderContent>
+            <RowTemplate>
+                <MudTd>
+                    <MudCheckBox @bind-Value="@context.IsCheck" Dense />
+                </MudTd>
+                <MudTd>@context.UserName</MudTd>
+                <MudTd>@context.FullName</MudTd>
+                <MudTd>@context.PhoneNumber</MudTd>
+                <MudTd>@context.Email</MudTd>
+            </RowTemplate>
+            <PagerContent>
+                <MudTablePager AllItemsText="Tất cả" PageSizeOptions="new int[] {10}" HideRowsPerPage
+                               HorizontalAlignment="HorizontalAlignment.Start" />
+            </PagerContent>
+        </MudTable>
+    </DialogContent>
+    <DialogActions>
+        <MudButton Color="Color.Error" OnClick="Cancel">Huỷ</MudButton>
+        <MudButton Color="Color.Success" OnClick="Submit">Lưu</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [CascadingParameter]
+    private MudDialogInstance MudDialog { get; set; }
+    private List<User> dsKhachHang { get; set; } = [];
+    private bool isCheck = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        dsKhachHang = new List<User>
+        {
+            new User { UserName = "john_doe", PhoneNumber = "0123456789", Email = "john.doe@example.com", FullName = "John Doe" },
+            new User { UserName = "jane_doe", PhoneNumber = "0987654321", Email = "jane.doe@example.com", FullName = "Jane Doe" },
+            new User { UserName = "alice123", PhoneNumber = "0912345678", Email = "alice.wonder@example.com", FullName = "Alice Wonderland" },
+            new User { UserName = "bob_builder", PhoneNumber = "0934567890", Email = "bob.builder@example.com", FullName = "Bob Builder" },
+            new User { UserName = "charlie_chap", PhoneNumber = "0945678901", Email = "charlie.chaplin@example.com", FullName = "Charlie Chaplin" },
+            new User { UserName = "dora_explore", PhoneNumber = "0923456781", Email = "dora.explore@example.com", FullName = "Dora Explorer" },
+            new User { UserName = "eve_hacker", PhoneNumber = "0967890123", Email = "eve.hacker@example.com", FullName = "Eve Hacker" },
+            new User { UserName = "frank_sin", PhoneNumber = "0978901234", Email = "frank.sinatra@example.com", FullName = "Frank Sinatra" },
+            new User { UserName = "grace_hop", PhoneNumber = "0956789012", Email = "grace.hopper@example.com", FullName = "Grace Hopper" },
+            new User { UserName = "harry_pot", PhoneNumber = "0945671234", Email = "harry.potter@example.com", FullName = "Harry Potter" },
+            new User { UserName = "ivan_drago", PhoneNumber = "0934567123", Email = "ivan.drago@example.com", FullName = "Ivan Drago" },
+            new User { UserName = "jack_spar", PhoneNumber = "0923456712", Email = "jack.sparrow@example.com", FullName = "Jack Sparrow" },
+            new User { UserName = "karen_manager", PhoneNumber = "0912345671", Email = "karen.manager@example.com", FullName = "Karen Manager" },
+            new User { UserName = "leo_davinci", PhoneNumber = "0987654320", Email = "leo.davinci@example.com", FullName = "Leonardo Da Vinci" },
+            new User { UserName = "mia_wall", PhoneNumber = "0976543210", Email = "mia.wallace@example.com", FullName = "Mia Wallace" },
+            new User { UserName = "nick_fury", PhoneNumber = "0965432109", Email = "nick.fury@example.com", FullName = "Nick Fury" },
+            new User { UserName = "olivia_ben", PhoneNumber = "0954321098", Email = "olivia.benson@example.com", FullName = "Olivia Benson" },
+            new User { UserName = "peter_par", PhoneNumber = "0943210987", Email = "peter.parker@example.com", FullName = "Peter Parker" },
+            new User { UserName = "quinn_hart", PhoneNumber = "0932109876", Email = "quinn.hart@example.com", FullName = "Quinn Hart" },
+            new User { UserName = "rachel_gre", PhoneNumber = "0921098765", Email = "rachel.green@example.com", FullName = "Rachel Green" }
+        };
+    }
+
+    private void Submit() => MudDialog.Close(DialogResult.Ok(true));
+
+    private void Cancel() => MudDialog.Cancel();
+
+    public class User
+    {
+        public bool IsCheck = false;
+        public string UserName { get; set; }
+        public string PhoneNumber { get; set; }
+        public string? Email { get; set; }
+        public string FullName { get; set; }
+    }
+}
