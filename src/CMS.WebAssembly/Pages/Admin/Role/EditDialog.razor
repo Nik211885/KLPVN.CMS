@@ -1,0 +1,106 @@
+﻿@using System.ComponentModel.DataAnnotations
+
+<style>
+    .mud-button-label {
+        text-transform: none;
+    }
+</style>
+
+<MudDialog>
+    <TitleContent>
+    </TitleContent>
+    <DialogContent>
+        <MudGrid Spacing="2" Justify="Justify.FlexStart">
+            <MudItem xs="12" sm="6">
+                <MudTextField Label="Mã quyền" @bind-Value="@role.Code" Required RequiredError="Mã quyền không được để trống" Variant="Variant.Outlined" Margin="Margin.Dense" />
+            </MudItem>
+            <MudItem xs="12" sm="6">
+                <MudTextField Label="Tên quyền" @bind-Value="@role.Name" Required RequiredError="Tên quyền không được để trống" Variant="Variant.Outlined" Margin="Margin.Dense" />
+            </MudItem>
+            <MudItem xs="12">
+                @foreach (var item in Roles)
+                {
+                    <MudText Style="font-weight:bold">
+                        @item.Name
+                    </MudText>
+                    <MudGrid Spacing="2">
+                        @foreach (var item in DsClaim.Where(x => x.Type == item.Code))
+                        {
+                            <MudItem xs="12" sm="6" md="6">
+                                <MudSwitch Label="@item.Name" Color="Color.Primary" @bind-Value="item.Value" />
+                            </MudItem>
+                        }
+                    </MudGrid>
+                }
+            </MudItem>
+        </MudGrid>
+    </DialogContent>
+    <DialogActions>
+        <MudButton Color="Color.Error" OnClick="Cancel">Hủy</MudButton>
+        <MudButton Color="Color.Primary" OnClick="Submit">Đồng ý</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [CascadingParameter]
+    private MudDialogInstance MudDialog { get; set; }
+    private List<ClaimName> DsClaim = new List<ClaimName>();
+    private List<string> typeNames = new List<string>();
+    private List<string> selectedClaims = new List<string>();
+    public Role role { get; set; } = new Role();
+    public List<Role> Roles { get; set; } = new List<Role>();
+
+    protected override Task OnInitializedAsync()
+    {
+        Roles = new List<Role>
+        {
+            new Role { Code = "ADMIN", Name = "Administrator", ParentId = null },
+            new Role { Code = "USER", Name = "User", ParentId = Guid.NewGuid() },
+            new Role { Code = "MANAGER", Name = "Manager", ParentId = null },
+            new Role { Code = "GUEST", Name = "Guest", ParentId = Guid.NewGuid() },
+            new Role { Code = "DEVELOPER", Name = "Developer", ParentId = null },
+            new Role { Code = "TESTER", Name = "Tester", ParentId = Guid.NewGuid() },
+            new Role { Code = "HR", Name = "Human Resources", ParentId = null },
+            new Role { Code = "FINANCE", Name = "Finance", ParentId = Guid.NewGuid() },
+            new Role { Code = "SALES", Name = "Sales", ParentId = null },
+            new Role { Code = "MARKETING", Name = "Marketing", ParentId = Guid.NewGuid() }
+        };
+        DsClaim = Roles.SelectMany(role => new List<ClaimName>
+        {
+            new ClaimName { Type = role.Code, Value = false, Name = "Read Permission" },
+            new ClaimName { Type = role.Code, Value = false, Name = " Write Permission" }
+        }).ToList();
+        typeNames = DsClaim.Select(x => x.Type).Distinct().ToList();
+        return base.OnInitializedAsync();
+    }
+
+    private void Submit() => MudDialog.Close(DialogResult.Ok(true));
+
+    private void Cancel() => MudDialog.Cancel();
+
+    private void selectClaim(string claim, bool value)
+    {
+        if (selectedClaims.Contains(claim))
+        {
+            selectedClaims.Remove(claim);
+        }
+        else
+        {
+            selectedClaims.Add(claim);
+        }
+    }
+
+    public class Role
+    {
+        public string Code { get; set; } = null!;
+        public string Name { get; set; } = null!;
+        public Guid? ParentId { get; set; }
+    }
+
+    public class ClaimName
+    {
+        public string Type { get; set; }
+        public bool Value { get; set; }
+        public string Name { get; set; }
+    }
+}

@@ -1,0 +1,102 @@
+﻿<style>
+    .mud-button-label {
+        text-transform: none;
+    }
+</style>
+
+<MudDialog>
+    <TitleContent>
+        <MudStack Row AlignItems="AlignItems.Center" Justify="Justify.Center" Spacing="1" Class="pl-0 pr-4 pt-1">
+            <MudText Color="Color.Default" Style="font-weight: bold" Typo="Typo.h6">Thêm Thông Tin</MudText>
+        </MudStack>
+    </TitleContent>
+    <DialogContent>
+        <MudForm @ref="form" Model="Input">
+            <MudGrid Justify="Justify.FlexStart" Spacing="1">
+                <MudItem xs="12">
+                    <MudStack Class="d-flex justify-content-center align-items-center mb-2" Style="width: 100%; height: auto;">
+                        <MudAvatar Style="width:100px; height:100px">
+                            <MudImage Class="center-image" Style="width:100%; height: auto" Src="imgs/no-image-icon-6.png" Alt="Icon" />
+                        </MudAvatar>
+                        <MudFileUpload Accept="image/png, image/jpeg" T="IBrowserFile">
+                            <ActivatorContent>
+                                <MudFab Color="Color.Secondary"
+                                        StartIcon="@Icons.Material.Filled.Image"
+                                        Label="Chọn ảnh" Style="text-transform: none" />
+                            </ActivatorContent>
+                        </MudFileUpload>
+                    </MudStack>
+                </MudItem>
+                <MudItem xs="12">
+                    <MudTextField @bind-Value="Input.Code" For="@(() => Input.Code)" Variant="Variant.Outlined" Margin="Margin.Dense"  Label="Mã"></MudTextField>
+                </MudItem>
+                <MudItem xs="12">
+                    <MudTextField @bind-Value="Input.OrganizationName" For="@(() => Input.OrganizationName)" Variant="Variant.Outlined" Margin="Margin.Dense"  Label="Tên tổ chức"></MudTextField>
+                </MudItem>
+                <MudItem xs="12">
+                    <MudTextField @bind-Value="Input.Phone" For="@(() => Input.Phone)" Variant="Variant.Outlined" Margin="Margin.Dense"  Label="Số điện thoại"></MudTextField>
+                </MudItem>
+                <MudItem xs="12">
+                    <MudTextField @bind-Value="Input.Email" For="@(() => Input.Email)" Variant="Variant.Outlined" Margin="Margin.Dense" Label="Email"></MudTextField>
+                </MudItem>
+                <MudItem xs="12">
+                    <MudTextField @bind-Value="Input.Address" For="@(() => Input.Address)" Variant="Variant.Outlined" Margin="Margin.Dense" Label="Địa chỉ"></MudTextField>
+                </MudItem>
+                <MudItem xs="12">
+                    <MudTextField @bind-Value="Input.RefFacebook" For="@(() => Input.RefFacebook)" Variant="Variant.Outlined" Margin="Margin.Dense" Label="Link FaceBook"></MudTextField>
+                </MudItem>
+                <MudItem xs="12">
+                    <MudTextField @bind-Value="Input.RefYoutube" For="@(() => Input.RefYoutube)" Variant="Variant.Outlined" Margin="Margin.Dense" Label="Link Youtube"></MudTextField>
+                </MudItem>
+                <MudItem xs="12">
+                    <MudTextField @bind-Value="Input.RefX" For="@(() => Input.RefX)" Variant="Variant.Outlined" Margin="Margin.Dense" Label="Link X"></MudTextField>
+                </MudItem>
+                <MudItem xs="12">
+                    <MudTextField @bind-Value="Input.RefSocial" For="@(() => Input.RefSocial)" Variant="Variant.Outlined" Margin="Margin.Dense" Label="Link Mạng Xã hội"></MudTextField>
+                </MudItem>
+                <MudItem xs="12">
+                    <MudTextField @bind-Value="Input.RefTikTok" For="@(() => Input.RefTikTok)" Variant="Variant.Outlined" Margin="Margin.Dense" Label="Link Tiktok"></MudTextField>
+                </MudItem>
+                <MudItem xs="12">
+                    <MudRadioGroup @bind-Value="Input.IsActive">
+                        <MudRadio Value="@(true)">Hoạt động</MudRadio>
+                        <MudRadio Value="@(false)">Không hoạt động</MudRadio>
+                    </MudRadioGroup>
+                </MudItem>
+            </MudGrid>
+        </MudForm>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel" Variant="Variant.Filled">Hủy</MudButton>
+        <MudButton Color="Color.Primary" OnClick="Submit" Variant="Variant.Filled">Lưu</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [CascadingParameter]
+    private MudDialogInstance MudDialog { get; set; }
+
+    private MudForm form;
+
+    public InputModel Input = new InputModel();
+
+    private void Submit() => MudDialog.Close(DialogResult.Ok(true));
+
+    private void Cancel() => MudDialog.Cancel();
+
+    public class InputModel
+    {
+        public string Code { get; set; }
+        public string OrganizationName { get; set; } = null!;
+        public string Address { get; set; } = null!;
+        public string Phone { get; set; } = null!;
+        public string? Email { get; set; }
+        public string? Icon { get; set; }
+        public string? RefFacebook { get; set; }
+        public string? RefYoutube { get; set; }
+        public string? RefX { get; set; }
+        public string? RefSocial { get; set; }
+        public string? RefTikTok { get; set; }
+        public bool IsActive { get; set; }
+    }
+}
