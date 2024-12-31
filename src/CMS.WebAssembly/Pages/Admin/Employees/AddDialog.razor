@@ -22,6 +22,10 @@
                     <MudTextField @bind-Value="nhanVien.Password" For="@(() => nhanVien.Password)" InputType="@passType" Adornment="Adornment.End" AdornmentIcon="@passIcon"
                                   OnAdornmentClick="ShowPass" Variant="Variant.Outlined" Margin="Margin.Dense" Required Label="Mật khẩu"></MudTextField>
                 </MudItem>
+                <MudItem xs="12">
+                    <MudTextField @bind-Value="nhanVien.ConfimPassword" For="@(() => nhanVien.ConfimPassword)" InputType="@confirmPassType" Adornment="Adornment.End" AdornmentIcon="@confirmPassIcon"
+                                  OnAdornmentClick="ShowConfirmPass" Variant="Variant.Outlined" Margin="Margin.Dense" Required Label="Xác nhận mật khẩu"></MudTextField>
+                </MudItem>
                 <MudItem xs="12" sm="12" md="6" lg="6">
                     <MudTextField @bind-Value="nhanVien.FullName" For="@(() => nhanVien.FullName)" Variant="Variant.Outlined" Margin="Margin.Dense" Required Label="Họ tên"></MudTextField>
                 </MudItem>
@@ -58,6 +62,10 @@
     InputType passType = InputType.Password;
     string passIcon = Icons.Material.Filled.VisibilityOff;
 
+    bool isShowConfirmPass = false;
+    InputType confirmPassType = InputType.Password;
+    string confirmPassIcon = Icons.Material.Filled.VisibilityOff;
+
     public void ShowPass()
     {
         if (isShowPass)
@@ -73,6 +81,23 @@
             passIcon = Icons.Material.Filled.Visibility;
         }
     }
+
+    public void ShowConfirmPass()
+    {
+        if (isShowConfirmPass)
+        {
+            isShowConfirmPass = false;
+            confirmPassType = InputType.Password;
+            confirmPassIcon = Icons.Material.Filled.VisibilityOff;
+        }
+        else
+        {
+            isShowConfirmPass = true;
+            confirmPassType = InputType.Text;
+            confirmPassIcon = Icons.Material.Filled.Visibility;
+        }
+    }
+
 
     private void Submit() => MudDialog.Close(DialogResult.Ok(true));
 
@@ -100,6 +125,11 @@
         [StringLength(255, MinimumLength = 7, ErrorMessage = "Mật khẩu phải có trên 7 ký tự!")]
         [RegularExpression(@"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{7,}$", ErrorMessage = "Mật khẩu cần ít nhất 1 ký tự thường, 1 ký tự IN HOA, 1 ký tự số, 1 ký tự đặc biệt (@$!%*?&)")]
         public string Password { get; set; }
+
+        [Required(ErrorMessage = "Mật khẩu xác nhận không được để trống!")]
+        [DataType(DataType.Password)]
+        [Compare(nameof(Password), ErrorMessage = "Mật khẩu xác nhận không khớp!")]
+        public string ConfimPassword { get; set; }
 
         public bool Gender { get; set; }
     }
