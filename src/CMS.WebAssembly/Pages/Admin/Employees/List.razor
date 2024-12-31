@@ -20,6 +20,13 @@
     .mud-grid-spacing-xs-2 {
         margin-top: 0px;
     }
+
+    .center-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 100%;
+    }
 </style>
 
 <PageTitle>Danh sách nhân viên</PageTitle>
@@ -45,17 +52,14 @@
             <MudItem xs="12" sm="6" lg="3" xl="3">
                 <MudCard Class="rounded-3 my-1" Style="border: 3px" Elevation="2">
                     <MudStack Row>
-                        <MudAvatar>
-                            <MudImage ObjectFit="ObjectFit.ScaleDown" Style="width: 100%; max-width: 5rem" Src="@u.Avatar" Alt="img"/>
-                        </MudAvatar>
-                        <MudItem>
-                            <MudText Typo="Typo.body1" Style="font-weight:bold">@u.FullName</MudText>
-                            @foreach (var r in u.Roles)
-                            {
-                                <MudText Typo="Typo.body2">@r.Name</MudText>
-                            }
-                        </MudItem>
-                        <MudSpacer/>
+                        <div class="mud-button-root mud-icon-button mud-ripple mud-ripple-icon">
+                            <div style="width:24px; height:24px"></div>
+                        </div>
+                        <div class="center-container">
+                            <MudAvatar Style="width: 100px; height: 100px">
+                                <MudImage ObjectFit="ObjectFit.ScaleDown" Src="@u.Avatar" Alt="img"/>
+                            </MudAvatar>
+                        </div>
                         <MudItem>
                             <MudMenu Icon="@Icons.Material.Filled.MoreVert" AnchorOrigin="Origin.BottomCenter" TransformOrigin="Origin.TopCenter">
                                 @* <MudMenuItem Icon="@Icons.Material.Filled.Edit" OnClick="OpenEditDialog">
@@ -86,6 +90,13 @@
                                 </MudSwitch>
                             </MudMenu>
                         </MudItem>
+                    </MudStack>
+                    <MudStack Justify="Justify.Center" AlignItems="AlignItems.Center" Style="gap: 0 !important">
+                        <MudText Typo="Typo.body1" Style="font-weight:bold">@u.FullName</MudText>
+                        @foreach (var r in u.Roles)
+                        {
+                            <MudText Typo="Typo.body2">@r.Name</MudText>
+                        }
                     </MudStack>
                 </MudCard>
             </MudItem>

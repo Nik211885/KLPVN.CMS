@@ -5,7 +5,7 @@
 
 <PageTitle>Danh sách chủ đề</PageTitle>
 
-<MudTable Items="_items" Dense="true" Virtualize="false" FixedHeader="true" Bordered="true">
+<MudTable @ref=@_table RowsPerPage="10" Items="_items" Dense="true" Virtualize="false" FixedHeader="true" Bordered="true">
     <ColGroup>
         <col style="width: 2%; " class="pa-0" />
         <col style="width: 2%; " class="pa-0" />
@@ -57,12 +57,18 @@
     </RowTemplate>
 
     <PagerContent>
-        <MudTablePager HidePageNumber HideRowsPerPage PageSizeOptions="new int[] {10}"/>
+        <MudPagination SelectedChanged="PageChanged" Count="@((_table.GetFilteredItemsCount() + _table.RowsPerPage - 1) / _table.RowsPerPage)" Class="pa-4" />
     </PagerContent>
 </MudTable>
 
 @code {
     private List<Topic> _items;
+    private MudTable<Topic> _table;
+
+    private void PageChanged(int i)
+    {
+        _table.NavigateTo(i - 1);
+    }
 
     protected override void OnInitialized()
     {

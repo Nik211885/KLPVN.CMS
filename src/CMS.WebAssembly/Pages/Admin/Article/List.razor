@@ -7,7 +7,7 @@
 
 <PageTitle>Danh sách bài viết</PageTitle>
 
-<MudTable Items="articles" Dense="true" Virtualize="false" FixedHeader="true" Bordered="true" HorizontalScrollbar="true">
+<MudTable @ref=@_table RowsPerPage="10" Items="articles" Dense="true" Virtualize="false" FixedHeader="true" Bordered="true" HorizontalScrollbar="true">
     <ColGroup>
         <col style="width: 1.5%; " class="pa-0" />
         <col style="width: 10%; " class="pa-0" />
@@ -18,7 +18,7 @@
         <col style="width: 0.5%; " class="pa-0" />
     </ColGroup>
     <ToolBarContent>
-        <MudTextField T="string" Placeholder="Tìm kiếm" Adornment="Adornment.Start"
+        <MudTextField T="string" Placeholder="Tìm kiếm" Adornment="Adornment.End"
                       AdornmentIcon="@Icons.Material.Filled.Search"
                       Variant="Variant.Outlined" Margin="Margin.Dense"
                       Immediate="true"></MudTextField>
@@ -82,13 +82,13 @@
     </RowTemplate>
 
     <PagerContent>
-        <MudTablePager HidePageNumber HideRowsPerPage PageSizeOptions="new int[] {10}" />
+        <MudPagination SelectedChanged="PageChanged" Count="@((_table.GetFilteredItemsCount() + _table.RowsPerPage - 1) / _table.RowsPerPage)" Class="pa-4" />
     </PagerContent>
 </MudTable>
 
 @code {
     private List<Article> articles = new List<Article>();
-
+    private MudTable<Article> _table;
     protected override void OnInitialized()
     {
         Random random = new Random();
@@ -124,6 +124,11 @@
         var options = new DialogOptions { CloseOnEscapeKey = true, CloseButton = true, FullWidth = true };
 
         return DialogService.ShowAsync<DeleteDialog>("", options);
+    }
+
+    private void PageChanged(int i)
+    {
+        _table.NavigateTo(i - 1);
     }
 
     public class Article
