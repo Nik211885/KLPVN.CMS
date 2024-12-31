@@ -12,5 +12,6 @@ public class RoleConfiguration : IEntityTypeConfiguration<Role>
     builder.Property(x=>x.Code).HasMaxLength(50).IsRequired();
     builder.Property(x=>x.Name).HasMaxLength(50).IsRequired();
     builder.HasOne(x => x.Parent).WithMany(x => x.Child).HasForeignKey(x => x.ParentId);
+    builder.HasMany(x=>x.UserRoles).WithOne(x=>x.Role).HasForeignKey(x=>x.RoleId);
   }
 }

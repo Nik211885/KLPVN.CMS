@@ -9,4 +9,4 @@ public record UserDetailResponse(
   bool Gender,
   string Phone, 
   string? Address, 
-  string? Avatar);
+  string Avatar);

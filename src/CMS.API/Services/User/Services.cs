@@ -209,6 +209,17 @@ public class Services : IServices
     return user.Id;
   }
 
+  public async Task<List<UserDescriptionResponse>> GetListUserDescriptionsAsync()
+  {
+    var users = await _context.Users
+      .Include(x=>x.UserRoles)
+      .ThenInclude(x=>x.Role)
+      .AsNoTracking()
+      .ToListAsync();
+    var userResponse = users.Mapping();
+    return userResponse;
+  }
+
   private async Task GetTreeMenuAsync(Entities.AuClass? auClass, MenuResponse menuBottom
     , MenuTreeResponse menuResponses, Dictionary<string, MenuResponse> menusMemo)
   {

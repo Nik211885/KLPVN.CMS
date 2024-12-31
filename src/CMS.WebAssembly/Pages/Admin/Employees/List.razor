@@ -1,4 +1,8 @@
 ﻿@page "/quanlynhanvien"
+@using CMS.Shared.DTOs.User.Response
+@using CMS.WEB.Common
+@using KLPVN.Core.Helper
+@using KLPVN.Core.Models
 @layout CMS.WebAssembly.Layout.Admin.AdminLayout
 
 @inject IDialogService DialogService
@@ -30,22 +34,31 @@
     </MudStack>
 </MudStack>
 <MudGrid Spacing="2" Class="pa-0">
-    @for(int i=1; i<=16; i++)
+    @if (!_isLoadEmployees)
     {
-        <MudItem xs="12" sm="6" lg="3" xl="3">
-            <MudCard Class="rounded-3 my-1" Style="border: 3px" Elevation="2">
-                <MudStack Row>
-                    <MudAvatar>
-                        <MudImage ObjectFit="ObjectFit.ScaleDown" Style="width: 100%; max-width: 5rem" Src="imgs/no-image-icon-6.png" Alt="img" />
-                    </MudAvatar>
-                    <MudItem>
-                        <MudText Typo="Typo.body1" Style="font-weight:bold">Tên Nhân Viên</MudText>
-                        <MudText Typo="Typo.body2">Chức vụ</MudText>
-                    </MudItem>
-                    <MudSpacer/>
-                    <MudItem>
-                        <MudMenu Icon="@Icons.Material.Filled.MoreVert" AnchorOrigin="Origin.BottomCenter" TransformOrigin="Origin.TopCenter">
-                            @* <MudMenuItem Icon="@Icons.Material.Filled.Edit" OnClick="OpenEditDialog">
+        <p>Loadding...</p>
+    }
+    else
+    {
+        @foreach (var u in _userDescriptionResponses)
+        {
+            <MudItem xs="12" sm="6" lg="3" xl="3">
+                <MudCard Class="rounded-3 my-1" Style="border: 3px" Elevation="2">
+                    <MudStack Row>
+                        <MudAvatar>
+                            <MudImage ObjectFit="ObjectFit.ScaleDown" Style="width: 100%; max-width: 5rem" Src="@u.Avatar" Alt="img"/>
+                        </MudAvatar>
+                        <MudItem>
+                            <MudText Typo="Typo.body1" Style="font-weight:bold">@u.FullName</MudText>
+                            @foreach (var r in u.Roles)
+                            {
+                                <MudText Typo="Typo.body2">@r.Name</MudText>
+                            }
+                        </MudItem>
+                        <MudSpacer/>
+                        <MudItem>
+                            <MudMenu Icon="@Icons.Material.Filled.MoreVert" AnchorOrigin="Origin.BottomCenter" TransformOrigin="Origin.TopCenter">
+                                @* <MudMenuItem Icon="@Icons.Material.Filled.Edit" OnClick="OpenEditDialog">
                                 <MudText>Sửa</MudText>
                             </MudMenuItem>
                             <MudMenuItem >
@@ -60,31 +73,65 @@
                                     }
                                 </MudSwitch>
                             </MudMenuItem> *@
-                            <MudButton StartIcon="@Icons.Material.Filled.Edit" OnClick="OpenEditDialog" Style="width:100%">Sửa</MudButton>
-                            <MudSwitch @bind-Value="isActive" Color="Color.Tertiary">
-                                @if (isActive)
-                                {
-                                    <span>Đang hoạt động</span>
-                                }
-                                else
-                                {
-                                    <span>Không hoạt động</span>
-                                }
-                            </MudSwitch>
-                        </MudMenu>
-                    </MudItem>
-                </MudStack>
-            </MudCard>
-        </MudItem>
+                                <MudButton StartIcon="@Icons.Material.Filled.Edit" OnClick="OpenEditDialog" Style="width:100%">Sửa</MudButton>
+                                <MudSwitch @bind-Value="isActive" Color="Color.Tertiary">
+                                    @if (isActive)
+                                    {
+                                        <span>Đang hoạt động</span>
+                                    }
+                                    else
+                                    {
+                                        <span>Không hoạt động</span>
+                                    }
+                                </MudSwitch>
+                            </MudMenu>
+                        </MudItem>
+                    </MudStack>
+                </MudCard>
+            </MudItem>
+        }
     }
 </MudGrid>
 
 @code {
     public bool isActive = true;
     public string active { get; set; }
-
+    private bool _isLoadEmployees = false;
+    private List<UserDescriptionResponse> _userDescriptionResponses;
     protected override void OnInitialized()
     {
+        
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            try
+            {
+                var employHttpMessage = await Client.SendAsync(HttpMethod.GET, ConstRequestUri.UserAll, null, true);
+                if (employHttpMessage is null)
+                {
+                    return;
+                }
+
+                if (employHttpMessage.IsSuccessStatusCode)
+                {
+                    _userDescriptionResponses = await employHttpMessage.Content.DecodeAsync<List<UserDescriptionResponse>>() ?? [];
+                    _isLoadEmployees = true;
+                    StateHasChanged();
+                }
+                else
+                {
+                    var errors = await employHttpMessage.Content.DecodeAsync<ErrorResponse>();
+                    Snack.Add(errors is null ? "Loadding thất bại" :errors.Detail, Severity.Warning);
+                }
+            }
+            catch (Exception ex)
+            {
+                Snack.Add("Cập nhật thất bại", Severity.Error);
+            }
+        }
     }
 
     private Task OpenAddDialog()

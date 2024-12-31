@@ -29,15 +29,7 @@ else{
                 <div class="d-flex justify-content-center align-items-center mb-2" style="width: 100%; height: auto;">
                     <MudBadge Color="Color.Success" Overlap="true" Bordered="true">
                         <MudAvatar Style="width:100px; height:100px">
-                            @if (Input.Avatar is null)
-                            {
-                                avatarUrl = Input.Gender ? "imgs/men.png" : "imgs/women.png";
-                            }
-                            else
-                            {
-                                avatarUrl = Input.Avatar;
-                            }
-                            <MudImage Class="center-image" Style="width:100%; height: auto" Src= "@avatarUrl" Alt="Icon"/>
+                            <MudImage Class="center-image" Style="width:100%; height: auto" Src= "@Input.Avatar" Alt="Icon"/>
                         </MudAvatar>
                     </MudBadge>
                 </div>
@@ -75,7 +67,6 @@ else{
 
 @code {
     private bool _isReadyPage = false;
-    private string avatarUrl;
     [SupplyParameterFromForm] 
     private InputModel Input { get; set; }
     private MudForm form;
@@ -166,10 +157,7 @@ else{
             else
             {
                 var errors = await updateMessage.Content.DecodeAsync<ErrorResponse>();
-                if (errors is null)
-                { 
-                    Snack.Add(errors is null ? "Cập nhật thất bại" :errors.Detail, Severity.Warning);
-                }
+                Snack.Add(errors is null ? "Cập nhật thất bại" :errors.Detail, Severity.Warning);
             }
 
         }

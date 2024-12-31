@@ -18,5 +18,7 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
     builder.Property(x=>x.PasswordHash).HasMaxLength(100).IsRequired();
     builder.Property(x=>x.Salt).HasMaxLength(100).IsRequired();
     builder.Property(x => x.Avatar).HasMaxLength(100);
+    builder.HasMany(x => x.UserRoles).WithOne(x=>x.User)
+      .HasForeignKey(x=>x.UserId);
   }
 }

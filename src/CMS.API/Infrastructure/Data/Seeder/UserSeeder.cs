@@ -7,13 +7,16 @@ public static class UserSeeder
 {
   public static async Task SeederAsync(ApplicationDbContext dbContext)
   {
-    if (await dbContext.Users.AnyAsync())
+    if (await dbContext.Users.CountAsync() >= 10)
     {
       return;
     }
-    
-    var role = await dbContext.Roles.FirstOrDefaultAsync(x => x.Code == "Administrator");
-    if (role is null)
+    var usersOld = await dbContext.Users.ToListAsync();
+    dbContext.Users.RemoveRange(usersOld);
+    await dbContext.SaveChangesAsync();
+    var roleAdmin = await dbContext.Roles.FirstOrDefaultAsync(x => x.Code == "Administrator");
+    var roleEditor = await dbContext.Roles.FirstOrDefaultAsync(x => x.Code == "Editor");
+    if (roleAdmin is null || roleEditor is null)
     {
       return;
     }
@@ -33,10 +36,30 @@ public static class UserSeeder
         IsActive = true,
         Avatar = "/avatar",
         UserRoles = [
-          new(role.Id),
+          new(roleAdmin.Id),
         ]
       }
     };
+    for (int i = 0; i < 9; i++)
+    {
+      users.Add(
+        new()
+        {
+          UserName = Faker.Name.First(),
+          PhoneNumber = Faker.RandomNumber.Next(1000000000, 9999999999).ToString(),
+          Email = Faker.Internet.Email(),
+          Address = Faker.Address.City(),
+          FullName = Faker.Name.FullName(),
+          Salt = (salt = SecurityHelper.GenerateSalt()),
+          PasswordHash = SecurityHelper.HashPassword("K@lnt211885", salt),
+          Gender = Faker.RandomNumber.Next(0, 2) == 0,
+          IsActive = true,
+          UserRoles =
+          [
+            new(roleEditor.Id),
+          ]
+        });
+    }
     dbContext.AddRange(users);
     await dbContext.SaveChangesAsync();
   }

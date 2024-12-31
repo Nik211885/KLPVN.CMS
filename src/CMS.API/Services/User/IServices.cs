@@ -17,4 +17,5 @@ public interface IServices
   Task<MenuTreeResponse> GetMenuTreeForUserAsync(IEnumerable<string>? permissionCode);
   Task<UserDetailResponse> GetUserDetailsAsync(string userName);
   Task<Guid> UploadAvatarAsync(string userName, string avatarUrl);
+  Task<List<UserDescriptionResponse>> GetListUserDescriptionsAsync();
 }

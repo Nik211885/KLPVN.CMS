@@ -94,4 +94,12 @@ public class UserController : ControllerBase
     var result = await _services.User.UploadAvatarAsync(_userProvider.UserName, avatarUrl);
     return Ok(result);
   }
+
+  [HttpGet("all")]
+  public async Task<ActionResult<IReadOnlyCollection<UserDescriptionResponse>>> GetAllUserDescriptionsAsync()
+  {
+    var result = await _services.User.GetListUserDescriptionsAsync();
+    return Ok(result);
+  }
+  
 }

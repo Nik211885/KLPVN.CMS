@@ -5,7 +5,7 @@ public class UserRole
   public Guid UserId { get;}
   public  Guid RoleId { get; }
   public User? User { get; init; }
-  public Role? Role { get; init; }
+  public Role? Role{ get; init; }
 
   public UserRole()
   {
