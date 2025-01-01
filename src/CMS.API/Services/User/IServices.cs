@@ -9,7 +9,7 @@ public interface IServices
   Task<Guid> CreateAsync(CreateUserRequest request);
   Task<string> ResetPasswordAsync(string userName);
   Task<Guid> ChangePasswordAsync(string userName, ChangePasswordRequest request);
-  Task<Guid> ActiveUserAsync(string userName);
+  Task<Entities.User> ActiveUserAsync(string userName);
   Task<Guid> UpdateAsync(string userName, UpdateUserInformationRequest request);
   Task<Guid> AddRoleForUserAsync(string userName, Guid roleId);
   Task<Guid> RemoveRoleForUserAsync(string userName, Guid roleId);

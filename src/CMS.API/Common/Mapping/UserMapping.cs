@@ -66,6 +66,7 @@ public static class UserMapping
       result.Add(new()
       {
         Id = u.Id,
+        IsActive = u.IsActive,
         UserName = u.UserName,
         Avatar = avatarUrl,
         FullName = u.FullName,

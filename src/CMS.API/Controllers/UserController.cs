@@ -14,10 +14,12 @@ public class UserController : ControllerBase
 {
   private readonly IServicesWrapper _services;
   private readonly IUserProvider _userProvider;
+  private readonly IJwtManager _jwtManager;
 
-  public UserController(IServicesWrapper services, IUserProvider userProvider)
+  public UserController(IServicesWrapper services, IUserProvider userProvider, IJwtManager jwtManager)
   {
     _userProvider = userProvider;
+    _jwtManager = jwtManager;
     _services = services;
   }
 
@@ -38,8 +40,12 @@ public class UserController : ControllerBase
   [HttpPut("active")]
   public async Task<ActionResult<Guid>> ActiveUserAsync(string userName)
   {
-    var result = await _services.User.ActiveUserAsync(userName);
-    return Ok(result);
+    var user = await _services.User.ActiveUserAsync(userName);
+    if (!user.IsActive)
+    {
+      _jwtManager.RemoveRefreshTokenByUserName(userName);
+    }
+    return Ok();
   }
 
   [HttpPut("change-password")]
@@ -81,10 +87,17 @@ public class UserController : ControllerBase
   }
 
   [HttpGet("information")]
-  public async Task<UserDetailResponse> GetUserDetailAsync()
+  public async Task<ActionResult<UserDetailResponse>> GetUserDetailAsync()
   {
     var result = await _services.User.GetUserDetailsAsync(_userProvider.UserName);
-    return result;
+    return Ok(result);
+  }
+
+  [HttpGet("detail")]
+  public async Task<ActionResult<UserDetailResponse>> GetUserDetailByUserNameAsync(string userName)
+  {
+    var result = await _services.User.GetUserDetailsAsync(userName);
+    return Ok(result);
   }
 
   [HttpPut("upload-avatar")]
@@ -95,6 +108,12 @@ public class UserController : ControllerBase
     return Ok(result);
   }
 
+  [HttpPut("update-by-user-name")]
+  public async Task<IActionResult> UpdateUserByUserNameAsync(string userName, UpdateUserInformationRequest request)
+  {
+    var result = await _services.User.UpdateAsync(userName, request);
+    return Ok(result);
+  }
   [HttpGet("all")]
   public async Task<ActionResult<IReadOnlyCollection<UserDescriptionResponse>>> GetAllUserDescriptionsAsync()
   {

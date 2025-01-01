@@ -18,7 +18,6 @@ namespace CMS.API.Services.User;
 public class Services : IServices
 {
   private readonly ApplicationDbContext _context;
-
   public Services(ApplicationDbContext dbContext)
   {
     _context = dbContext;
@@ -77,7 +76,7 @@ public class Services : IServices
     return user.Id;
   }
 
-  public async Task<Guid> ActiveUserAsync(string userName)
+  public async Task<Entities.User> ActiveUserAsync(string userName)
   {
     var user = await _context.Users.FirstOrDefaultAsync(x => x.UserName == userName);
     if (user is null)
@@ -87,7 +86,7 @@ public class Services : IServices
     user.IsActive = !user.IsActive;
     _context.Users.Update(user);
     await _context.SaveChangesAsync();
-    return user.Id;
+    return user;
   }
 
   public async Task<Guid> UpdateAsync(string userName, UpdateUserInformationRequest request)

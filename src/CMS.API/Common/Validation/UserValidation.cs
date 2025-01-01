@@ -77,7 +77,7 @@ public static class UserValidation
     }
     if (!RegularExpressionsHelper.IsValidPhoneNumberInVietNam(request.PhoneNumber))
     {
-      throw new BadRequestException(ConstMessage.IN_VALID_EMAIL);
+      throw new BadRequestException(ConstMessage.IN_VALID_PHONE_VN);
     }
     if (!RegularExpressionsHelper.IsValidEmail(request.Email))
     {
