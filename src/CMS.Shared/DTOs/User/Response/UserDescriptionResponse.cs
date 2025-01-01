@@ -7,6 +7,7 @@ public class UserDescriptionResponse
   public Guid Id { get; set; }
   public string UserName { get; set; }
   public string FullName { get; set; }
+  public bool IsActive { get; set; }
   public string Avatar { get; set; }
   public List<RoleResponse> Roles  { get; set; }
 }

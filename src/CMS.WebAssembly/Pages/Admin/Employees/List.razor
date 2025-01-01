@@ -77,9 +77,9 @@
                                     }
                                 </MudSwitch>
                             </MudMenuItem> *@
-                                <MudButton StartIcon="@Icons.Material.Filled.Edit" OnClick="OpenEditDialog" Style="width:100%">Sửa</MudButton>
-                                <MudSwitch @bind-Value="isActive" Color="Color.Tertiary">
-                                    @if (isActive)
+                                <MudButton StartIcon="@Icons.Material.Filled.Edit" OnClick="()=>OpenEditDialog(u.UserName)" Style="width:100%">Sửa</MudButton>
+                                <MudSwitch T = "bool" Value="u.IsActive" Color="Color.Tertiary" ValueChanged="() => HandlerUserActiveChange(u)">
+                                    @if (u.IsActive)
                                     {
                                         <span>Đang hoạt động</span>
                                     }
@@ -105,7 +105,6 @@
 </MudGrid>
 
 @code {
-    public bool isActive = true;
     public string active { get; set; }
     private bool _isLoadEmployees = false;
     private List<UserDescriptionResponse> _userDescriptionResponses;
@@ -152,11 +151,14 @@
         return DialogService.ShowAsync<AddDialog>("", options);
     }
 
-    private Task OpenEditDialog()
+    private Task OpenEditDialog(string userName)
     {
         var options = new DialogOptions { CloseOnEscapeKey = true, CloseButton = true, FullWidth = true };
-
-        return DialogService.ShowAsync<EditDialog>("", options);
+        var parameters = new DialogParameters()
+        {
+            { "UserName", userName },
+        };
+        return DialogService.ShowAsync<EditDialog>("", parameters, options);
     }
 
     private Task OpenDeleteDialog()
@@ -164,5 +166,34 @@
         var options = new DialogOptions { CloseOnEscapeKey = true, CloseButton = true };
 
         return DialogService.ShowAsync<DeleteDialog>("", options);
+    }
+
+    private async Task HandlerUserActiveChange(UserDescriptionResponse user)
+    {
+        user.IsActive = !user.IsActive;
+        try
+        {
+            var userActiveMessage = await Client.SendAsync(HttpMethod.PUT, string.Format(ConstRequestUri.PutActiveUser, user.UserName), null, true);
+            if (userActiveMessage is null)
+            {
+                return;
+            }
+
+            if (userActiveMessage.IsSuccessStatusCode)
+            {
+                return;
+            }
+            else
+            {
+                var errors = await userActiveMessage.Content.DecodeAsync<ErrorResponse>();
+                Snack.Add(errors is not null ? errors.Detail : "Có lỗi xãy ra", Severity.Warning);
+            }
+        }
+        catch (Exception ex)
+        {
+            Snack.Add("Có lỗi xãy ra", Severity.Error);
+        }
+
+        user.IsActive = !user.IsActive;
     }
 }

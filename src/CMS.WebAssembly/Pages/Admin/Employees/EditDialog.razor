@@ -1,56 +1,140 @@
 ﻿@using System.ComponentModel.DataAnnotations
+@using CMS.Shared.DTOs.User.Request
+@using CMS.Shared.DTOs.User.Response
+@using CMS.WEB.Common
+@using KLPVN.Core.Helper
+@using KLPVN.Core.Models
+@using Microsoft.VisualBasic
 
 <style>
     .mud-button-label {
         text-transform: none;
     }
 </style>
-
-<MudDialog>
-    <TitleContent>
-        <MudStack Row AlignItems="AlignItems.Center" Justify="Justify.Center" Spacing="1" Class="pl-0 pr-4 pt-1">
-            <MudText Color="Color.Default" Style="font-weight: bold" Typo="Typo.h6">Sửa Nhân Viên</MudText>
-        </MudStack>
-    </TitleContent>
-    <DialogContent>
-        <MudForm @ref="form" Model="nhanVien">
-            <MudGrid Justify="Justify.FlexStart" Spacing="1">
-                <MudItem xs="12" sm="12" md="6" lg="6">
-                    <MudTextField @bind-Value="nhanVien.FullName" For="@(() => nhanVien.FullName)" Variant="Variant.Outlined" Margin="Margin.Dense" Required Label="Họ tên"></MudTextField>
-                </MudItem>
-                <MudItem xs="12" sm="12" md="6" lg="6">
-                    <MudRadioGroup @bind-Value="nhanVien.Gender">
-                        <MudRadio Value="@(true)">Nam</MudRadio>
-                        <MudRadio Value="@(false)">Nữ</MudRadio>
-                    </MudRadioGroup>
-                </MudItem>
-                <MudItem xs="12">
-                    <MudTextField @bind-Value="nhanVien.PhoneNumber" For="@(() => nhanVien.PhoneNumber)" Variant="Variant.Outlined" Margin="Margin.Dense" Required Label="Số điện thoại"></MudTextField>
-                </MudItem>
-                <MudItem xs="12">
-                    <MudTextField @bind-Value="nhanVien.Email" For="@(() => nhanVien.Email)" Variant="Variant.Outlined" Margin="Margin.Dense" Label="Email"></MudTextField>
-                </MudItem>
-                <MudItem xs="12">
-                    <MudTextField @bind-Value="nhanVien.Address" For="@(() => nhanVien.Address)" Variant="Variant.Outlined" Margin="Margin.Dense" Label="Địa chỉ"></MudTextField>
-                </MudItem>
-            </MudGrid>
-        </MudForm>
-    </DialogContent>
-    <DialogActions>
-        <MudButton OnClick="Cancel" Variant="Variant.Filled">Hủy</MudButton>
-        <MudButton Color="Color.Primary" OnClick="Submit" Variant="Variant.Filled">Lưu</MudButton>
-    </DialogActions>
-</MudDialog>
+@if (!_isLoadPage)
+{
+    <p>Loading ...</p>
+}
+else{
+    <MudDialog>
+        <TitleContent>
+            <MudStack Row AlignItems="AlignItems.Center" Justify="Justify.Center" Spacing="1" Class="pl-0 pr-4 pt-1">
+                <MudText Color="Color.Default" Style="font-weight: bold" Typo="Typo.h6">Sửa Nhân Viên</MudText>
+            </MudStack>
+        </TitleContent>
+        <DialogContent>
+            <MudForm @ref="form" Model="nhanVien">
+                <MudGrid Justify="Justify.FlexStart" Spacing="1">
+                    <MudItem xs="12" sm="12" md="6" lg="6">
+                        <MudTextField @bind-Value="nhanVien.FullName" For="@(() => nhanVien.FullName)" Variant="Variant.Outlined" Margin="Margin.Dense" Required Label="Họ tên"></MudTextField>
+                    </MudItem>
+                    <MudItem xs="12" sm="12" md="6" lg="6">
+                        <MudRadioGroup @bind-Value="nhanVien.Gender">
+                            <MudRadio Value="@(true)">Nam</MudRadio>
+                            <MudRadio Value="@(false)">Nữ</MudRadio>
+                        </MudRadioGroup>
+                    </MudItem>
+                    <MudItem xs="12">
+                        <MudTextField @bind-Value="nhanVien.PhoneNumber" For="@(() => nhanVien.PhoneNumber)" Variant="Variant.Outlined" Margin="Margin.Dense" Required Label="Số điện thoại"></MudTextField>
+                    </MudItem>
+                    <MudItem xs="12">
+                        <MudTextField @bind-Value="nhanVien.Email" For="@(() => nhanVien.Email)" Variant="Variant.Outlined" Margin="Margin.Dense" Label="Email"></MudTextField>
+                    </MudItem>
+                    <MudItem xs="12">
+                        <MudTextField @bind-Value="nhanVien.Address" For="@(() => nhanVien.Address)" Variant="Variant.Outlined" Margin="Margin.Dense" Label="Địa chỉ"></MudTextField>
+                    </MudItem>
+                </MudGrid>
+            </MudForm>
+        </DialogContent>
+        <DialogActions>
+            <MudButton OnClick="Cancel" Variant="Variant.Filled">Hủy</MudButton>
+            <MudButton Color="Color.Primary" OnClick="Submit" Variant="Variant.Filled">Lưu</MudButton>
+        </DialogActions>
+    </MudDialog>
+}
 
 @code {
+    private bool _isLoadPage = false;
+    [Parameter]
+    public string UserName { get; set; }
     [CascadingParameter]
     private MudDialogInstance MudDialog { get; set; }
 
     private MudForm form;
 
     public NhanVien nhanVien { get; set; } = new();
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            try
+            {
+                var informationHttpMessage = await Client.SendAsync(HttpMethod.GET,
+                    string.Format(ConstRequestUri.GetUserDetailByUserName, UserName), null, true);
+                if (informationHttpMessage is null)
+                {
+                    return;
+                }
 
-    private void Submit() => MudDialog.Close(DialogResult.Ok(true));
+                if (informationHttpMessage.IsSuccessStatusCode)
+                {
+                    var user = await informationHttpMessage.Content.DecodeAsync<UserDetailResponse>();
+                    if (user is null)
+                    {
+                        Snack.Add("Có lỗi xãy ra", Severity.Error);
+                        return;
+                    }
+
+                    nhanVien = new()
+                    {
+                        Address = user.Address,
+                        Email = user.Email,
+                        FullName = user.FullName,
+                        PhoneNumber = user.Phone,
+                        Gender = user.Gender,
+                    };
+                    _isLoadPage = true;
+                    StateHasChanged();
+                    return;
+                }
+                var errors = await informationHttpMessage.Content.DecodeAsync<ErrorResponse>();
+                Snack.Add(errors is not null ? errors.Detail : "Có lỗi xãy ra", Severity.Warning);
+            }
+            catch (Exception ex)
+            {
+                Snack.Add("Có lỗi xãy ra", Severity.Warning);
+            }
+        }
+    }
+
+    private async Task  Submit()
+    {
+        var userRequest = new UpdateUserInformationRequest(nhanVien.PhoneNumber, nhanVien.Email, nhanVien.Address, nhanVien.FullName, nhanVien.Gender);
+        try
+        {
+            var userUpdateMessage = await Client.SendAsync(HttpMethod.PUT,
+                string.Format(ConstRequestUri.PutUpdateUserByUserName, UserName),
+                userRequest, true
+            );
+            if (userUpdateMessage is null)
+            {
+                return;
+            }
+
+            if (userUpdateMessage.IsSuccessStatusCode)
+            {
+                Snack.Add("Cập nhật thành công", Severity.Success);
+                return;    
+            }
+
+            var error = await userUpdateMessage.Content.DecodeAsync<ErrorResponse>();
+            Snack.Add(error is not null ? error.Detail : "Có lỗi xãy ra", Severity.Warning);
+        }
+        catch (Exception ex)
+        {
+            Snack.Add("Có lỗi xãy ra", Severity.Error);
+        }
+    }
 
     private void Cancel() => MudDialog.Cancel();
 
@@ -61,9 +145,9 @@
         public string PhoneNumber { get; set; }
 
         [RegularExpression(@"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$", ErrorMessage = "Email không đúng định dạng!")]
-        public string Email { get; set; }
+        public string? Email { get; set; }
 
-        public string Address { get; set; }
+        public string? Address { get; set; }
 
         [Required(ErrorMessage = "Tên nhân viên không được để trống!")]
         public string FullName { get; set; }
