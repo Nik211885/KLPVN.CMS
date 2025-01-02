@@ -24,4 +24,10 @@ public abstract class ConstRequestUri
   
   //feedbacks
   public const string FeedBacks = "feed-back/all";
+  
+  //subject
+  public const string GetAllSubject = "subject/get-subjects";
+  public const string GetTreeSubjectActive = "subject/get-tree-subject-active";
+  public const string PostCreateSubject = "subject/create";
+  
 }

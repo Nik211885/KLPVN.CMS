@@ -45,6 +45,17 @@ public interface IServices
   /// </returns>
   Task DeleteAsync(Guid id);
   /// <summary>
+  ///   Get all subject follow tree structred
+  /// </summary>
+  /// <param name="isActive">
+  ///   Get all subject has status is active
+  ///   If active is null get all subject no filter for active
+  /// </param>
+  /// <returns>
+  ///   Return list subject response 
+  /// </returns>
+  Task<SubjectResponse> GetAllTreeSubjectAsync(bool? isActive = true);
+  /// <summary>
   ///   Get all subject
   /// </summary>
   /// <param name="isActive">
@@ -54,5 +65,5 @@ public interface IServices
   /// <returns>
   ///   Return list subject response 
   /// </returns>
-  Task<SubjectResponse> GetAllSubjectAsync(bool? isActive = true);
+  Task<List<Subjects>> GetAllSubjectsAsync(bool? isActive = true);
 }

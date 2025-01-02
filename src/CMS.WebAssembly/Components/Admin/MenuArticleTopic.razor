@@ -1,7 +1,31 @@
-<h1>@Value</h1>
-
+@using CMS.Shared.DTOs.Subject.Response
+<MudPaper Width="100%" Elevation="0">
+    <MudTreeView T="Subjects" Hover SelectedValue="SubjectsSelected" SelectedValueChanged="(subject)=>OnSelectedValuesChanged(subject)" SelectionMode="@_selectionMode">
+        @foreach (var s in Subject.SubjectsList)
+        {
+            if (s.Subject.Any())
+            {
+                var sResponseTree = new SubjectResponse();
+                sResponseTree.SubjectsList.AddRange(s.Subject);
+                <MudTreeViewItem Text="@s.Name" Value="@s">
+                    <MenuArticleTopic Subject="@sResponseTree"/>
+                </MudTreeViewItem>
+            }
+            else
+            {
+                <MudTreeViewItem Text="@s.Name" Value="@s"/>
+            }
+        }
+    </MudTreeView>
+</MudPaper>
 @code{
-
-    [Parameter] public required string Value { get; set; }
-
+    public Subjects SubjectsSelected { get; set; } = new();
+    [Parameter] public required SubjectResponse Subject { get; set; }
+    private SelectionMode _selectionMode = SelectionMode.SingleSelection;
+    [Parameter]
+    public EventCallback<Subjects> SelectedItemsChanged { get; set; }
+    private async Task OnSelectedValuesChanged(Subjects? subjects)
+    {
+        await SelectedItemsChanged.InvokeAsync(subjects);
+    }
 }

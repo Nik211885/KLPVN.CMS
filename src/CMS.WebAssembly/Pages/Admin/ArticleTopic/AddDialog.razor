@@ -1,56 +1,135 @@
 ﻿@using System.ComponentModel.DataAnnotations
+@using CMS.Shared.DTOs.Subject.Request
+@using CMS.Shared.DTOs.Subject.Response
+@using CMS.WEB.Common
+@using CMS.WebAssembly.Components.Admin
+@using KLPVN.Core.Helper
+@using KLPVN.Core.Models
 
 <style>
     .mud-button-label {
         text-transform: none;
     }
 </style>
-
-<MudDialog>
-    <TitleContent>
-        <MudStack Row AlignItems="AlignItems.Center" Justify="Justify.Center" Spacing="1" Class="pl-0 pr-4 pt-1">
-            <MudText Color="Color.Default" Style="font-weight: bold" Typo="Typo.h6">Thêm Chủ Đề</MudText>
-        </MudStack>
-    </TitleContent>
-    <DialogContent>
-        <MudForm @ref="form" Model="topic">
-            <MudGrid Justify="Justify.FlexStart" Spacing="1">
-                <MudItem xs="12">
-                    <MudTextField Margin="Margin.Dense" @bind-Value="topic.Code" Variant="Variant.Outlined" Label="Mã chủ đề"></MudTextField>
-                </MudItem>
-                <MudItem xs="12">
-                    <MudTextField Margin="Margin.Dense" @bind-Value="topic.Name" Variant="Variant.Outlined" Label="Tên chủ đề"></MudTextField>
-                </MudItem>
-                <MudItem xs="12">
-                    <MudTextField Margin="Margin.Dense" @bind-Value="topic.Code" Variant="Variant.Outlined" Label="Thứ tự hiển thị"></MudTextField>
-                </MudItem>
-                <MudItem xs="12">
-                    <MudStack Row AlignItems="AlignItems.Center">
-                        <MudText>Trạng thái:</MudText>
-                        <MudRadioGroup @bind-Value="topic.IsActive">
-                            <MudRadio Value="@(true)">Hoạt động</MudRadio>
-                            <MudRadio Value="@(false)">Không hoạt động</MudRadio>
-                        </MudRadioGroup>
-                    </MudStack>
-                </MudItem>
-            </MudGrid>
-        </MudForm>
-    </DialogContent>
-    <DialogActions>
-        <MudButton OnClick="Cancel" Variant="Variant.Filled">Hủy</MudButton>
-        <MudButton Color="Color.Primary" OnClick="Submit" Variant="Variant.Filled">Lưu</MudButton>
-    </DialogActions>
-</MudDialog>
-
+@if (!_isLoadingDialog)
+{
+    <p>Loading ...</p>
+}
+else{
+    <MudDialog>
+        <TitleContent>
+            <MudStack Row AlignItems="AlignItems.Center" Justify="Justify.Center" Spacing="1" Class="pl-0 pr-4 pt-1">
+                <MudText Color="Color.Default" Style="font-weight: bold" Typo="Typo.h6">Thêm Chủ Đề</MudText>
+            </MudStack>
+        </TitleContent>
+        <DialogContent>
+            <MudForm @ref="form" Model="topic">
+                <MudGrid Justify="Justify.FlexStart" Spacing="1">
+                    <MudItem xs="12">
+                        <MudTextField Margin="Margin.Dense" @bind-Value="topic.Code" Variant="Variant.Outlined" Label="Mã chủ đề"></MudTextField>
+                    </MudItem>
+                    <MudItem xs="12">
+                        <MudTextField Margin="Margin.Dense" @bind-Value="topic.Name" Variant="Variant.Outlined" Label="Tên chủ đề"></MudTextField>
+                    </MudItem>
+                    <MudItem xs="12">
+                        <MudTextField Margin="Margin.Dense" @bind-Value="topic.DisplayOrder" Variant="Variant.Outlined" Label="Thứ tự hiển thị"></MudTextField>
+                    </MudItem>
+                    <MudItem xs="12" Style="width:100%">
+                        <MudText Style="margin: 10px">Chủ đề cha</MudText>
+                        @if (_subjects is not null)
+                        {
+                            <MudText Color="Color.Secondary" Style="margin: 10px">@_subjects.Name</MudText>
+                        }
+                        <MenuArticleTopic Subject="@_subjectTree" SelectedItemsChanged="(subject)=>GetParentSubject(subject)"/>
+                    </MudItem>
+                </MudGrid>
+            </MudForm>
+        </DialogContent>
+        <DialogActions>
+            <MudButton OnClick="Cancel" Variant="Variant.Filled">Hủy</MudButton>
+            <MudButton Color="Color.Primary" OnClick="Submit" Variant="Variant.Filled">Lưu</MudButton>
+        </DialogActions>
+    </MudDialog>
+}
 @code {
-    [CascadingParameter]
+    private bool _isLoadingDialog = false;
+    [CascadingParameter] 
     private MudDialogInstance MudDialog { get; set; }
     private MudForm form;
+    private SubjectResponse _subjectTree;
     public Topic topic { get; set; } = new();
+    private Subjects? _subjects { get; set; }
 
-    private void Submit() => MudDialog.Close(DialogResult.Ok(true));
+    private void GetParentSubject(Subjects? subject)
+    {
+        _subjects = subject;
+    }
+
+    private async Task Submit()
+    {
+        var createSubjectRequest = new CreateSubjectRequest(topic.Code, topic.Name, topic.DisplayOrder, _subjects?.Id);
+        try
+        {
+            var createSubjectMessage = await Client.SendAsync(HttpMethod.POST, 
+                ConstRequestUri.PostCreateSubject, createSubjectRequest, true);
+            if (createSubjectMessage is null)
+            {
+                return;
+            }
+
+            if (createSubjectMessage.IsSuccessStatusCode)
+            {
+                MudDialog.Close(DialogResult.Ok(0));
+                Snack.Add("Thêm chủ đề thành công");
+                return;    
+            }
+            var errors = await createSubjectMessage.Content.DecodeAsync<ErrorResponse>();
+            Snack.Add(errors is null ? "Có lỗi xảy ra" :errors.Detail, Severity.Warning);
+            
+        }
+        catch (Exception ex)
+        {
+            Snack.Add("Có lỗi xảy ra", Severity.Error);
+        }
+    }
 
     private void Cancel() => MudDialog.Cancel();
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            try
+            {
+                var subjectTreeMessage = await Client.SendAsync(HttpMethod.GET, ConstRequestUri.GetTreeSubjectActive,
+                    null, true);
+                if (subjectTreeMessage is null)
+                {
+                    return;
+                }
+
+                if (subjectTreeMessage.IsSuccessStatusCode)
+                {
+                    var tree = await subjectTreeMessage.Content.DecodeAsync<SubjectResponse>();
+                    if (tree is null)
+                    {
+                        Snack.Add("Có lỗi xảy ra", Severity.Warning);
+                        return;
+                    }
+                    _subjectTree = tree;
+                    _isLoadingDialog = true;
+                    StateHasChanged();
+                    return;
+                }
+                var errors = await subjectTreeMessage.Content.DecodeAsync<ErrorResponse>();
+                Snack.Add(errors is null ? "Loading thất bại" :errors.Detail, Severity.Warning);
+            }
+            catch (Exception ex)
+            {
+                Snack.Add("Có lỗi xảy ra", Severity.Error);
+            }
+
+        }
+    }
 
     public class Topic
     {

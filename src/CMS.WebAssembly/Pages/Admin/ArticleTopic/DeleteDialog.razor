@@ -20,6 +20,8 @@
 </MudDialog>
 
 @code {
+    [Parameter]
+    public Guid Id { get; set; }
     [CascadingParameter]
     private MudDialogInstance MudDialog { get; set; }
 

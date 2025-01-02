@@ -1,69 +1,79 @@
 ﻿@page "/articletopic"
+@using CMS.Shared.DTOs.Subject.Response
+@using CMS.WEB.Common
+@using KLPVN.Core.Helper
+@using KLPVN.Core.Models
 @layout CMS.WebAssembly.Layout.Admin.AdminLayout
 
 @inject IDialogService DialogService
 
 <PageTitle>Danh sách chủ đề</PageTitle>
+@if (!_isLoadingData)
+{
+    <p>Loading....</p>
+}
+else{
+    <MudTable @ref=@_table RowsPerPage="10" Items="_items" Dense="true" Virtualize="false" FixedHeader="true" Bordered="true">
+        <ColGroup>
+            <col style="width: 2%; " class="pa-0" />
+            <col style="width: 2%; " class="pa-0" />
+            <col style="width: 10%; " class="pa-0" />
+            <col style="width: 1%; " class="pa-0" />
+            <col style="width: 0.5%; " class="pa-0" />
+        </ColGroup>
+        <ToolBarContent>
+            <MudTextField T="string" Placeholder="Tìm kiếm" Adornment="Adornment.Start"
+                          AdornmentIcon="@Icons.Material.Filled.Search"
+                          Variant="Variant.Outlined" Margin="Margin.Dense"
+                          Immediate="true" ></MudTextField>
+            <MudSpacer />
+            <MudTooltip Text="Tạo chủ đề" Arrow Placement="Placement.End">
+                <MudFab OnClick="OpenAddDialog" StartIcon="@Icons.Material.Filled.Add" Color="Color.Primary" Style="width:45px; height:45px"></MudFab>
+            </MudTooltip>
+        </ToolBarContent>
+        <HeaderContent>
+            <MudTh>Mã chủ đề</MudTh>
+            <MudTh><MudTableSortLabel SortBy="new Func<AddDialog.Topic, object>(x=>x.DisplayOrder)">Thứ tự hiển thị</MudTableSortLabel></MudTh>
+            <MudTh>Tên chủ đề</MudTh>
+            <MudTh><MudTableSortLabel SortBy="new Func<AddDialog.Topic, object>(x=>x.IsActive)">Trạng thái</MudTableSortLabel></MudTh>
+            <MudTh></MudTh>
+        </HeaderContent>
+        <RowTemplate>
+                <MudTd DataLabel="Mã chủ đề">@context.Code</MudTd>
+                <MudTd DataLabel="Thứ tự hiển thị">@context.DisplayOrder</MudTd>
+                <MudTd DataLabel="Tên chủ đề">@context.Name</MudTd>
+                <MudTd DataLabel="Trạng thái">
+                    @if (context.IsActive)
+                    {
+                        <MudChip Size="Size.Small" Variant="Variant.Text" Style="margin: 0px" T="string" Color="Color.Success">Đang hoạt động</MudChip>
+                    }
+                    else
+                    {
+                        <MudChip Size="Size.Small" Variant="Variant.Text" Style="margin: 0px" T="string" Color="Color.Error">Không hoạt động</MudChip>
+                    }
+                </MudTd>
+                <MudTd>
+                    <MudStack Row>
+                        <MudTooltip Text="Sửa" Arrow Placement="Placement.Top">
+                            <MudIconButton Size="Size.Small" Icon="@Icons.Material.Filled.Edit" OnClick="OpenEditDialog"></MudIconButton>
+                        </MudTooltip>
+                        <MudTooltip Text="Xóa" Arrow Placement="Placement.Top">
+                            <MudIconButton Size="Size.Small" Icon="@Icons.Material.Filled.Delete" OnClick="OpenDeleteDialog"></MudIconButton>
+                        </MudTooltip>
+                    </MudStack>
+                </MudTd>
+        </RowTemplate>
 
-<MudTable @ref=@_table RowsPerPage="10" Items="_items" Dense="true" Virtualize="false" FixedHeader="true" Bordered="true">
-    <ColGroup>
-        <col style="width: 2%; " class="pa-0" />
-        <col style="width: 2%; " class="pa-0" />
-        <col style="width: 10%; " class="pa-0" />
-        <col style="width: 1%; " class="pa-0" />
-        <col style="width: 0.5%; " class="pa-0" />
-    </ColGroup>
-    <ToolBarContent>
-        <MudTextField T="string" Placeholder="Tìm kiếm" Adornment="Adornment.Start"
-                      AdornmentIcon="@Icons.Material.Filled.Search"
-                      Variant="Variant.Outlined" Margin="Margin.Dense"
-                      Immediate="true" ></MudTextField>
-        <MudSpacer />
-        <MudTooltip Text="Tạo chủ đề" Arrow Placement="Placement.End">
-            <MudFab OnClick="OpenAddDialog" StartIcon="@Icons.Material.Filled.Add" Color="Color.Primary" Style="width:45px; height:45px"></MudFab>
-        </MudTooltip>
-    </ToolBarContent>
-    <HeaderContent>
-        <MudTh>Mã chủ đề</MudTh>
-        <MudTh><MudTableSortLabel SortBy="new Func<Topic, object>(x=>x.DisplayOrder)">Thứ tự hiển thị</MudTableSortLabel></MudTh>
-        <MudTh>Tên chủ đề</MudTh>
-        <MudTh><MudTableSortLabel SortBy="new Func<Topic, object>(x=>x.IsActive)">Trạng thái</MudTableSortLabel></MudTh>
-        <MudTh></MudTh>
-    </HeaderContent>
-    <RowTemplate>
-        <MudTd DataLabel="Mã chủ đề">@context.Code</MudTd>
-        <MudTd DataLabel="Thứ tự hiển thị">@context.DisplayOrder</MudTd>
-        <MudTd DataLabel="Tên chủ đề">@context.Name</MudTd>
-        <MudTd DataLabel="Trạng thái">
-            @if (context.IsActive)
-            {
-                <MudChip Size="Size.Small" Variant="Variant.Text" Style="margin: 0px" T="string" Color="Color.Success">Đang hoạt động</MudChip>
-            }
-            else
-            {
-                <MudChip Size="Size.Small" Variant="Variant.Text" Style="margin: 0px" T="string" Color="Color.Error">Không hoạt động</MudChip>
-            }
-        </MudTd>
-        <MudTd>
-            <MudStack Row>
-                <MudTooltip Text="Sửa" Arrow Placement="Placement.Top">
-                    <MudIconButton Size="Size.Small" Icon="@Icons.Material.Filled.Edit" OnClick="OpenEditDialog"></MudIconButton>
-                </MudTooltip>
-                <MudTooltip Text="Xóa" Arrow Placement="Placement.Top">
-                    <MudIconButton Size="Size.Small" Icon="@Icons.Material.Filled.Delete" OnClick="OpenDeleteDialog"></MudIconButton>
-                </MudTooltip>
-            </MudStack>
-        </MudTd>
-    </RowTemplate>
-
-    <PagerContent>
-        <MudPagination SelectedChanged="PageChanged" Count="@((_table.GetFilteredItemsCount() + _table.RowsPerPage - 1) / _table.RowsPerPage)" Class="pa-4" />
-    </PagerContent>
-</MudTable>
+        <PagerContent>
+            <MudPagination SelectedChanged="PageChanged" Count="@((_table.GetFilteredItemsCount() + _table.RowsPerPage - 1) / _table.RowsPerPage)" Class="pa-4" />
+        </PagerContent>
+    </MudTable>
+}
 
 @code {
-    private List<Topic> _items;
-    private MudTable<Topic> _table;
+    private List<Subjects> _items;
+    private bool _isLoadingData = false;
+    private MudTable<Subjects> _table;
 
     private void PageChanged(int i)
     {
@@ -72,48 +82,27 @@
 
     protected override void OnInitialized()
     {
-        Random random = new Random();
-        List<int> displayOrders = Enumerable.Range(1, 30).OrderBy(x => random.Next()).ToList();
-        _items = new List<Topic>
-        {
-            new Topic { Code = "T001", Name = "Lập trình C# cơ bản", IsActive = true, DisplayOrder = displayOrders[0] },
-            new Topic { Code = "T002", Name = "Lập trình hướng đối tượng", IsActive = true, DisplayOrder = displayOrders[1] },
-            new Topic { Code = "T003", Name = "Cấu trúc dữ liệu và giải thuật", IsActive = false, DisplayOrder = displayOrders[2] },
-            new Topic { Code = "T004", Name = "Lập trình Web với ASP.NET Core", IsActive = true, DisplayOrder = displayOrders[3] },
-            new Topic { Code = "T005", Name = "Kết nối cơ sở dữ liệu với Entity Framework", IsActive = false, DisplayOrder = displayOrders[4] },
-            new Topic { Code = "T006", Name = "Quản lý phiên bản với Git", IsActive = true, DisplayOrder = displayOrders[5] },
-            new Topic { Code = "T007", Name = "Triển khai ứng dụng với Docker", IsActive = true, DisplayOrder = displayOrders[6] },
-            new Topic { Code = "T008", Name = "Kiểm thử phần mềm với xUnit", IsActive = false, DisplayOrder = displayOrders[7] },
-            new Topic { Code = "T009", Name = "Xây dựng API với ASP.NET Core", IsActive = true, DisplayOrder = displayOrders[8] },
-            new Topic { Code = "T010", Name = "Lập trình với Python", IsActive = true, DisplayOrder = displayOrders[9] },
-            new Topic { Code = "T011", Name = "An toàn thông tin", IsActive = true, DisplayOrder = displayOrders[10] },
-            new Topic { Code = "T012", Name = "Đồ họa máy tính", IsActive = true, DisplayOrder = displayOrders[11] },
-            new Topic { Code = "T013", Name = "Lập trình di động với Flutter", IsActive = false, DisplayOrder = displayOrders[12] },
-            new Topic { Code = "T014", Name = "Xử lý dữ liệu lớn", IsActive = true, DisplayOrder = displayOrders[13] },
-            new Topic { Code = "T015", Name = "Khoa học dữ liệu", IsActive = false, DisplayOrder = displayOrders[14] },
-            new Topic { Code = "T016", Name = "Trí tuệ nhân tạo", IsActive = true, DisplayOrder = displayOrders[15] },
-            new Topic { Code = "T017", Name = "Phát triển game với Unity", IsActive = true, DisplayOrder = displayOrders[16] },
-            new Topic { Code = "T018", Name = "Lập trình với JavaScript", IsActive = true, DisplayOrder = displayOrders[17] },
-            new Topic { Code = "T019", Name = "Xử lý hình ảnh với OpenCV", IsActive = false, DisplayOrder = displayOrders[18] },
-            new Topic { Code = "T020", Name = "Phân tích dữ liệu với R", IsActive = true, DisplayOrder = displayOrders[19] },
-            new Topic { Code = "T021", Name = "Công nghệ Blockchain", IsActive = true, DisplayOrder = displayOrders[20] },
-            new Topic { Code = "T022", Name = "Lập trình với Swift", IsActive = true, DisplayOrder = displayOrders[21] },
-            new Topic { Code = "T023", Name = "Xây dựng hệ thống phân tán", IsActive = false, DisplayOrder = displayOrders[22] },
-            new Topic { Code = "T024", Name = "Lập trình với Rust", IsActive = true, DisplayOrder = displayOrders[23] },
-            new Topic { Code = "T025", Name = "Lập trình hệ thống nhúng", IsActive = true, DisplayOrder = displayOrders[24] },
-            new Topic { Code = "T026", Name = "Quản lý dự án phần mềm", IsActive = true, DisplayOrder = displayOrders[25] },
-            new Topic { Code = "T027", Name = "Giải thuật tiến hóa", IsActive = false, DisplayOrder = displayOrders[26] },
-            new Topic { Code = "T028", Name = "Lập trình Python cho Data Science", IsActive = true, DisplayOrder = displayOrders[27] },
-            new Topic { Code = "T029", Name = "Học máy với TensorFlow", IsActive = true, DisplayOrder = displayOrders[28] },
-            new Topic { Code = "T030", Name = "Thiết kế giao diện người dùng", IsActive = false, DisplayOrder = displayOrders[29] },
-        };
+        
     }
 
-    private Task OpenAddDialog()
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await LoadSubjectAsync();
+        }
+    }
+
+    private async Task OpenAddDialog()
     {
         var options = new DialogOptions { CloseOnEscapeKey = true, CloseButton = true};
 
-        return DialogService.ShowAsync<AddDialog>("", options);
+        var dialog = await DialogService.ShowAsync<AddDialog>("", options);
+        var result = await dialog.Result;
+        if (result is {Canceled : false})
+        {
+            await LoadSubjectAsync();
+        }
     }
 
     private Task OpenEditDialog()
@@ -126,16 +115,33 @@
     private Task OpenDeleteDialog()
     {
         var options = new DialogOptions { CloseOnEscapeKey = true, CloseButton = true};
-
         return DialogService.ShowAsync<DeleteDialog>("", options);
     }
 
-    public class Topic
+    private async Task LoadSubjectAsync()
     {
-        public string Code { get; set; }
-        public string Name { get; set; }
-        public bool IsActive { get; set; }
-        public int DisplayOrder { get; set; }
+        try
+        {
+            var articleMessage = await Client.SendAsync(HttpMethod.GET, ConstRequestUri.GetAllSubject, null, true);
+            if (articleMessage is null)
+            {
+                return;
+            }
+
+            if (articleMessage.IsSuccessStatusCode)
+            {
+                _items = await articleMessage.Content.DecodeAsync<List<Subjects>>() ?? [];
+                _isLoadingData = true;
+                StateHasChanged();
+                return;    
+            }
+            var errors = await articleMessage.Content.DecodeAsync<ErrorResponse>();
+            Snack.Add(errors is null ? "Loadding thất bại" :errors.Detail, Severity.Warning);
+        }
+        catch (Exception ex)
+        {
+            Snack.Add("Cập nhật thất bại", Severity.Error);
+        }
     }
 
 }

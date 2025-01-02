@@ -40,17 +40,30 @@ public class SubjectController : ControllerBase
     return Ok(result);
   }
 
+  [HttpGet("get-tree-subjects")]
+  public async Task<ActionResult<SubjectResponse>> GetAllTreeSubjectsAsync(bool? isActive = null)
+  {
+    var result = await _services.Subject.GetAllTreeSubjectAsync(isActive);
+    return Ok(result);
+  }
+
+  [HttpGet("get-tree-subject-active")]
+  public async Task<IActionResult> GetAllTreeSubjectActiveAsync()
+  {
+    var result = await _services.Subject.GetAllTreeSubjectAsync(true);
+    return Ok(result);
+  }
   [HttpGet("get-subjects")]
   public async Task<ActionResult<SubjectResponse>> GetAllSubjectsAsync(bool? isActive = null)
   {
-    var result = await _services.Subject.GetAllSubjectAsync(isActive);
+    var result = await _services.Subject.GetAllSubjectsAsync(isActive);
     return Ok(result);
   }
 
   [HttpGet("get-subject-active")]
   public async Task<IActionResult> GetAllSubjectActiveAsync()
   {
-    var result = await _services.Subject.GetAllSubjectAsync(true);
+    var result = await _services.Subject.GetAllSubjectsAsync(true);
     return Ok(result);
   }
 }

@@ -85,7 +85,7 @@ public class Services : IServices
     await _context.SaveChangesAsync();
   }
 
-  public async Task<SubjectResponse> GetAllSubjectAsync(bool? isActive)
+  public async Task<SubjectResponse> GetAllTreeSubjectAsync(bool? isActive)
   {
     var subjectsResponse = new SubjectResponse();
     var allSubjectQuery = _context.Subjects.AsQueryable();
@@ -100,6 +100,19 @@ public class Services : IServices
       subjectsResponse.SubjectsList.Add(RecursiveSubject(r.Mapping(), childSubjects));
     }
     return subjectsResponse;
+  }
+
+  public async Task<List<Subjects>> GetAllSubjectsAsync(bool? isActive = true)
+  {
+    var subjectsResponse = new SubjectResponse();
+    var allSubjectQuery = _context.Subjects.AsQueryable();
+    if (isActive is not null)
+    {
+      allSubjectQuery = allSubjectQuery.Where(x => x.IsActive == isActive);
+    }
+    
+    var subject = await allSubjectQuery.OrderBy(x=>x.DisplayOrder).ToListAsync();
+    return subject.Mapping();
   }
 
   private Subjects RecursiveSubject(Subjects currentSubject,
