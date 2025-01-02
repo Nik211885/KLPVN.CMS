@@ -11,6 +11,7 @@ public class AuActionClassConfiguration : IEntityTypeConfiguration<AuActionClass
     builder.ToTable("AuActionClasses");
     builder.HasKey(x=>x.Id);
     builder.Property(x=>x.Code).HasMaxLength(50).IsRequired();
+    builder.Property(x => x.Description).HasMaxLength(250);
     builder.Property(x=>x.Name).HasMaxLength(50).IsRequired();
     builder.Property(x=>x.Path).HasMaxLength(75).IsRequired();
     builder.HasOne(x => x.AuClass).WithMany(x => x.AuActionClasses).HasForeignKey(x => x.ClassId);

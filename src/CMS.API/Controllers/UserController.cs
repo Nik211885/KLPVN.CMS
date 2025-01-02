@@ -120,5 +120,13 @@ public class UserController : ControllerBase
     var result = await _services.User.GetListUserDescriptionsAsync();
     return Ok(result);
   }
+
+  [HttpDelete("delete")]
+  public async Task<IActionResult> DeleteUserByUserNameAsync(string userName)
+  {
+    await _services.User.DeleteAsync(userName);
+    _jwtManager.RemoveRefreshTokenByUserName(userName);
+    return NoContent();
+  }
   
 }

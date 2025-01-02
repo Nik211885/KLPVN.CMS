@@ -124,6 +124,7 @@ else{
             if (userUpdateMessage.IsSuccessStatusCode)
             {
                 Snack.Add("Cập nhật thành công", Severity.Success);
+                MudDialog.Close(DialogResult.Ok(userRequest));
                 return;    
             }
 

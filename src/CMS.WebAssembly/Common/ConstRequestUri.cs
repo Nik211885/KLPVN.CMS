@@ -19,6 +19,8 @@ public abstract class ConstRequestUri
   public const string GetUserDetailByUserName = "user/detail?userName={0}";
   public const string PutActiveUser = "user/active?userName={0}";
   public const string PutUpdateUserByUserName = "user/update-by-user-name?userName={0}";
+  public const string PostCreateUser = "user/create";
+  public const string DeleteUser = "user/delete?userName={0}";
   
   //feedbacks
   public const string FeedBacks = "feed-back/all";

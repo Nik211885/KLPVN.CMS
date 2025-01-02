@@ -1,8 +1,10 @@
 ﻿@page "/quanlynhanvien"
+@using CMS.Shared.DTOs.User.Request
 @using CMS.Shared.DTOs.User.Response
 @using CMS.WEB.Common
 @using KLPVN.Core.Helper
 @using KLPVN.Core.Models
+@using Newtonsoft.Json
 @layout CMS.WebAssembly.Layout.Admin.AdminLayout
 
 @inject IDialogService DialogService
@@ -77,7 +79,7 @@
                                     }
                                 </MudSwitch>
                             </MudMenuItem> *@
-                                <MudButton StartIcon="@Icons.Material.Filled.Edit" OnClick="()=>OpenEditDialog(u.UserName)" Style="width:100%">Sửa</MudButton>
+                                <MudButton StartIcon="@Icons.Material.Filled.Edit" OnClick="()=>OpenEditDialog(u)" Style="width:100%">Sửa</MudButton>
                                 <MudSwitch T = "bool" Value="u.IsActive" Color="Color.Tertiary" ValueChanged="() => HandlerUserActiveChange(u)">
                                     @if (u.IsActive)
                                     {
@@ -88,6 +90,7 @@
                                         <span>Không hoạt động</span>
                                     }
                                 </MudSwitch>
+                                <MudButton StartIcon="@Icons.Material.Filled.Delete" OnClick="()=>DeleteUserDialog(u)" Style="width:100%">Xóa</MudButton>
                             </MudMenu>
                         </MudItem>
                     </MudStack>
@@ -112,60 +115,41 @@
     {
         
     }
-
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
         {
-            try
-            {
-                var employHttpMessage = await Client.SendAsync(HttpMethod.GET, ConstRequestUri.UserAll, null, true);
-                if (employHttpMessage is null)
-                {
-                    return;
-                }
-
-                if (employHttpMessage.IsSuccessStatusCode)
-                {
-                    _userDescriptionResponses = await employHttpMessage.Content.DecodeAsync<List<UserDescriptionResponse>>() ?? [];
-                    _isLoadEmployees = true;
-                    StateHasChanged();
-                }
-                else
-                {
-                    var errors = await employHttpMessage.Content.DecodeAsync<ErrorResponse>();
-                    Snack.Add(errors is null ? "Loadding thất bại" :errors.Detail, Severity.Warning);
-                }
-            }
-            catch (Exception ex)
-            {
-                Snack.Add("Cập nhật thất bại", Severity.Error);
-            }
+            await LoadUserAsync();
         }
     }
 
-    private Task OpenAddDialog()
+    private async Task OpenAddDialog()
     {
         var options = new DialogOptions { CloseOnEscapeKey = true, CloseButton = true, FullWidth=true};
 
-        return DialogService.ShowAsync<AddDialog>("", options);
+        var dialog =  await DialogService.ShowAsync<AddDialog>("", options);
+        var result = await dialog.Result;
+        if (result is { Canceled: false})
+        {
+            await LoadUserAsync();
+        }
     }
 
-    private Task OpenEditDialog(string userName)
+    private async Task OpenEditDialog(UserDescriptionResponse user)
     {
         var options = new DialogOptions { CloseOnEscapeKey = true, CloseButton = true, FullWidth = true };
         var parameters = new DialogParameters()
         {
-            { "UserName", userName },
+            { "UserName", user.UserName },
         };
-        return DialogService.ShowAsync<EditDialog>("", parameters, options);
-    }
+        
+        var dialog = await DialogService.ShowAsync<EditDialog>("", parameters, options);
+        var result = await dialog.Result;
+        if (result is {  Canceled: false, Data: UpdateUserInformationRequest userByUserName })
+        {
+            user.FullName = userByUserName.FullName;
+        }
 
-    private Task OpenDeleteDialog()
-    {
-        var options = new DialogOptions { CloseOnEscapeKey = true, CloseButton = true };
-
-        return DialogService.ShowAsync<DeleteDialog>("", options);
     }
 
     private async Task HandlerUserActiveChange(UserDescriptionResponse user)
@@ -183,11 +167,8 @@
             {
                 return;
             }
-            else
-            {
-                var errors = await userActiveMessage.Content.DecodeAsync<ErrorResponse>();
-                Snack.Add(errors is not null ? errors.Detail : "Có lỗi xãy ra", Severity.Warning);
-            }
+            var errors = await userActiveMessage.Content.DecodeAsync<ErrorResponse>();
+            Snack.Add(errors is not null ? errors.Detail : "Có lỗi xãy ra", Severity.Warning);
         }
         catch (Exception ex)
         {
@@ -195,5 +176,49 @@
         }
 
         user.IsActive = !user.IsActive;
+    }
+
+    private async Task LoadUserAsync()
+    {
+        try
+        {
+            var employHttpMessage = await Client.SendAsync(HttpMethod.GET, ConstRequestUri.UserAll, null, true);
+            if (employHttpMessage is null)
+            {
+                return;
+            }
+
+            if (employHttpMessage.IsSuccessStatusCode)
+            {
+                _userDescriptionResponses = await employHttpMessage.Content.DecodeAsync<List<UserDescriptionResponse>>() ?? [];
+                _isLoadEmployees = true;
+                StateHasChanged();
+            }
+            else
+            {
+                var errors = await employHttpMessage.Content.DecodeAsync<ErrorResponse>();
+                Snack.Add(errors is null ? "Loadding thất bại" :errors.Detail, Severity.Warning);
+            }
+        }
+        catch (Exception ex)
+        {
+            Snack.Add("Cập nhật thất bại", Severity.Error);
+        }
+    }
+
+    private async Task DeleteUserDialog(UserDescriptionResponse user)
+    {
+        var options = new DialogOptions { CloseOnEscapeKey = true, CloseButton = true, FullWidth=true};
+        var parameters = new DialogParameters()
+        {
+            { "UserName", user.UserName },
+        };
+        
+        var dialog =  await DialogService.ShowAsync<DeleteDialog>("",parameters, options);
+        var result = await dialog.Result;
+        if (result is { Canceled: false})
+        {
+            _userDescriptionResponses.Remove(user);
+        }
     }
 }

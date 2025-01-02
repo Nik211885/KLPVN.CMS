@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using CMS.API.Services;
 using CMS.Shared.DTOs.Subject.Request;
+using CMS.Shared.DTOs.Subject.Response;
 using KLPVN.Core.Interface;
 using Microsoft.AspNetCore.Mvc;
 
@@ -36,6 +37,20 @@ public class SubjectController : ControllerBase
   public async Task<ActionResult<Guid>> ActiveSubjectAsync([Required] Guid id)
   {
     var result = await _services.Subject.ActiveAsync(id);
+    return Ok(result);
+  }
+
+  [HttpGet("get-subjects")]
+  public async Task<ActionResult<SubjectResponse>> GetAllSubjectsAsync(bool? isActive = null)
+  {
+    var result = await _services.Subject.GetAllSubjectAsync(isActive);
+    return Ok(result);
+  }
+
+  [HttpGet("get-subject-active")]
+  public async Task<IActionResult> GetAllSubjectActiveAsync()
+  {
+    var result = await _services.Subject.GetAllSubjectAsync(true);
     return Ok(result);
   }
 }

@@ -4,6 +4,7 @@ using CMS.API.Common.Validation;
 using CMS.API.Exceptions;
 using CMS.API.Infrastructure.Data;
 using CMS.Shared.DTOs.Subject.Request;
+using CMS.Shared.DTOs.Subject.Response;
 using KLPVN.Core.Interface;
 using Microsoft.EntityFrameworkCore;
 
@@ -82,5 +83,35 @@ public class Services : IServices
 
     _context.Subjects.Remove(subject);
     await _context.SaveChangesAsync();
+  }
+
+  public async Task<SubjectResponse> GetAllSubjectAsync(bool? isActive)
+  {
+    var subjectsResponse = new SubjectResponse();
+    var allSubjectQuery = _context.Subjects.AsQueryable();
+    if (isActive is not null)
+    {
+      allSubjectQuery = allSubjectQuery.Where(x => x.IsActive == isActive);
+    }
+    var rootParent = await _context.Subjects.Where(x => x.ParentId == null).OrderBy(x=>x.DisplayOrder).ToListAsync();
+    var childSubjects = await _context.Subjects.Where(x => x.ParentId != null).OrderBy(x=>x.DisplayOrder).ToListAsync();
+    foreach (var r in rootParent)
+    {
+      subjectsResponse.SubjectsList.Add(RecursiveSubject(r.Mapping(), childSubjects));
+    }
+    return subjectsResponse;
+  }
+
+  private Subjects RecursiveSubject(Subjects currentSubject,
+    List<Entities.Subject> childSubjects)
+  {
+    var child = childSubjects.Where(x => x.ParentId == currentSubject.Id).ToList().Mapping();
+    foreach (var c in child)
+    {
+      RecursiveSubject(c, childSubjects);
+    }
+
+    currentSubject.Subject.AddRange(child);
+    return currentSubject;
   }
 }
