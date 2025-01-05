@@ -30,7 +30,7 @@ public static class InformationOrganizationValidation
 
     if (!string.IsNullOrWhiteSpace(request.Email))
     {
-      if (RegularExpressionsHelper.IsValidEmail(request.Email) || request.Email.Length > 50)
+      if (!RegularExpressionsHelper.IsValidEmail(request.Email) || request.Email.Length > 50)
       {
         throw new BadRequestException(ConstMessage.IN_VALID_EMAIL);
       }
@@ -74,7 +74,7 @@ public static class InformationOrganizationValidation
 
     if (!string.IsNullOrWhiteSpace(request.Email))
     {
-      if (RegularExpressionsHelper.IsValidEmail(request.Email) || request.Email.Length > 50)
+      if (!RegularExpressionsHelper.IsValidEmail(request.Email) || request.Email.Length > 50)
       {
         throw new BadRequestException(ConstMessage.IN_VALID_EMAIL);
       }

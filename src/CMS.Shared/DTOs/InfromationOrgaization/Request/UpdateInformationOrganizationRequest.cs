@@ -6,9 +6,8 @@ public record UpdateInformationOrganizationRequest(
   string Address,
   string Phone, 
   string? Email,
-  string? Icon,
   string? RefFacebook, 
   string? RefYoutube,  
   string? RefX, 
   string? RefSocial, 
-  string? RefTikTok);
+  string? RefTikTok); 

@@ -4,6 +4,7 @@ using CMS.API.Common.Validation;
 using CMS.API.Exceptions;
 using CMS.API.Infrastructure.Data;
 using CMS.Shared.DTOs.InfromationOrgaization.Request;
+using CMS.Shared.DTOs.InfromationOrgaization.Response;
 using KLPVN.Core.Interface;
 using Microsoft.EntityFrameworkCore;
 
@@ -54,7 +55,7 @@ public class Services : IServices
     if (informationOr is null)
     {
       throw new NotFoundException(nameof(InformationOrganization));
-    }
+    } 
 
     if (!informationOr.IsActive)
     {
@@ -73,6 +74,13 @@ public class Services : IServices
     return id;
   }
 
+  public async Task<List<InformationOrganizationResponse>> GetAllAsync()
+  {
+    var informationOrganizations = await _context.InformationOrganizations.ToListAsync();
+    var result = informationOrganizations.Mapping();
+    return result;
+  }
+
   public async Task DeleteAsync(Guid id)
   {
     var informationOr = await _context.InformationOrganizations.FirstOrDefaultAsync(x => x.Id == id);
@@ -82,5 +90,18 @@ public class Services : IServices
     }
     _context.InformationOrganizations.Remove(informationOr);
     await _context.SaveChangesAsync();
+  }
+
+  public async Task<Guid> UploadIconAsync(Guid id, string iconUrl)
+  {
+    var informationOr = await _context.InformationOrganizations.FirstOrDefaultAsync(x => x.Id == id);
+    if (informationOr is null)
+    {
+      throw new NotFoundException(nameof(InformationOrganization));
+    }
+    informationOr.Icon = iconUrl;
+    _context.InformationOrganizations.Update(informationOr);
+    await _context.SaveChangesAsync();
+    return informationOr.Id;
   }
 }

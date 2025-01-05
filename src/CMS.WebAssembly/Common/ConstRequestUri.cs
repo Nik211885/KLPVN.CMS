@@ -33,4 +33,11 @@ public abstract class ConstRequestUri
   public const string PutActiveSubject = "subject/active?id={0}";
   public const string PutUpdateSubject = "subject/update?id={0}";
   public const string DeleteSubject = "subject/delete?id={0}";
+  
+  // InformationOrganization
+  public const string GetAllInformationOrganization = "information-organization/all";
+  public const string DeleteInformationOrganizationById = "information-organization/delete?id={0}";
+  public const  string PostCreateInformationOrganization = "information-organization/create";
+  public const string PutUpdateIconInformationOrganization = "information-organization/upload-icon?id={0}&iconUrl={1}";
+  public const string PutUpdateInformationOrganization = "information-organization/update?id={0}";
 }

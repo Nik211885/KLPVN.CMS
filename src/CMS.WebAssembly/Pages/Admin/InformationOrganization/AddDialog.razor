@@ -1,4 +1,8 @@
-﻿<style>
+﻿@using CMS.Shared.DTOs.InfromationOrgaization.Request
+@using CMS.WEB.Common
+@using KLPVN.Core.Helper
+@using KLPVN.Core.Models
+<style>
     .mud-button-label {
         text-transform: none;
     }
@@ -16,13 +20,13 @@
                 <MudItem xs="12">
                     <MudStack Class="d-flex justify-content-center align-items-center mb-2" Style="width: 100%; height: auto;">
                         <MudAvatar Style="width:100px; height:100px">
-                            <MudImage Class="center-image" Style="width:100%; height: auto" Src="imgs/no-image-icon-6.png" Alt="Icon" />
+                            <MudImage Class="center-image" Style="width:100%; height: auto" Src="@_iconUrl" Alt="Icon" />
                         </MudAvatar>
-                        <MudFileUpload Accept="image/png, image/jpeg" T="IBrowserFile">
+                        <MudFileUpload Accept="image/png, image/jpeg" T="IBrowserFile" FilesChanged="UploadFileInformation">
                             <ActivatorContent>
                                 <MudFab Color="Color.Secondary"
                                         StartIcon="@Icons.Material.Filled.Image"
-                                        Label="Chọn ảnh" Style="text-transform: none" />
+                                        Label="Chọn icon" Style="text-transform: none" />
                             </ActivatorContent>
                         </MudFileUpload>
                     </MudStack>
@@ -57,12 +61,6 @@
                 <MudItem xs="12">
                     <MudTextField @bind-Value="Input.RefTikTok" For="@(() => Input.RefTikTok)" Variant="Variant.Outlined" Margin="Margin.Dense" Label="Link Tiktok"></MudTextField>
                 </MudItem>
-                <MudItem xs="12">
-                    <MudRadioGroup @bind-Value="Input.IsActive">
-                        <MudRadio Value="@(true)">Hoạt động</MudRadio>
-                        <MudRadio Value="@(false)">Không hoạt động</MudRadio>
-                    </MudRadioGroup>
-                </MudItem>
             </MudGrid>
         </MudForm>
     </DialogContent>
@@ -77,13 +75,81 @@
     private MudDialogInstance MudDialog { get; set; }
 
     private MudForm form;
-
+    private string _iconUrl;
     public InputModel Input = new InputModel();
 
-    private void Submit() => MudDialog.Close(DialogResult.Ok(true));
+    private async Task Submit()
+    {
+        var createInformationOrRequest = new CreateInformationOrganizationRequest(
+                Code:Input.Code,
+                OrganizationName:Input.OrganizationName,
+                Address:Input.Address,
+                Phone:Input.Phone,
+                Email:Input.Email,
+                Icon:_iconUrl,
+                RefFacebook:Input.RefFacebook,
+                RefYoutube:Input.RefYoutube,
+                RefX:Input.RefX,
+                RefSocial:Input.RefSocial,
+                RefTikTok:Input.RefTikTok
+            );
+        try
+        {
+            var createInforMessage = await Client.SendAsync(HttpMethod.POST,
+                ConstRequestUri.PostCreateInformationOrganization, createInformationOrRequest,  true);
+            if (createInforMessage is null)
+            {
+                return;
+            }
+
+            if (createInforMessage.IsSuccessStatusCode)
+            {
+                MudDialog.Close(DialogResult.Ok(0));
+                Snack.Add("Thêm mới thành công", Severity.Success);
+                return;
+            }
+            var error = await createInforMessage.Content.DecodeAsync<ErrorResponse>();
+            Snack.Add(error is not null ? error.Detail : "Có lỗi xãy ra", Severity.Warning);
+        }
+        catch (Exception ex)
+        {
+            Snack.Add("Có lỗi xãy ra", Severity.Error);
+        }
+    }
 
     private void Cancel() => MudDialog.Cancel();
 
+    private async Task UploadFileInformation(IBrowserFile file)
+    {
+        try
+        {
+            var urlUploadImages = await Client.SendAsync(HttpMethod.GET,
+                ConstRequestUri.AuUploadFile, null, true);
+            if (urlUploadImages is null)
+            {
+                return;
+            }
+
+            if (urlUploadImages.IsSuccessStatusCode)
+            {
+                var url = await urlUploadImages.Content.ReadAsStringAsync();
+                var sendCloudinaryMessage = await CloudHelper.UploadFileAsync(url, file);
+                if (sendCloudinaryMessage.IsSuccess)
+                {
+                    _iconUrl = sendCloudinaryMessage.Data;
+                    return;
+                }
+                Snack.Add(sendCloudinaryMessage.Data, Severity.Warning);
+                return;
+            }
+            var error = await urlUploadImages.Content.DecodeAsync<ErrorResponse>();
+            Snack.Add(error is not null ? error.Detail : "Có lỗi xãy ra", Severity.Warning);
+        }
+        catch (Exception ex)
+        {
+            Snack.Add("Upload images thất bại", Severity.Error);
+        }
+    }
     public class InputModel
     {
         public string Code { get; set; }

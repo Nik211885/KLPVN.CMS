@@ -1,4 +1,5 @@
 ﻿using CMS.Shared.DTOs.InfromationOrgaization.Request;
+using CMS.Shared.DTOs.InfromationOrgaization.Response;
 
 namespace CMS.API.Common.Mapping;
 
@@ -29,11 +30,35 @@ public static class InformationOrganizationMapping
     informationOrganization.Address = request.Address;
     informationOrganization.Phone = request.Phone;
     informationOrganization.Email = request.Email;
-    informationOrganization.Icon = request.Icon;
     informationOrganization.RefFacebook = request.RefFacebook;
     informationOrganization.RefYoutube = request.RefYoutube;
     informationOrganization.RefX = request.RefX;
     informationOrganization.RefSocial = request.RefSocial;
     informationOrganization.RefTikTok = request.RefTikTok;
+  }
+
+  public static InformationOrganizationResponse Mapping(this Entities.InformationOrganization informationOrganization)
+  {
+    return new InformationOrganizationResponse(
+      Id: informationOrganization.Id,
+      Code: informationOrganization.Code,
+      OrganizationName: informationOrganization.OrganizationName,
+      Address: informationOrganization.Address,
+      Phone: informationOrganization.Phone,
+      Email: informationOrganization.Email,
+      Icon: informationOrganization.Icon,
+      RefFacebook: informationOrganization.RefFacebook,
+      RefYoutube: informationOrganization.RefYoutube,
+      RefX: informationOrganization.RefX,
+      RefSocial: informationOrganization.RefSocial,
+      RefTikTok: informationOrganization.RefTikTok,
+      IsActive: informationOrganization.IsActive
+    );
+  }
+
+  public static List<InformationOrganizationResponse> Mapping(
+    this List<Entities.InformationOrganization> informationOrganizations)
+  {
+    return informationOrganizations.Select(Mapping).ToList();
   }
 }
