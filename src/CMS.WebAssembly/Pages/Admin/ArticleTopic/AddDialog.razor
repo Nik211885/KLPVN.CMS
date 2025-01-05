@@ -35,11 +35,7 @@ else{
                         <MudTextField Margin="Margin.Dense" @bind-Value="topic.DisplayOrder" Variant="Variant.Outlined" Label="Thứ tự hiển thị"></MudTextField>
                     </MudItem>
                     <MudItem xs="12" Style="width:100%">
-                        <MudText Style="margin: 10px">Chủ đề cha</MudText>
-                        @if (_subjects is not null)
-                        {
-                            <MudText Color="Color.Secondary" Style="margin: 10px">@_subjects.Name</MudText>
-                        }
+                        <MudTextField @bind-Value="@_subjects.Name" Variant="Variant.Outlined" Disabled="true" Label="Chủ đề cha" />
                         <MenuArticleTopic Subject="@_subjectTree" SelectedItemsChanged="(subject)=>GetParentSubject(subject)"/>
                     </MudItem>
                 </MudGrid>
@@ -58,9 +54,9 @@ else{
     private MudForm form;
     private SubjectResponse _subjectTree;
     public Topic topic { get; set; } = new();
-    private Subjects? _subjects { get; set; }
+    private Subjects _subjects { get; set; } = new();
 
-    private void GetParentSubject(Subjects? subject)
+    private void GetParentSubject(Subjects subject)
     {
         _subjects = subject;
     }
@@ -127,7 +123,6 @@ else{
             {
                 Snack.Add("Có lỗi xảy ra", Severity.Error);
             }
-
         }
     }
 

@@ -55,10 +55,10 @@ else{
                 <MudTd>
                     <MudStack Row>
                         <MudTooltip Text="Sửa" Arrow Placement="Placement.Top">
-                            <MudIconButton Size="Size.Small" Icon="@Icons.Material.Filled.Edit" OnClick="OpenEditDialog"></MudIconButton>
+                            <MudIconButton Size="Size.Small" Icon="@Icons.Material.Filled.Edit" OnClick="()=>OpenEditDialog(context)"></MudIconButton>
                         </MudTooltip>
                         <MudTooltip Text="Xóa" Arrow Placement="Placement.Top">
-                            <MudIconButton Size="Size.Small" Icon="@Icons.Material.Filled.Delete" OnClick="OpenDeleteDialog"></MudIconButton>
+                            <MudIconButton Size="Size.Small" Icon="@Icons.Material.Filled.Delete" Color="Color.Error" OnClick="()=>OpenDeleteDialog(context)"></MudIconButton>
                         </MudTooltip>
                     </MudStack>
                 </MudTd>
@@ -105,17 +105,37 @@ else{
         }
     }
 
-    private Task OpenEditDialog()
+    private async Task OpenEditDialog(Subjects subject)
     {
         var options = new DialogOptions { CloseOnEscapeKey = true, CloseButton = true};
-
-        return DialogService.ShowAsync<EditDialog>("", options);
+        var parameters = new DialogParameters()
+        {
+            { "SubjectId", subject.Id }
+        };
+        var dialog =  await DialogService.ShowAsync<EditDialog>("", parameters, options);
+        var result = await dialog.Result;
+        if (result is {Canceled : false, Data: SubjectDetailResponse subjectDetail})
+        {
+            subject.Code = subjectDetail.Code;
+            subject.DisplayOrder = subject.DisplayOrder;
+            subject.IsActive = subjectDetail.IsActive;
+            subject.Name = subjectDetail.Name;
+        }
     }
 
-    private Task OpenDeleteDialog()
+    private async Task OpenDeleteDialog(Subjects subject)
     {
         var options = new DialogOptions { CloseOnEscapeKey = true, CloseButton = true};
-        return DialogService.ShowAsync<DeleteDialog>("", options);
+        var parameter = new DialogParameters()
+        {
+            { "SubjectId", subject.Id }
+        };
+        var dialog = await DialogService.ShowAsync<DeleteDialog>("", parameter, options);
+        var result = await dialog.Result;
+        if (result is { Canceled: false })
+        {
+            _items.Remove(subject);
+        }
     }
 
     private async Task LoadSubjectAsync()

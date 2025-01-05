@@ -66,4 +66,18 @@ public class SubjectController : ControllerBase
     var result = await _services.Subject.GetAllSubjectsAsync(true);
     return Ok(result);
   }
+
+  [HttpGet("detail")]
+  public async Task<ActionResult<SubjectDetailResponse>> GetSubjectDetailAsync([Required] Guid id)
+  {
+    var result = await _services.Subject.GetSubjectDetailAsync(id);
+    return Ok(result);
+  }
+
+  [HttpDelete("delete")]
+  public async Task<IActionResult> DeleteSubjectAsync([Required] Guid id)
+  {
+    await _services.Subject.DeleteAsync(id);
+    return NoContent();
+  }
 }

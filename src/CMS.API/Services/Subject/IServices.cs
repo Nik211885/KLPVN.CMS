@@ -66,4 +66,17 @@ public interface IServices
   ///   Return list subject response 
   /// </returns>
   Task<List<Subjects>> GetAllSubjectsAsync(bool? isActive = true);
+  /// <summary>
+  ///   Get detail subject
+  /// </summary>
+  /// <param name="id">
+  ///   Id for subject
+  /// </param>
+  /// <exception cref="Exception">
+  ///   Throw exception notfound if not find subject has id
+  /// </exception>
+  /// <returns>
+  ///   Return detail subject
+  /// </returns>
+  Task<SubjectDetailResponse> GetSubjectDetailAsync(Guid id);
 }

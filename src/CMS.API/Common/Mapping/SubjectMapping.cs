@@ -1,5 +1,6 @@
 ﻿using CMS.Shared.DTOs.Subject.Request;
 using CMS.Shared.DTOs.Subject.Response;
+using Faker;
 
 namespace CMS.API.Common.Mapping;
 
@@ -38,5 +39,19 @@ public static class SubjectMapping
   public static List<Subjects> Mapping(this List<Entities.Subject> subjects)
   {
     return subjects.Select(Mapping).ToList();
+  }
+
+  public static SubjectDetailResponse MappingDetail(this Entities.Subject subject)
+  {
+    return new SubjectDetailResponse()
+    {
+      Id = subject.Id,
+      Code = subject.Code,
+      Name = subject.Name,
+      IsActive = subject.IsActive,
+      DisplayOrder = subject.DisplayOrder,
+      ParentId = subject.ParentId,
+      ParentName = subject.Parent?.Name
+    };
   }
 }

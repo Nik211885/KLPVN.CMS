@@ -29,5 +29,8 @@ public abstract class ConstRequestUri
   public const string GetAllSubject = "subject/get-subjects";
   public const string GetTreeSubjectActive = "subject/get-tree-subject-active";
   public const string PostCreateSubject = "subject/create";
-  
+  public const string GetDetailSubject = "subject/detail?id={0}";
+  public const string PutActiveSubject = "subject/active?id={0}";
+  public const string PutUpdateSubject = "subject/update?id={0}";
+  public const string DeleteSubject = "subject/delete?id={0}";
 }

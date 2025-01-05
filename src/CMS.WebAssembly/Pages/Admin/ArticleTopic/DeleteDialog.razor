@@ -1,4 +1,7 @@
-﻿<style>
+﻿@using CMS.WEB.Common
+@using KLPVN.Core.Helper
+@using KLPVN.Core.Models
+<style>
     .mud-button-label {
         text-transform: none;
     }
@@ -21,11 +24,37 @@
 
 @code {
     [Parameter]
-    public Guid Id { get; set; }
+    public Guid SubjectId { get; set; }
     [CascadingParameter]
     private MudDialogInstance MudDialog { get; set; }
 
-    private void Submit() => MudDialog.Close(DialogResult.Ok(true));
+    private async Task Submit()
+    {
+        try
+        {
+            var deleteSubjectMessage = await Client.SendAsync(HttpMethod.DELETE,
+                string.Format(ConstRequestUri.DeleteSubject, SubjectId), null, true
+                );
+            if (deleteSubjectMessage is null)
+            {
+                return;
+            }
+
+            if (deleteSubjectMessage.IsSuccessStatusCode)
+            {
+                MudDialog.Close(DialogResult.Ok(0));
+                Snack.Add("Xóa chủ đề thành công", Severity.Success);
+                return;
+            }
+            var errors = await deleteSubjectMessage.Content.DecodeAsync<ErrorResponse>();
+            Snack.Add(errors is null ? "Có lỗi xảy ra" :errors.Detail, Severity.Warning);
+            
+        }
+        catch (Exception ex)
+        {
+            Snack.Add("Có lỗi xảy ra", Severity.Error);
+        }
+    }
 
     private void Cancel() => MudDialog.Cancel();
 }

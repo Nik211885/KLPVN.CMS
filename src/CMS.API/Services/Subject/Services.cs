@@ -115,6 +115,17 @@ public class Services : IServices
     return subject.Mapping();
   }
 
+  public async Task<SubjectDetailResponse> GetSubjectDetailAsync(Guid id)
+  {
+    var subject = await _context.Subjects.FirstOrDefaultAsync(x=>x.Id == id);
+    if (subject is null)
+    {
+      throw new NotFoundException(nameof(subject));
+    }
+
+    return subject.MappingDetail();
+  }
+
   private Subjects RecursiveSubject(Subjects currentSubject,
     List<Entities.Subject> childSubjects)
   {
