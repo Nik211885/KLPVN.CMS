@@ -41,4 +41,11 @@ public class AuClassController : ControllerBase
     await _services.AuClass.DeleteAsync(id);
     return NoContent();
   }
+
+  [HttpGet("get-all")]
+  public async Task<ActionResult<IReadOnlyCollection<AuClassResponse>>> GetAllAuClassAsync()
+  {
+    var result = await _services.AuClass.GetAllAsync();
+    return Ok(result);
+  }
 }

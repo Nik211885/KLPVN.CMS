@@ -38,4 +38,18 @@ public class RoleController : ControllerBase
     await _services.Role.DeleteAsync(id);
     return NoContent();
   }
+
+  [HttpPost("add-permission")]
+  public async Task<IActionResult> AddPermissionForRoleAsync([Required] Guid roleId, [Required] Guid auActionId)
+  {
+    await _services.Role.AddPermissionForRoleAsync(roleId, auActionId);
+    return NoContent();
+  }
+
+  [HttpDelete("remove-permission")]
+  public async Task<IActionResult> RemovePermissionForRoleAsync([Required] Guid roleId, [Required] Guid auActionId)
+  {
+    await _services.Role.RemovePermissionForRoleAsync(roleId, auActionId);
+    return NoContent();
+  }
 }

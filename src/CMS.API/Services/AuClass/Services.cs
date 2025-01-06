@@ -3,6 +3,7 @@ using CMS.API.Common.Validation;
 using CMS.API.Exceptions;
 using CMS.API.Infrastructure.Data;
 using CMS.Shared.DTOs.AuClass.Request;
+using CMS.Shared.DTOs.AuClass.Response;
 using KLPVN.Core.Interface;
 using Microsoft.EntityFrameworkCore;
 
@@ -56,6 +57,15 @@ public class Services : IServices
     await _context.SaveChangesAsync();
     return id;
   }
+
+  public async Task<List<AuClassResponse>> GetAllAsync()
+  {
+    var entity = await _context.AuClasses
+      .Include(x => x.AuActionClasses).ToListAsync();
+    var result = entity.Mapping();
+    return result;
+  }
+
 
   public async Task DeleteAsync(Guid id)
   {

@@ -42,9 +42,16 @@ public class FeedBackController : ControllerBase
   }
 
   [HttpDelete("delete")]
-  public async Task<IActionResult> DeleteFeedBackAsync(Guid id)
+  public async Task<IActionResult> DeleteFeedBackAsync([FromQuery] Guid id)
   {
     await _services.FeedBack.DeleteAsync(id);
+    return NoContent();
+  }
+
+  [HttpDelete("delete-list")]
+  public async Task<IActionResult> DeleteFeedBackAsync([FromBody] List<Guid> ids)
+  {
+    await _services.FeedBack.DeleteListAsync(ids);
     return NoContent();
   }
 }

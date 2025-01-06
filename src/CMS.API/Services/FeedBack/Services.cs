@@ -51,6 +51,13 @@ public class Services : IServices
     return feedBacks;
   }
 
+  public async Task DeleteListAsync(IEnumerable<Guid> ids)
+  {
+    var entities = await _context.FeedBacks.Where(x => ids.Contains(x.Id)).ToListAsync();
+    _context.FeedBacks.RemoveRange(entities);
+    await _context.SaveChangesAsync();
+  }
+
   public async Task DeleteFeedBackAsync(Guid id)
   {
     var feedBack = await _context.FeedBacks.FirstOrDefaultAsync(x => x.Id == id);
