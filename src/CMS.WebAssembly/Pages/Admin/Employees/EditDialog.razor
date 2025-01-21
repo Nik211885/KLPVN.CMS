@@ -67,43 +67,36 @@ else{
     {
         if (firstRender)
         {
-            try
+            var informationHttpMessage = await Client.SendAsync(HttpMethod.GET,
+                string.Format(ConstRequestUri.GetUserDetailByUserName, UserName), null, true);
+            if (informationHttpMessage is null)
             {
-                var informationHttpMessage = await Client.SendAsync(HttpMethod.GET,
-                    string.Format(ConstRequestUri.GetUserDetailByUserName, UserName), null, true);
-                if (informationHttpMessage is null)
+                return;
+            }
+
+            if (informationHttpMessage.IsSuccessStatusCode)
+            {
+                var user = await informationHttpMessage.Content.DecodeAsync<UserDetailResponse>();
+                if (user is null)
                 {
+                    Snack.Add("Có lỗi xãy ra", Severity.Error);
                     return;
                 }
 
-                if (informationHttpMessage.IsSuccessStatusCode)
+                nhanVien = new()
                 {
-                    var user = await informationHttpMessage.Content.DecodeAsync<UserDetailResponse>();
-                    if (user is null)
-                    {
-                        Snack.Add("Có lỗi xãy ra", Severity.Error);
-                        return;
-                    }
-
-                    nhanVien = new()
-                    {
-                        Address = user.Address,
-                        Email = user.Email,
-                        FullName = user.FullName,
-                        PhoneNumber = user.Phone,
-                        Gender = user.Gender,
-                    };
-                    _isLoadPage = true;
-                    StateHasChanged();
-                    return;
-                }
-                var errors = await informationHttpMessage.Content.DecodeAsync<ErrorResponse>();
-                Snack.Add(errors is not null ? errors.Detail : "Có lỗi xãy ra", Severity.Warning);
+                    Address = user.Address,
+                    Email = user.Email,
+                    FullName = user.FullName,
+                    PhoneNumber = user.Phone,
+                    Gender = user.Gender,
+                };
+                _isLoadPage = true;
+                StateHasChanged();
+                return;
             }
-            catch (Exception ex)
-            {
-                Snack.Add("Có lỗi xãy ra", Severity.Warning);
-            }
+            var errors = await informationHttpMessage.Content.DecodeAsync<ErrorResponse>();
+            Snack.Add(errors is not null ? errors.Detail : "Có lỗi xãy ra", Severity.Warning);
         }
     }
 

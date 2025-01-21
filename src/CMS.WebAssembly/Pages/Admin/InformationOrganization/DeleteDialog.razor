@@ -29,28 +29,21 @@
 
     private async Task Submit()
     {
-        try
+        var deleteInformationMessage = await Client.SendAsync(HttpMethod.DELETE,
+            string.Format(ConstRequestUri.DeleteInformationOrganizationById, Id), null, true);
+        if (deleteInformationMessage is null)
         {
-            var deleteInformationMessage = await Client.SendAsync(HttpMethod.DELETE,
-                string.Format(ConstRequestUri.DeleteInformationOrganizationById, Id), null, true);
-            if (deleteInformationMessage is null)
-            {
-                return;
-            }
+            return;
+        }
 
-            if (deleteInformationMessage.IsSuccessStatusCode)
-            {
-                MudDialog.Close(DialogResult.Ok(0));
-                Snack.Add("Xóa thành công", Severity.Success);
-                return;
-            }
-            var error = await deleteInformationMessage.Content.DecodeAsync<ErrorResponse>();
-            Snack.Add(error is not null ? error.Detail : "Có lỗi xãy ra", Severity.Warning);
-        }
-        catch (Exception ex)
+        if (deleteInformationMessage.IsSuccessStatusCode)
         {
-            Snack.Add("Có lỗi xãy ra", Severity.Error);
+            MudDialog.Close(DialogResult.Ok(0));
+            Snack.Add("Xóa thành công", Severity.Success);
+            return;
         }
+        var error = await deleteInformationMessage.Content.DecodeAsync<ErrorResponse>();
+        Snack.Add(error is not null ? error.Detail : "Có lỗi xãy ra", Severity.Warning);
     }
 
     private void Cancel() => MudDialog.Cancel();

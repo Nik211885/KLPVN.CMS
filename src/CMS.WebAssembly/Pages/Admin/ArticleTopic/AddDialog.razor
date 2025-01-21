@@ -64,29 +64,22 @@ else{
     private async Task Submit()
     {
         var createSubjectRequest = new CreateSubjectRequest(topic.Code, topic.Name, topic.DisplayOrder, _subjects?.Id);
-        try
+        var createSubjectMessage = await Client.SendAsync(HttpMethod.POST, 
+            ConstRequestUri.PostCreateSubject, createSubjectRequest, true);
+        if (createSubjectMessage is null)
         {
-            var createSubjectMessage = await Client.SendAsync(HttpMethod.POST, 
-                ConstRequestUri.PostCreateSubject, createSubjectRequest, true);
-            if (createSubjectMessage is null)
-            {
-                return;
-            }
+            return;
+        }
 
-            if (createSubjectMessage.IsSuccessStatusCode)
-            {
-                MudDialog.Close(DialogResult.Ok(0));
-                Snack.Add("Thêm chủ đề thành công");
-                return;    
-            }
-            var errors = await createSubjectMessage.Content.DecodeAsync<ErrorResponse>();
-            Snack.Add(errors is null ? "Có lỗi xảy ra" :errors.Detail, Severity.Warning);
-            
-        }
-        catch (Exception ex)
+        if (createSubjectMessage.IsSuccessStatusCode)
         {
-            Snack.Add("Có lỗi xảy ra", Severity.Error);
+            MudDialog.Close(DialogResult.Ok(0));
+            Snack.Add("Thêm chủ đề thành công");
+            return;    
         }
+        var errors = await createSubjectMessage.Content.DecodeAsync<ErrorResponse>();
+        Snack.Add(errors is null ? "Có lỗi xảy ra" :errors.Detail, Severity.Warning);
+            
     }
 
     private void Cancel() => MudDialog.Cancel();
@@ -94,35 +87,28 @@ else{
     {
         if (firstRender)
         {
-            try
+            var subjectTreeMessage = await Client.SendAsync(HttpMethod.GET, ConstRequestUri.GetTreeSubjectActive,
+                null, true);
+            if (subjectTreeMessage is null)
             {
-                var subjectTreeMessage = await Client.SendAsync(HttpMethod.GET, ConstRequestUri.GetTreeSubjectActive,
-                    null, true);
-                if (subjectTreeMessage is null)
-                {
-                    return;
-                }
+                return;
+            }
 
-                if (subjectTreeMessage.IsSuccessStatusCode)
+            if (subjectTreeMessage.IsSuccessStatusCode)
+            {
+                var tree = await subjectTreeMessage.Content.DecodeAsync<SubjectResponse>();
+                if (tree is null)
                 {
-                    var tree = await subjectTreeMessage.Content.DecodeAsync<SubjectResponse>();
-                    if (tree is null)
-                    {
-                        Snack.Add("Có lỗi xảy ra", Severity.Warning);
-                        return;
-                    }
-                    _subjectTree = tree;
-                    _isLoadingDialog = true;
-                    StateHasChanged();
+                    Snack.Add("Có lỗi xảy ra", Severity.Warning);
                     return;
                 }
-                var errors = await subjectTreeMessage.Content.DecodeAsync<ErrorResponse>();
-                Snack.Add(errors is null ? "Loading thất bại" :errors.Detail, Severity.Warning);
+                _subjectTree = tree;
+                _isLoadingDialog = true;
+                StateHasChanged();
+                return;
             }
-            catch (Exception ex)
-            {
-                Snack.Add("Có lỗi xảy ra", Severity.Error);
-            }
+            var errors = await subjectTreeMessage.Content.DecodeAsync<ErrorResponse>();
+            Snack.Add(errors is null ? "Loading thất bại" :errors.Detail, Severity.Warning);
         }
     }
 

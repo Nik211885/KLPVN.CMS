@@ -79,53 +79,46 @@ else{
 
     private async Task UploadFiles(IBrowserFile file)
     {
-        try
+        var pesignedURLHttpMessage = await Client.SendAsync(HttpMethod.GET,
+            ConstRequestUri.AuUploadFile, null, true);
+        if (pesignedURLHttpMessage is null)
         {
-            var pesignedURLHttpMessage = await Client.SendAsync(HttpMethod.GET,
-                ConstRequestUri.AuUploadFile, null, true);
-            if (pesignedURLHttpMessage is null)
-            {
-                return;
-            }
+            return;
+        }
 
-            if (pesignedURLHttpMessage.IsSuccessStatusCode)
-            {
-                var pesignedUrl = await pesignedURLHttpMessage.Content.ReadAsStringAsync();
+        if (pesignedURLHttpMessage.IsSuccessStatusCode)
+        {
+            var pesignedUrl = await pesignedURLHttpMessage.Content.ReadAsStringAsync();
 
-                var sendCloudinaryMessage = await CloudHelper.UploadFileAsync(pesignedUrl, file);
-                if (!sendCloudinaryMessage.IsSuccess)
-                {
-                    Snack.Add(sendCloudinaryMessage.Data, Severity.Warning);
-                }
-                else
-                {
-                    var urlImage = sendCloudinaryMessage.Data;
-                    var uploadAvatarParameter = $"{ConstRequestUri.UserUploadAvatar}?avatarUrl={urlImage}";
-                    var uploadImages = await Client.SendAsync(
-                        HttpMethod.PUT, uploadAvatarParameter,null, true
-                    );
-                    if (uploadImages is null)
-                    {
-                        return;
-                    }
-                    if(uploadImages.IsSuccessStatusCode)
-                    {
-                        Input.Avatar = urlImage;
-                        StateHasChanged();
-                        Snack.Add("Thay đổi ảnh thành công", Severity.Success);   
-                    }
-                    else
-                    {
-                        Snack.Add("Có lỗi xãy ra", Severity.Error);
-                    }
-                }
+            var sendCloudinaryMessage = await CloudHelper.UploadFileAsync(pesignedUrl, file);
+            if (!sendCloudinaryMessage.IsSuccess)
+            {
+                Snack.Add(sendCloudinaryMessage.Data, Severity.Warning);
             }
             else
             {
-                Snack.Add("Có lỗi xãy ra", Severity.Error);
+                var urlImage = sendCloudinaryMessage.Data;
+                var uploadAvatarParameter = $"{ConstRequestUri.UserUploadAvatar}?avatarUrl={urlImage}";
+                var uploadImages = await Client.SendAsync(
+                    HttpMethod.PUT, uploadAvatarParameter,null, true
+                );
+                if (uploadImages is null)
+                {
+                    return;
+                }
+                if(uploadImages.IsSuccessStatusCode)
+                {
+                    Input.Avatar = urlImage;
+                    StateHasChanged();
+                    Snack.Add("Thay đổi ảnh thành công", Severity.Success);   
+                }
+                else
+                {
+                    Snack.Add("Có lỗi xãy ra", Severity.Error);
+                }
             }
         }
-        catch (Exception ex)
+        else
         {
             Snack.Add("Có lỗi xãy ra", Severity.Error);
         }
@@ -135,36 +128,29 @@ else{
     private async Task SaveProfile()
     {
         var profile = new UpdateUserInformationRequest(
-                Input.PhoneNumber,
-                Input.Email,
-                Input.Address,
-                Input.FullName,
-                Input.Gender
-            );
-        try
+            Input.PhoneNumber,
+            Input.Email,
+            Input.Address,
+            Input.FullName,
+            Input.Gender
+        );
+        var updateMessage = await Client.SendAsync(HttpMethod.PUT, ConstRequestUri.UserUpdateProfile,
+            profile, true);
+        if (updateMessage is null)
         {
-            var updateMessage = await Client.SendAsync(HttpMethod.PUT, ConstRequestUri.UserUpdateProfile,
-                profile, true);
-            if (updateMessage is null)
-            {
-                return;
-            }
-
-            if (updateMessage.IsSuccessStatusCode)
-            {
-                Snack.Add("Cập nhận thành công", Severity.Success);
-            }
-            else
-            {
-                var errors = await updateMessage.Content.DecodeAsync<ErrorResponse>();
-                Snack.Add(errors is null ? "Cập nhật thất bại" :errors.Detail, Severity.Warning);
-            }
-
+            return;
         }
-        catch (Exception ex)
+
+        if (updateMessage.IsSuccessStatusCode)
         {
-            Snack.Add("Cập nhật thất bại", Severity.Error);
+            Snack.Add("Cập nhận thành công", Severity.Success);
         }
+        else
+        {
+            var errors = await updateMessage.Content.DecodeAsync<ErrorResponse>();
+            Snack.Add(errors is null ? "Cập nhật thất bại" :errors.Detail, Severity.Warning);
+        }
+        
     }
 
     private sealed class InputModel
@@ -187,48 +173,39 @@ else{
     {
         if (firstRender)
         {
-            try
+            var informationHttpMessage = await Client.SendAsync(HttpMethod.GET,
+                ConstRequestUri.UserInformation, null, true);
+            if (informationHttpMessage is null)
             {
-                var informationHttpMessage = await Client.SendAsync(HttpMethod.GET,
-                    ConstRequestUri.UserInformation, null, true);
-                if (informationHttpMessage is null)
+                return;
+            }
+
+            if (informationHttpMessage.IsSuccessStatusCode)
+            {
+                var user = await informationHttpMessage.Content.DecodeAsync<UserDetailResponse>();
+                if (user is null)
                 {
+                    Snack.Add("Có lỗi xãy ra", Severity.Error);
+                    Navigation.NavigateTo("/admin");
                     return;
                 }
 
-                if (informationHttpMessage.IsSuccessStatusCode)
+                Input = new InputModel
                 {
-                    var user = await informationHttpMessage.Content.DecodeAsync<UserDetailResponse>();
-                    if (user is null)
-                    {
-                        Snack.Add("Có lỗi xãy ra", Severity.Error);
-                        Navigation.NavigateTo("/admin");
-                        return;
-                    }
-
-                    Input = new InputModel
-                    {
-                        Address = user.Address,
-                        Avatar = user.Avatar,
-                        Email = user.Email,
-                        FullName = user.FullName,
-                        PhoneNumber = user.Phone,
-                        Gender = user.Gender,
-                    };
-                    _isReadyPage = true;
-                    StateHasChanged();
-                    return;
-                }
-
-                Snack.Add("Có lỗi xãy ra", Severity.Warning);
-                Navigation.NavigateTo("/admin");
-
+                    Address = user.Address,
+                    Avatar = user.Avatar,
+                    Email = user.Email,
+                    FullName = user.FullName,
+                    PhoneNumber = user.Phone,
+                    Gender = user.Gender,
+                };
+                _isReadyPage = true;
+                StateHasChanged();
+                return;
             }
-            catch (Exception ex)
-            {
-                Snack.Add("Có lỗi xãy ra", Severity.Warning);
-                Navigation.NavigateTo("/admin");
-            }
+
+            Snack.Add("Có lỗi xãy ra", Severity.Warning);
+            Navigation.NavigateTo("/admin");
         }
     }
     

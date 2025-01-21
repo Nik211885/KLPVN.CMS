@@ -9,6 +9,7 @@ using KLPVN.Core.Models;
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
 using MudBlazor;
+using HttpMethod = CMS.WebAssembly.Common.HttpMethod;
 
 namespace CMS.WebAssembly.Pages.Admin.Account;
 
@@ -57,106 +58,35 @@ public partial class Login
   private async Task HandlerLoginAsync()
   {
     isLoginButton = true;
-    var client = Factory.CreateClient(ApiKey.BaseAddress);
     var loginRequest = new LoginRequest(Input.UserName, Input.Password);
-    var data = loginRequest.EncodeJsonContent();
-    try
+
+    var loginMessage = await Client.SendAsync(HttpMethod.POST,
+      ConstRequestUri.AuLogin, loginRequest, true);
+    if (loginMessage is null)
     {
-      var httpResponse = await client.PostAsync(ConstRequestUri.AuLogin, data);
-      if (httpResponse.IsSuccessStatusCode)
-      {
-        // save in local storgage
-        var jwtResult = await httpResponse.Content.DecodeAsync<JwtResult>();
-        await Js.InvokeVoidAsync("localStorage.setItem", "Token", jwtResult.AccessToken);
-        await Js.InvokeVoidAsync("localStorage.setItem", "Refresh", jwtResult.RefreshToken);
-        Navigation.NavigateTo("/admin");
-        Snack.Add("Đăng nhập thành công", Severity.Success);
-        return;
-      }
-      else
-      {
-        var errors = await httpResponse.Content.DecodeAsync<ErrorResponse>();
-        Snack.Add(errors.Detail, Severity.Warning);
-      }
-    }
-    catch (Exception ex)
-    {
-      Snack.Add("Có lỗi trong quá trình đăng nhập", Severity.Error);
+      return;
     }
 
+    if (loginMessage.IsSuccessStatusCode)
+    {
+      var jwtResult = await loginMessage.Content.DecodeAsync<JwtResult>();
+      await Js.InvokeVoidAsync("localStorage.setItem", "Token", jwtResult.AccessToken);
+      await Js.InvokeVoidAsync("localStorage.setItem", "Refresh", jwtResult.RefreshToken);
+      Navigation.NavigateTo("/admin");
+      Snack.Add("Đăng nhập thành công", Severity.Success);
+      return;
+    }
+    var errors = await loginMessage.Content.DecodeAsync<ErrorResponse>();
+    Snack.Add(errors.Detail, Severity.Warning);
     isLoginButton = false;
   }
 
-  protected override async Task OnAfterRenderAsync(bool firstRender)
+  protected override void OnAfterRender(bool firstRender)
   {
     if (firstRender)
     {
-      var token = await Js.InvokeAsync<string?>("localStorage.getItem", "Token");
-      var client = Factory.CreateClient(ApiKey.BaseAddress);
-      if (token is null)
-      {
-        isPassPage = true;
-        StateHasChanged();
-        return;
-      }
-      else
-      {
-        client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-        try
-        {
-          var sampleResponse = await client.GetAsync("sample");
-          if (sampleResponse.IsSuccessStatusCode)
-          {
-            Navigation.NavigateTo("/admin");
-          }
-          else if (sampleResponse.StatusCode == HttpStatusCode.Unauthorized)
-          {
-            var refreshToken = await Js.InvokeAsync<string?>("localStorage.getItem", "Refresh");
-            if (refreshToken is null)
-            {
-              isPassPage = true;
-              StateHasChanged();
-              return;
-            }
-
-            var tokenResponse =
-              await client.PostAsync(ConstRequestUri.AuRefresh + $"?refreshToken={refreshToken}", null);
-            if (tokenResponse.IsSuccessStatusCode)
-            {
-              var jwtResult = await tokenResponse.Content.DecodeAsync<JwtResult>();
-              await Js.InvokeVoidAsync("localStorage.setItem", "Token", jwtResult.AccessToken);
-              await Js.InvokeVoidAsync("localStorage.setItem", "Refresh", jwtResult.RefreshToken);
-              Navigation.NavigateTo("/admin");
-            }
-            else
-            {
-              await Js.InvokeVoidAsync("localStorage.removeItem", "Token");
-              await Js.InvokeVoidAsync("localStorage.removeItem", "Refresh");
-              await Js.InvokeVoidAsync("localStorage.removeItem", "Menu");
-              isPassPage = true;
-              StateHasChanged();
-            }
-          }
-          else
-          {
-            await Js.InvokeVoidAsync("localStorage.removeItem", "Token");
-            await Js.InvokeVoidAsync("localStorage.removeItem", "Refresh");
-            await Js.InvokeVoidAsync("localStorage.removeItem", "Menu");
-            isPassPage = true;
-            StateHasChanged();
-            return;
-          }
-        }
-        catch (Exception)
-        {
-          await Js.InvokeVoidAsync("localStorage.removeItem", "Token");
-          await Js.InvokeVoidAsync("localStorage.removeItem", "Refresh");
-          await Js.InvokeVoidAsync("localStorage.removeItem", "Menu");
-          isPassPage = true;
-          StateHasChanged();
-          return;
-        }
-      }
+      isPassPage = true;
+      StateHasChanged();
     }
   }
 }

@@ -140,28 +140,21 @@ else{
 
     private async Task LoadSubjectAsync()
     {
-        try
+        var articleMessage = await Client.SendAsync(HttpMethod.GET, ConstRequestUri.GetAllSubject, null, true);
+        if (articleMessage is null)
         {
-            var articleMessage = await Client.SendAsync(HttpMethod.GET, ConstRequestUri.GetAllSubject, null, true);
-            if (articleMessage is null)
-            {
-                return;
-            }
+            return;
+        }
 
-            if (articleMessage.IsSuccessStatusCode)
-            {
-                _items = await articleMessage.Content.DecodeAsync<List<Subjects>>() ?? [];
-                _isLoadingData = true;
-                StateHasChanged();
-                return;    
-            }
-            var errors = await articleMessage.Content.DecodeAsync<ErrorResponse>();
-            Snack.Add(errors is null ? "Loadding thất bại" :errors.Detail, Severity.Warning);
-        }
-        catch (Exception ex)
+        if (articleMessage.IsSuccessStatusCode)
         {
-            Snack.Add("Cập nhật thất bại", Severity.Error);
+            _items = await articleMessage.Content.DecodeAsync<List<Subjects>>() ?? [];
+            _isLoadingData = true;
+            StateHasChanged();
+            return;    
         }
+        var errors = await articleMessage.Content.DecodeAsync<ErrorResponse>();
+        Snack.Add(errors is null ? "Loadding thất bại" :errors.Detail, Severity.Warning);
     }
 
 }

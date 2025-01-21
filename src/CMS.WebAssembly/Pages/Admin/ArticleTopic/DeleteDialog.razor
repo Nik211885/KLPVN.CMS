@@ -30,30 +30,22 @@
 
     private async Task Submit()
     {
-        try
+        var deleteSubjectMessage = await Client.SendAsync(HttpMethod.DELETE,
+            string.Format(ConstRequestUri.DeleteSubject, SubjectId), null, true
+            );
+        if (deleteSubjectMessage is null)
         {
-            var deleteSubjectMessage = await Client.SendAsync(HttpMethod.DELETE,
-                string.Format(ConstRequestUri.DeleteSubject, SubjectId), null, true
-                );
-            if (deleteSubjectMessage is null)
-            {
-                return;
-            }
+            return;
+        }
 
-            if (deleteSubjectMessage.IsSuccessStatusCode)
-            {
-                MudDialog.Close(DialogResult.Ok(0));
-                Snack.Add("Xóa chủ đề thành công", Severity.Success);
-                return;
-            }
-            var errors = await deleteSubjectMessage.Content.DecodeAsync<ErrorResponse>();
-            Snack.Add(errors is null ? "Có lỗi xảy ra" :errors.Detail, Severity.Warning);
-            
-        }
-        catch (Exception ex)
+        if (deleteSubjectMessage.IsSuccessStatusCode)
         {
-            Snack.Add("Có lỗi xảy ra", Severity.Error);
+            MudDialog.Close(DialogResult.Ok(0));
+            Snack.Add("Xóa chủ đề thành công", Severity.Success);
+            return;
         }
+        var errors = await deleteSubjectMessage.Content.DecodeAsync<ErrorResponse>();
+        Snack.Add(errors is null ? "Có lỗi xảy ra" :errors.Detail, Severity.Warning);
     }
 
     private void Cancel() => MudDialog.Cancel();

@@ -147,35 +147,28 @@
 
     private async Task LoadDataAsync()
     {
-        try
+        var informationOrMessage = await Client.SendAsync(HttpMethod.GET,
+            ConstRequestUri.GetAllInformationOrganization, null, true);
+        if (informationOrMessage is null)
         {
-            var informationOrMessage = await Client.SendAsync(HttpMethod.GET,
-                ConstRequestUri.GetAllInformationOrganization, null, true);
-            if (informationOrMessage is null)
-            {
-                return;
-            }
+            return;
+        }
 
-            if (informationOrMessage.IsSuccessStatusCode)
+        if (informationOrMessage.IsSuccessStatusCode)
+        {
+            var dsToChuc = await informationOrMessage.Content.DecodeAsync<List<InformationOrganizationResponse>>();
+            if (dsToChuc is null)
             {
-                var dsToChuc = await informationOrMessage.Content.DecodeAsync<List<InformationOrganizationResponse>>();
-                if (dsToChuc is null)
-                {
-                    Snack.Add("Có lỗi xãy ra", Severity.Error);
-                    return;
-                }
-                    
-                DSThongtin = dsToChuc;
-                _isLoadPage = true;
-                StateHasChanged();
+                Snack.Add("Có lỗi xãy ra", Severity.Error);
                 return;
             }
-            var errors = await informationOrMessage.Content.DecodeAsync<ErrorResponse>();
-            Snack.Add(errors is null ? "Có lỗi xãy ra" :errors.Detail, Severity.Warning);
+                
+            DSThongtin = dsToChuc;
+            _isLoadPage = true;
+            StateHasChanged();
+            return;
         }
-        catch (Exception ex)
-        {
-            Snack.Add("Có lỗi xãy ra", Severity.Error);
-        }
+        var errors = await informationOrMessage.Content.DecodeAsync<ErrorResponse>();
+        Snack.Add(errors is null ? "Có lỗi xãy ra" :errors.Detail, Severity.Warning);
     }
 }

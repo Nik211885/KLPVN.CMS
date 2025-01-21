@@ -45,20 +45,13 @@
     private IReadOnlyCollection<Feedback> feedbacks;
     protected override async Task OnInitializedAsync()
     {
-        try
+        var feedBacksMessage = await Client.SendAsync(HttpMethod.GET,
+        ConstRequestUri.FeedBacks, null, true);
+        if (feedBacksMessage is null)
         {
-            var feedBacksMessage = await Client.SendAsync(HttpMethod.GET,
-            ConstRequestUri.FeedBacks, null, true);
-            if (feedBacksMessage is null)
-            {
-                return;
-            }
-            feedbacks = await feedBacksMessage.Content.DecodeAsync<IReadOnlyCollection<Feedback>>() ?? [];
+            return;
         }
-        catch(Exception ex)
-        {
-            Snack.Add("Có lỗi xãy ra", Severity.Error);
-        }
+        feedbacks = await feedBacksMessage.Content.DecodeAsync<IReadOnlyCollection<Feedback>>() ?? [];
         await base.OnInitializedAsync();
     }
     private void PageChanged(int i)

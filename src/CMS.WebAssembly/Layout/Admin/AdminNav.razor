@@ -62,41 +62,33 @@ else{
                 StateHasChanged();
                 return;
             }
-
-            try
+            var menu = await Client.SendAsync(HttpMethod.GET,
+                ConstRequestUri.UserMenu, null, true);
+            if (menu is null)
             {
-                var menu = await Client.SendAsync(HttpMethod.GET,
-                    ConstRequestUri.UserMenu, null, true);
-                if (menu is null)
+                return;
+            }
+
+            if (menu.IsSuccessStatusCode)
+            {
+                var menuResponse = await menu.Content.DecodeAsync<MenuTreeResponse?>();
+                if (menuResponse is null)
                 {
+                    Snack.Add("Có lỗi xãy ra hãy login lại xem");
                     return;
                 }
 
-                if (menu.IsSuccessStatusCode)
-                {
-                    var menuResponse = await menu.Content.DecodeAsync<MenuTreeResponse?>();
-                    if (menuResponse is null)
-                    {
-                        Snack.Add("Có lỗi xãy ra hãy login lại xem");
-                        return;
-                    }
-
-                    _menu = menuResponse;
-                    var menuJson = JsonConvert.SerializeObject(_menu);
-                    await Js.InvokeVoidAsync("localStorage.setItem", "Menu", menuJson);
-                    var user = await GetUserDecodeAsync();
-                    _user = user ?? new UserDecodeAccessToken("Guest", []);
-                    _isReadPage = true;
-                    StateHasChanged();
-                    return;
-                }
-
-                Snack.Add("Có lỗi xãy ra hãy login lại xem");
+                _menu = menuResponse;
+                var menuJson = JsonConvert.SerializeObject(_menu);
+                await Js.InvokeVoidAsync("localStorage.setItem", "Menu", menuJson);
+                var user = await GetUserDecodeAsync();
+                _user = user ?? new UserDecodeAccessToken("Guest", []);
+                _isReadPage = true;
+                StateHasChanged();
+                return;
             }
-            catch (Exception ex)
-            {
-                Snack.Add("Có lỗi server", Severity.Error);
-            }
+
+            Snack.Add("Có lỗi xãy ra hãy login lại xem");
         }
     }
 
@@ -132,28 +124,20 @@ else{
 
     private async Task<UserDecodeAccessToken?> GetUserDecodeAsync()
     {
-        try
+        var userInforHttpMessage = await Client.SendAsync(HttpMethod.GET, 
+            ConstRequestUri.AuUser, null, true);
+        if (userInforHttpMessage is null)
         {
-            var userInforHttpMessage = await Client.SendAsync(HttpMethod.GET, 
-                ConstRequestUri.AuUser, null, true);
-            if (userInforHttpMessage is null)
-            {
-                return null;
-            }
-
-            if (userInforHttpMessage.IsSuccessStatusCode)
-            {
-                var user = await userInforHttpMessage.Content.DecodeAsync<UserDecodeAccessToken>();
-                return user;
-            }
-
-            Snack.Add("Có lỗi xãy ra hãy login lại xem");
-        }
-        catch (Exception ex)
-        {
-            Snack.Add("Có lỗi server xãy ra", Severity.Error);
+            return null;
         }
 
+        if (userInforHttpMessage.IsSuccessStatusCode)
+        {
+            var user = await userInforHttpMessage.Content.DecodeAsync<UserDecodeAccessToken>();
+            return user;
+        }
+
+        Snack.Add("Có lỗi xãy ra hãy login lại xem");
         return null;
     }
 

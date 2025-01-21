@@ -93,62 +93,48 @@
                 RefSocial:Input.RefSocial,
                 RefTikTok:Input.RefTikTok
             );
-        try
+        var createInforMessage = await Client.SendAsync(HttpMethod.POST,
+            ConstRequestUri.PostCreateInformationOrganization, createInformationOrRequest,  true);
+        if (createInforMessage is null)
         {
-            var createInforMessage = await Client.SendAsync(HttpMethod.POST,
-                ConstRequestUri.PostCreateInformationOrganization, createInformationOrRequest,  true);
-            if (createInforMessage is null)
-            {
-                return;
-            }
+            return;
+        }
 
-            if (createInforMessage.IsSuccessStatusCode)
-            {
-                MudDialog.Close(DialogResult.Ok(0));
-                Snack.Add("Thêm mới thành công", Severity.Success);
-                return;
-            }
-            var error = await createInforMessage.Content.DecodeAsync<ErrorResponse>();
-            Snack.Add(error is not null ? error.Detail : "Có lỗi xãy ra", Severity.Warning);
-        }
-        catch (Exception ex)
+        if (createInforMessage.IsSuccessStatusCode)
         {
-            Snack.Add("Có lỗi xãy ra", Severity.Error);
+            MudDialog.Close(DialogResult.Ok(0));
+            Snack.Add("Thêm mới thành công", Severity.Success);
+            return;
         }
+        var error = await createInforMessage.Content.DecodeAsync<ErrorResponse>();
+        Snack.Add(error is not null ? error.Detail : "Có lỗi xãy ra", Severity.Warning);
     }
 
     private void Cancel() => MudDialog.Cancel();
 
     private async Task UploadFileInformation(IBrowserFile file)
     {
-        try
+        var urlUploadImages = await Client.SendAsync(HttpMethod.GET,
+            ConstRequestUri.AuUploadFile, null, true);
+        if (urlUploadImages is null)
         {
-            var urlUploadImages = await Client.SendAsync(HttpMethod.GET,
-                ConstRequestUri.AuUploadFile, null, true);
-            if (urlUploadImages is null)
-            {
-                return;
-            }
+            return;
+        }
 
-            if (urlUploadImages.IsSuccessStatusCode)
+        if (urlUploadImages.IsSuccessStatusCode)
+        {
+            var url = await urlUploadImages.Content.ReadAsStringAsync();
+            var sendCloudinaryMessage = await CloudHelper.UploadFileAsync(url, file);
+            if (sendCloudinaryMessage.IsSuccess)
             {
-                var url = await urlUploadImages.Content.ReadAsStringAsync();
-                var sendCloudinaryMessage = await CloudHelper.UploadFileAsync(url, file);
-                if (sendCloudinaryMessage.IsSuccess)
-                {
-                    _iconUrl = sendCloudinaryMessage.Data;
-                    return;
-                }
-                Snack.Add(sendCloudinaryMessage.Data, Severity.Warning);
+                _iconUrl = sendCloudinaryMessage.Data;
                 return;
             }
-            var error = await urlUploadImages.Content.DecodeAsync<ErrorResponse>();
-            Snack.Add(error is not null ? error.Detail : "Có lỗi xãy ra", Severity.Warning);
+            Snack.Add(sendCloudinaryMessage.Data, Severity.Warning);
+            return;
         }
-        catch (Exception ex)
-        {
-            Snack.Add("Upload images thất bại", Severity.Error);
-        }
+        var error = await urlUploadImages.Content.DecodeAsync<ErrorResponse>();
+        Snack.Add(error is not null ? error.Detail : "Có lỗi xãy ra", Severity.Warning);
     }
     public class InputModel
     {

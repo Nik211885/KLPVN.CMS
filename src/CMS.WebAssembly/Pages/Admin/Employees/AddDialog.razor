@@ -113,29 +113,21 @@
             nhanVien.FullName,
             nhanVien.Password, 
             nhanVien.Gender, null);
-        try
+        var createUserMessage = await Client.SendAsync(HttpMethod.POST, 
+            ConstRequestUri.PostCreateUser, createUserRequest, true);
+        if (createUserMessage is null)
         {
-            var createUserMessage = await Client.SendAsync(HttpMethod.POST, 
-                ConstRequestUri.PostCreateUser, createUserRequest, true);
-            if (createUserMessage is null)
-            {
-                return;
-            }
+            return;
+        }
 
-            if (createUserMessage.IsSuccessStatusCode)
-            {
-                Snack.Add("Tạo tài khoản thành công", Severity.Success);
-                MudDialog.Close(DialogResult.Ok(0));
-                return;
-            }
-            var error = await createUserMessage.Content.DecodeAsync<ErrorResponse>();
-            Snack.Add(error is not null ? error.Detail : "Có lỗi xãy ra", Severity.Warning);
-            
-        }
-        catch (Exception ex)
+        if (createUserMessage.IsSuccessStatusCode)
         {
-            Snack.Add("Có lỗi xãy ra", Severity.Error);
+            Snack.Add("Tạo tài khoản thành công", Severity.Success);
+            MudDialog.Close(DialogResult.Ok(0));
+            return;
         }
+        var error = await createUserMessage.Content.DecodeAsync<ErrorResponse>();
+        Snack.Add(error is not null ? error.Detail : "Có lỗi xãy ra", Severity.Warning);
     }
 
     private void Cancel() => MudDialog.Cancel();
